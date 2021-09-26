@@ -279,4 +279,4 @@ const SalesRepRoutes = [
   }
 ]
 
-export default userData.role === 'manager' ? ManagerRoutes : userData.role === 'busary' ? BusaryRoutes : SalesRepRoutes
+export default userData?.role === 'manager' ? ManagerRoutes : userData?.role === 'busary' ? BusaryRoutes : SalesRepRoutes
