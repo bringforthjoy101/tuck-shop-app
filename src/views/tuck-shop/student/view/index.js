@@ -14,9 +14,7 @@ import PlanCard from './PlanCard'
 import UserInfoCard from './UserInfoCard'
 import AllTransactionList from './AllTransactions'
 import AllOrders from './AllOrders'
-// import BankTransactionList from './BankTransactions'
-// import EscrowTransactionList from './EscrowTransactions'
-// import UserRewardsHistory from './UserRewards'
+import Books from './Books'
 import { isUserLoggedIn } from '@utils'
 
 // ** Styles
@@ -66,6 +64,9 @@ const UserView = props => {
               <NavItem>
                 <NavLink onClick={() => setActiveTransaction('orders')} active={activeTransaction === "orders"}>Orders</NavLink>
               </NavItem>
+              <NavItem>
+                <NavLink onClick={() => setActiveTransaction('books')} active={activeTransaction === "books"}>Books</NavLink>
+              </NavItem>
             </Nav>
           </Row>
         </Card>
@@ -74,6 +75,8 @@ const UserView = props => {
             <AllTransactionList />
           </Col> : activeTransaction === "orders" ? <Col sm='12'>
             <AllOrders />
+          </Col> : activeTransaction === "books" ? <Col sm='12'>
+            <Books />
           </Col>  : ""}
         </Row>
       </div>

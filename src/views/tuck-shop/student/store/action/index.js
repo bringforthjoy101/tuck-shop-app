@@ -28,7 +28,7 @@ export const getFilteredData = (students, params) => {
     const queryLowered = q.toLowerCase()
     const filteredData = students.filter(
       student =>
-        (student.studentId.toLowerCase().includes(queryLowered) || student.firstName.toLowerCase().includes(queryLowered) || student.lastName?.toString().toLowerCase().includes(queryLowered) || student.type.toLowerCase().includes(queryLowered)) &&
+        (student.otherName.toLowerCase().includes(queryLowered) || student.firstName.toLowerCase().includes(queryLowered) || student.lastName?.toString().toLowerCase().includes(queryLowered) || student.type.toLowerCase().includes(queryLowered)) &&
         student.class === (className || student.class) && student.level === (level || student.level) && student.group === (group || student.group) && student.status === (status || student.status)
     )
 
@@ -151,6 +151,25 @@ export const getFilteredStudentOrders = (orders, params) => {
     const queryLowered = q.toLowerCase()
     const filteredData = orders.filter(
       order => (order.orderNumber.toLowerCase().includes(queryLowered) || moment(order.createdAt).format('lll').toLowerCase().includes(queryLowered)))
+    /* eslint-enable  */
+    await dispatch({
+      type: 'GET_STUDENT_ORDERS',
+      data: paginateArray(filteredData, perPage, page),
+      totalPages: filteredData.length,
+      params
+    })
+  }
+}
+
+// Filtered Books
+export const getFilteredStudentBooks = (books, params) => {
+  return async dispatch => {
+    const { q = '', perPage = 10, page = 1 } = params
+    /* eslint-enable */
+
+    const queryLowered = q.toLowerCase()
+    const filteredData = books.filter(
+      book => (book.name.toLowerCase().includes(queryLowered)))
     /* eslint-enable  */
     await dispatch({
       type: 'GET_STUDENT_ORDERS',

@@ -85,7 +85,8 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
   }
 
   const getTotalSpent = (transactions) => {
-    const totalPrice = transactions.reduce(function (accumulator, item) {
+    const debitTransactions = transactions.filter(item => { return item.type === 'debit' })
+    const totalPrice = debitTransactions.reduce(function (accumulator, item) {
       return accumulator + item.amount
     }, 0)
     return totalPrice
@@ -103,7 +104,7 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                   <div className='user-info mb-1'>
                     <h4 className='mb-0'>{studentDetails !== null ? `${studentDetails.firstName} ${studentDetails.lastName} ${studentDetails.otherName}` : 'Student Name'}</h4>
                     <CardText tag='span'>
-                      {studentDetails !== null ? `${studentDetails.studentId} | ${studentDetails.email}`  : 'eleanor.aguilar@gmail.com'}
+                      {studentDetails?.class === 'junior' ? 'JSS' : 'SS'} {studentDetails?.level} {studentDetails?.group}
                     </CardText>
                   </div>
                   <div className='d-flex flex-wrap align-items-center'>

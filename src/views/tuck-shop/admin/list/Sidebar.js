@@ -147,6 +147,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
             >
               <option value=''>Select Role</option>
               <option value='sales rep'>Sales Rep</option>
+              <option value='store'>Store</option>
               <option value='busary'>Busary</option>
               <option value='manager'>Manager</option>
             </AvInput>

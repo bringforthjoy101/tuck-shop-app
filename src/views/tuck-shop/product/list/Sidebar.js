@@ -7,7 +7,7 @@ import { swal, apiRequest } from '@utils'
 import { getAllData, getFilteredData } from '../store/action'
 
 // ** Third Party Components
-import { Button, FormGroup, Label, FormText, CustomInput } from 'reactstrap'
+import { Button, FormGroup, Label, Spinner, CustomInput } from 'reactstrap'
 import { AvForm, AvInput } from 'availity-reactstrap-validation-safe'
 
 const SidebarNewUsers = ({ open, toggleSidebar }) => {
@@ -16,27 +16,30 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
   const [productData, setProductData] = useState({
     name: '',
     qty: '',
+    unit: '',
+    category: '',
     price: '',
     description: '',
     image: 'https://res.cloudinary.com/bringforthjoy/image/upload/v1621720743/INVESTA/appia_reward_image_placeholder_um7q6g.jpg'
   })
-  const [password, setPassword] = useState('kfxHdSCqM')
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  
   // ** Function to handle form submit
   const onSubmit = async (event, errors) => {
-    // if (!errors.length) {
-    //   toggleSidebar()
-    // }
+    setIsSubmitting(true)
     event.preventDefault()
     console.log({errors})
+    if (errors) setIsSubmitting(false)
     if (errors && !errors.length) {
-      // const {first_name, last_name, email, phone, role} = productData
-      // const body = JSON.stringify
       console.log({productData})
+      setIsSubmitting(true)
       const body = JSON.stringify(productData)
       try {
         const response = await apiRequest({url:'/products/create', method:'POST', body}, dispatch)
         console.log({response})
         if (response.data.status) {
+            setIsSubmitting(false)
             swal('Great job!', response.data.message, 'success')
             dispatch(getAllData())
             setProductData({
@@ -48,6 +51,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
             })
             toggleSidebar()
         } else {
+          setIsSubmitting(false)
           swal('Oops!', response.data.message, 'error')
           setProductData({
             name: '',
@@ -59,6 +63,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
           toggleSidebar()
         }
       } catch (error) {
+        setIsSubmitting(false)
         console.error({error})
       }
     }
@@ -93,7 +98,6 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
               placeholder='Quantity' 
               value={productData.qty}
               onChange={e => setProductData({...productData, qty: e.target.value})}
-              required 
             />
           </FormGroup>
           <FormGroup>
@@ -105,9 +109,46 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
               placeholder='Product Price' 
               value={productData.price}
               onChange={e => setProductData({...productData, price: e.target.value})}
-              required 
             />
-            {/* <FormText color='muted'>You can use letters, numbers & periods</FormText> */}
+          </FormGroup>
+          <FormGroup>
+            <Label for='unit'>Product Unit</Label>
+            <AvInput 
+              type='select' 
+              id='unit' 
+              name='unit' 
+              value={productData.unit}
+              onChange={e => setProductData({...productData, unit: e.target.value})}
+              required
+            >
+              <option value=''>Select Product Unit</option>
+              <option value='kg'>Kilogram</option>
+              <option value='pck'>Pack</option>
+              <option value='pcs'>Pieces</option>
+              <option value='l'>Litre</option>
+              <option value='tuber'>Tuber</option>
+              <option value='g'>Gram</option>
+              <option value='rubber'>Rubber</option>
+              <option value='bunch'>Bunch</option>
+              <option value='crate'>Crate</option>
+              <option value='carton'>Carton</option>
+            </AvInput>
+          </FormGroup>
+          <FormGroup>
+            <Label for='category'>Product Category</Label>
+            <AvInput 
+              type='select' 
+              id='category' 
+              name='category' 
+              value={productData.category}
+              onChange={e => setProductData({...productData, category: e.target.value})}
+              required
+            >
+              <option value=''>Select Product Unit</option>
+              <option value='shop'>Shop</option>
+              <option value='book'>Book</option>
+              <option value='store'>Store</option>
+            </AvInput>
           </FormGroup>
           <FormGroup>
             <Label for='description'>Product Description</Label>
@@ -121,12 +162,13 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
               required 
             />
           </FormGroup>
-          <FormGroup>
+          {/* <FormGroup>
             <Label for='exampleCustomFileBrowser'>Product Image</Label>
             <CustomInput type='file' id='exampleCustomFileBrowser' name='customFile' />
-          </FormGroup>
-          <Button type='submit' className='mr-1' color='primary'>
-            Submit
+          </FormGroup> */}
+          <Button type='submit' className='mr-1' color='primary' disabled={isSubmitting}>
+            {isSubmitting && <Spinner color='white' size='sm' />}
+            <span className='ml-50'>Submit</span>
           </Button>
           <Button type='reset' color='secondary' outline onClick={toggleSidebar}>
             Cancel

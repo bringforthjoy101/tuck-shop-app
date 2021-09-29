@@ -20,7 +20,9 @@ const UserAccountTab = ({ selectedProduct }) => {
     name: selectedProduct.name,
     qty: selectedProduct.qty,
     price: selectedProduct.price,
-    status: selectedProduct.status
+    status: selectedProduct.status,
+    unit: selectedProduct.unit,
+    category: selectedProduct.category
     // image: 'https://res.cloudinary.com/bringforthjoy/image/upload/v1621720743/INVESTA/appia_reward_image_placeholder_um7q6g.jpg'
   })
 
@@ -188,6 +190,49 @@ const UserAccountTab = ({ selectedProduct }) => {
             </Col>
             <Col md='6' sm='12'>
               <FormGroup>
+                <Label for='unit'>Unit</Label>
+                <AvInput 
+                  type='select' 
+                  id='unit' 
+                  name='unit' 
+                  value={selectedProduct.unit}
+                  onChange={e => setProductData({...productData, unit: e.target.value})}
+                  required
+                >
+                  <option value={selectedProduct.unit} className='text-cpitalize'>{selectedProduct.unit}</option>
+                  <option value='kg'>Kilogram</option>
+                  <option value='pck'>Pack</option>
+                  <option value='pcs'>Pieces</option>
+                  <option value='l'>Litre</option>
+                  <option value='tuber'>Tuber</option>
+                  <option value='g'>Gram</option>
+                  <option value='rubber'>Rubber</option>
+                  <option value='bunch'>Bunch</option>
+                  <option value='crate'>Crate</option>
+                  <option value='carton'>Carton</option>
+                </AvInput>
+              </FormGroup>
+            </Col>
+            <Col md='6' sm='12'>
+              <FormGroup>
+                <Label for='category'>Status</Label>
+                <AvInput 
+                  type='select' 
+                  id='category' 
+                  name='category' 
+                  value={selectedProduct.category}
+                  onChange={e => setProductData({...productData, category: e.target.value})}
+                  required
+                >
+                  <option value={selectedProduct.category} className='text-cpitalize'>{selectedProduct.category}</option>
+                  <option value='shop'>Shop</option>
+                  <option value='book'>Book</option>
+                  <option value='store'>Store</option>
+                </AvInput>
+              </FormGroup>
+            </Col>
+            <Col md='6' sm='12'>
+              <FormGroup>
                 <Label for='status'>Status</Label>
                 <AvInput 
                   type='select' 
@@ -201,10 +246,6 @@ const UserAccountTab = ({ selectedProduct }) => {
                   <option value='in stock'>In Stock</option>
                   <option value='out of stock'>Out Of Stock</option>
                 </AvInput>
-                {/* <Input type='select' name='status' id='status' defaultValue={selectedProduct.status}>
-                  <option value='in stock'>In Stock</option>
-                  <option value='out of stock'>Out Of Stock</option>
-                </Input> */}
               </FormGroup>
             </Col>
             

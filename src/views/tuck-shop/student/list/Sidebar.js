@@ -7,7 +7,7 @@ import { swal, apiRequest } from '@utils'
 import { getAllData, getFilteredData } from '../store/action'
 
 // ** Third Party Components
-import { Button, FormGroup, Label, FormText, CustomInput } from 'reactstrap'
+import { Button, FormGroup, Label, Spinner, CustomInput } from 'reactstrap'
 import { AvForm, AvInput } from 'availity-reactstrap-validation-safe'
 
 const SidebarNewUsers = ({ open, toggleSidebar }) => {
@@ -17,14 +17,14 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
     firstName: '',
     lastName: '',
     otherName: '',
-    email: '',
     type: '',
     className: '',
     level: '',
     group: '',
-    avatar: 'https://res.cloudinary.com/bringforthjoy/image/upload/v1632178397/2.c8691d67.png',
-    studentId: ''
+    avatar: ''
   })
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const uploadImage = async (event) => {
     console.log('hi')
@@ -41,6 +41,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
         if (response) {
           if (response?.data?.status) {
             const avatar = response.data.data
+            // setIsSubmitting(false)
             setUserData({ ...userData, avatar })
           } else {
             swal("Oops!", response.data.message, "error")
@@ -51,27 +52,32 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
       } catch (error) {
         console.error({ error })
       }
-    // }
   }
 
   // ** Function to handle form submit
   const onSubmit = async (event, errors) => {
+    setIsSubmitting(true)
     event.preventDefault()
     console.log({errors})
+    if (errors) setIsSubmitting(false)
     if (errors && !errors.length) {
       console.log({userData})
+      setIsSubmitting(true)
       const body = JSON.stringify(userData)
       try {
         const response = await apiRequest({url:'/students/create', method:'POST', body}, dispatch)
         console.log({response})
         if (response.data.status) {
+          setIsSubmitting(false)
             swal('Great job!', response.data.message, 'success')
             dispatch(getAllData())
             toggleSidebar()
         } else {
+          setIsSubmitting(false)
           swal('Oops!', response.data.message, 'error')
         }
       } catch (error) {
+        setIsSubmitting(false)
         console.error({error})
       }
     }
@@ -88,11 +94,15 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
       >
         <AvForm onSubmit={onSubmit}>
           <FormGroup>
+            <Label for='image'>Student Image</Label>
+            <CustomInput type='file' id='image' name='image' accept='image/*' onChange={e => uploadImage(e)} required  />
+          </FormGroup>
+          <FormGroup>
             <Label for='firstName'>First Name</Label>
             <AvInput 
               name='firstName' 
               id='firstName' 
-              placeholder='John Doe' 
+              placeholder='First Name' 
               value={userData.firstName}
               onChange={e => setUserData({...userData, firstName: e.target.value})}
               required 
@@ -103,7 +113,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
             <AvInput 
               name='lastName' 
               id='lastName' 
-              placeholder='johnDoe99' 
+              placeholder='Last Name' 
               value={userData.lastName}
               onChange={e => setUserData({...userData, lastName: e.target.value})}
               required 
@@ -117,30 +127,6 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
               placeholder='Other Name' 
               value={userData.otherName}
               onChange={e => setUserData({...userData, otherName: e.target.value})}
-            />
-          </FormGroup>
-          <FormGroup>
-            <Label for='email'>Email</Label>
-            <AvInput 
-              type='email' 
-              name='email' 
-              id='email' 
-              placeholder='john.doe@example.com' 
-              value={userData.email}
-              onChange={e => setUserData({...userData, email: e.target.value})}
-              required 
-            />
-            <FormText color='muted'>You can use letters, numbers & periods</FormText>
-          </FormGroup>
-          <FormGroup>
-            <Label for='studentId'>Student ID</Label>
-            <AvInput 
-              name='studentId' 
-              id='studentId' 
-              placeholder='Student ID' 
-              value={userData.studentId}
-              onChange={e => setUserData({...userData, studentId: e.target.value})}
-              required 
             />
           </FormGroup>
           <FormGroup>
@@ -205,12 +191,9 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
               <option value='R'>R</option>
             </AvInput>
           </FormGroup>
-          <FormGroup>
-            <Label for='image'>Student Image</Label>
-            <CustomInput type='file' id='image' name='image' accept='image/*' onChange={e => uploadImage(e)}  />
-          </FormGroup>
-          <Button type='submit' className='mr-1' color='primary'>
-            Submit
+          <Button type='submit' className='mr-1' color='primary' disabled={isSubmitting}>
+            {isSubmitting && <Spinner color='white' size='sm' />}
+            <span className='ml-50'>Submit</span>
           </Button>
           <Button type='reset' color='secondary' outline onClick={toggleSidebar}>
             Cancel
