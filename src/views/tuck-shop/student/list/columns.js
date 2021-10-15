@@ -25,7 +25,7 @@ const renderClient = row => {
   if (row.avatar) {
     return <Avatar className='mr-1' img={row.avatar} width='32' height='32' />
   } else {
-    return <Avatar color={color || 'primary'} className='mr-1' content={`${row.names}` || 'John Doe'} initials />
+    return <Avatar color={color || 'primary'} className='mr-1' content={`${row.firstName} ${row.lastName}` || 'John Doe'} initials />
   }
 }
 
