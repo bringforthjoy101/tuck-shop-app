@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 
 // ** Custom Components
 import Avatar from '@components/avatar'
-import moment from 'moment'
-import { getAllData, deleteProduct } from '../store/action'
+
+import { getAllData, deleteStudent } from '../store/action'
 import { store } from '@store/storeConfig/store'
 
 import Swal from 'sweetalert2'
@@ -13,11 +13,8 @@ import withReactContent from 'sweetalert2-react-content'
 const MySwal = withReactContent(Swal)
 
 // ** Third Party Components
-import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
-import { MoreVertical, FileText, Trash2, Archive } from 'react-feather'
-
-
-// ** Third Party Components
+import { Badge, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
+import { MoreVertical, FileText, Trash2, Slack, User, Settings } from 'react-feather'
 
 // ** Renders Client Columns
 const renderClient = row => {
@@ -25,11 +22,53 @@ const renderClient = row => {
     states = ['light-success', 'light-danger', 'light-warning', 'light-info', 'light-primary', 'light-secondary'],
     color = states[stateNum]
 
-  if (row.image) {
-    return <Avatar className='mr-1' img={row.image} width='32' height='32' />
+  if (row.avatar) {
+    return <Avatar className='mr-1' img={row.avatar} width='32' height='32' />
   } else {
-    return <Avatar color={color || 'primary'} className='mr-1' content={`${row.name}` || 'Sample Product'} initials />
+    return <Avatar color={color || 'primary'} className='mr-1' content={`${row.firstName} ${row.lastName}` || 'John Doe'} initials />
   }
+}
+
+// ** Renders Role Columns
+const renderRole = row => {
+  
+  const roleObj = {
+    subscriber: {
+      class: 'text-primary',
+      icon: User
+    },
+    maintainer: {
+      class: 'text-success',
+      icon: Database
+    },
+    editor: {
+      class: 'text-info',
+      icon: Edit
+    },
+    author: {
+      class: 'text-warning',
+      icon: Settings
+    },
+    admin: {
+      class: 'text-danger',
+      icon: Slack
+    }
+  }
+
+  const Icon = roleObj[row.role] ? roleObj[row.role].icon : User
+
+  return (
+    <span className='text-truncate text-capitalize align-middle'>
+      <Icon size={18} className={`${roleObj[row.role] ? roleObj[row.role].class : 'text-primary'} mr-50`} />
+      {row.role_name || 'User'}
+    </span>
+  )
+}
+
+const statusObj = {
+  expelled: 'light-danger',
+  active: 'light-success',
+  suspended: 'light-warning'
 }
 
 const handleDelete = async (id) => {
@@ -47,13 +86,13 @@ const handleDelete = async (id) => {
     buttonsStyling: false
   }).then(async function (result) {
     if (result.value) {
-      const deleted = await store.dispatch(deleteProduct(id))
+      const deleted = await store.dispatch(deleteStudent(id))
       if (deleted.status) {
         await store.dispatch(getAllData())
           MySwal.fire({
               icon: 'success',
               title: 'Deleted!',
-              text: 'Product has been deleted.',
+              text: 'Student record has been deleted.',
               customClass: {
                 confirmButton: 'btn btn-primary'
               }
@@ -65,58 +104,35 @@ const handleDelete = async (id) => {
 
 export const columns = [
   {
-    name: 'Product Name',
+    name: 'Staff',
     minWidth: '297px',
-    selector: 'id',
+    selector: 'names',
     sortable: true,
     cell: row => (
       <div className='d-flex justify-content-left align-items-center'>
         {renderClient(row)}
         <div className='d-flex flex-column'>
           <Link
-            to={`/product/view/${row.id}`}
+            to={`/kitchen-staff/view/${row.id}`}
             className='user-name text-truncate mb-0'
           >
-            <span className='font-weight-bold'>{row.name}</span>
+            <span className='font-weight-bold'>{row.firstName} {row.lastName} {row.otherName}</span>
           </Link>
+          {/* <small className='text-truncate text-muted mb-0'>{row.class === 'junior' ? 'JSS' : 'SS'} {row.level} {row.group}</small> */}
         </div>
       </div>
     )
   },
   {
-    name: 'Price',
-    minWidth: '150px',
-    selector: 'price',
+    name: 'Status',
+    minWidth: '80px',
+    selector: 'status',
     sortable: true,
-    cell: row => <span>{(row.price || 0).toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}</span>
-  },
-  {
-    name: 'Qty',
-    minWidth: '150px',
-    selector: 'qty',
-    sortable: true,
-    cell: row => <span className="text-capitalize">{row.qty}</span>
-  },
-  {
-    name: 'Unit',
-    minWidth: '150px',
-    selector: 'unit',
-    sortable: true,
-    cell: row => <span className="text-capitalize">{row.unit}</span>
-  },
-  {
-    name: 'Category',
-    minWidth: '150px',
-    selector: 'category',
-    sortable: true,
-    cell: row => <span className="text-capitalize">{row.category}</span>
-  },
-  {
-    name: 'Cretaed Date',
-    minWidth: '250px',
-    selector: 'createdAt',
-    sortable: true,
-    cell: row => moment(row.createdAt).format('lll')
+    cell: row => (
+      <Badge className='text-capitalize' color={statusObj[row.status]} pill>
+        {row.status}
+      </Badge>
+    )
   },
   {
     name: 'Actions',
@@ -131,21 +147,21 @@ export const columns = [
         <DropdownMenu right>
           <DropdownItem
             tag={Link}
-            to={`/product/view/${row.id}`}
+            to={`/kitchen-staff/view/${row.id}`}
             className='w-100'
           >
             <FileText size={14} className='mr-50' />
             <span className='align-middle'>Details</span>
           </DropdownItem>
-          <DropdownItem
+          {/* <DropdownItem
             tag={Link}
-            to={`/product/edit/${row.id}`}
+            to={`/student/edit/${row.id}`}
             className='w-100'
             // onClick={() => store.dispatch(getUser(row.id))}
           >
             <Archive size={14} className='mr-50' />
             <span className='align-middle'>Edit</span>
-          </DropdownItem>
+          </DropdownItem> */}
           <DropdownItem 
             className='w-100' 
             onClick={() => handleDelete(row.id)}

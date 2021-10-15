@@ -68,6 +68,22 @@ const ManagerRoutes = [
         }
       },
       {
+        path: '/kitchen-staffs/list',
+        component: lazy(() => import('../../views/tuck-shop/kitchen-staffs/list'))
+      },
+      {
+        path: '/kitchen-staff/view',
+        exact: true,
+        component: () => <Redirect to='/tuck-shop/kitchen-staffs/view/1' />
+      },
+      {
+        path: '/kitchen-staff/view/:id',
+        component: lazy(() => import('../../views/tuck-shop/kitchen-staffs/view')),
+        meta: {
+          navLink: '/tuck-shop/kitchen-staff/view'
+        }
+      },
+      {
         path: '/products/list',
         component: lazy(() => import('../../views/tuck-shop/product/list'))
       },
@@ -197,6 +213,22 @@ const BusaryRoutes = [
     }
   },
   {
+    path: '/kitchen-staffs/list',
+    component: lazy(() => import('../../views/tuck-shop/kitchen-staffs/list'))
+  },
+  {
+    path: '/kitchen-staff/view',
+    exact: true,
+    component: () => <Redirect to='/tuck-shop/kitchen-staffs/view/1' />
+  },
+  {
+    path: '/kitchen-staff/view/:id',
+    component: lazy(() => import('../../views/tuck-shop/kitchen-staffs/view')),
+    meta: {
+      navLink: '/tuck-shop/kitchen-staff/view'
+    }
+  },
+  {
     path: '/orders/list',
     component: lazy(() => import('../../views/tuck-shop/order/list'))
   },
@@ -279,4 +311,53 @@ const SalesRepRoutes = [
   }
 ]
 
-export default userData?.role === 'manager' ? ManagerRoutes : userData?.role === 'busary' ? BusaryRoutes : SalesRepRoutes
+const StoreRoutes = [
+  {
+    path: '/apps/ecommerce/shop',
+    className: 'ecommerce-application',
+    component: lazy(() => import('../../views/tuck-shop/ecommerce/shop'))
+  },
+  {
+      path: '/apps/ecommerce/wishlist',
+      className: 'ecommerce-application',
+      component: lazy(() => import('../../views/tuck-shop/ecommerce/wishlist'))
+  },
+  {
+      path: '/apps/ecommerce/product-detail',
+      exact: true,
+      className: 'ecommerce-application',
+      component: () => <Redirect to='/apps/tuck-shop/product-detail/apple-i-phone-11-64-gb-black-26' />
+  },
+  {
+      path: '/apps/ecommerce/product-detail/:product',
+      exact: true,
+      className: 'ecommerce-application',
+      component: lazy(() => import('../../views/tuck-shop/ecommerce/detail')),
+      meta: {
+        navLink: '/apps/ecommerce/product-detail'
+      }
+  },
+  {
+      path: '/apps/ecommerce/checkout',
+      className: 'ecommerce-application',
+      component: lazy(() => import('../../views/tuck-shop/ecommerce/checkout'))
+  },
+  {
+    path: '/kitchen-staffs/list',
+    component: lazy(() => import('../../views/tuck-shop/kitchen-staffs/list'))
+  },
+  {
+    path: '/kitchen-staff/view',
+    exact: true,
+    component: () => <Redirect to='/tuck-shop/kitchen-staffs/view/1' />
+  },
+  {
+    path: '/kitchen-staff/view/:id',
+    component: lazy(() => import('../../views/tuck-shop/kitchen-staffs/view')),
+    meta: {
+      navLink: '/tuck-shop/kitchen-staff/view'
+    }
+  }
+]
+
+export default userData?.role === 'manager' ? ManagerRoutes : userData?.role === 'busary' ? BusaryRoutes : userData?.role === 'sales res' ? SalesRepRoutes : StoreRoutes

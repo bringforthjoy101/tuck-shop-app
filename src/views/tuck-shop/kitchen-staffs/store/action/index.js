@@ -4,13 +4,13 @@ import moment from 'moment'
 export const apiUrl = process.env.REACT_APP_API_ENDPOINT
 
 // ** Get all User Data
-export const getAllData = (role) => {
+export const getAllData = () => {
   return async dispatch => {
-    const url = role === 'store' ? '/students/kitchen' : '/students'
-    const response = await apiRequest({ url, method: 'GET' }, dispatch)
+    // const url = role === 'store' ? '/students/kitchen' : '/students'
+    const response = await apiRequest({ url: '/students/kitchen', method: 'GET' }, dispatch)
     if (response && response.data.data && response.data.status) {
       await dispatch({
-        type: 'GET_ALL_DATA',
+        type: 'GET_ALL_KITCHEN_STAFF_DATA',
         data: response.data.data
       })
     } else {
@@ -36,7 +36,7 @@ export const getFilteredData = (students, params) => {
     /* eslint-enable  */
 
     dispatch({
-      type: 'GET_FILTERED_STUDENT_DATA',
+      type: 'GET_FILTERED_KITCHEN_STAFF_DATA',
       data: paginateArray(filteredData, perPage, page),
       totalPages: filteredData.length,
       params
@@ -51,7 +51,7 @@ export const getStudentDetails =  (id) => {
     console.log(response)
     if (response && response.data && response.data.status) {
       await dispatch({
-        type: 'GET_STUDENT_DETAILS',
+        type: 'GET_KITCHEN_STAFF_DETAILS',
         studentDetails: response.data.data
       })
     } else {
@@ -97,7 +97,7 @@ export const getUserAllTransactions = (user_id) => {
     const response = await apiRequest({ url: '/admin/users/transactions/all', method: 'POST', body }, dispatch)
     if (response && response.data.data && response.data.success) {
       await dispatch({
-        type: 'GET_STUDENT_ALL_TRANSACTIONS',
+        type: 'GET_KITCHEN_STAFF_ALL_TRANSACTIONS',
         data: response.data.data
       })
     } else {
@@ -118,7 +118,7 @@ export const getFilteredUserTransactions = (userTransactions, params) => {
       transaction => (transaction?.transactionId?.toLowerCase()?.includes(queryLowered) || moment(transaction.createdAt).format('lll')?.toLowerCase()?.includes(queryLowered)))
     /* eslint-enable  */
     await dispatch({
-      type: 'GET_STUDENT_TRANSACTIONS',
+      type: 'GET_KITCHEN_STAFF_TRANSACTIONS',
       data: paginateArray(filteredData, perPage, page),
       totalPages: filteredData.length,
       params
@@ -133,7 +133,7 @@ export const getUserAllUtilitiesTransactions = (user_id) => {
     const response = await apiRequest({ url: '/admin/users/transactions/utility', method: 'POST', body }, dispatch)
     if (response && response.data.data && response.data.success) {
       await dispatch({
-        type: 'GET_STUDENT_ALL_UTILITIES_TRANSACTIONS',
+        type: 'GET_KITCHEN_STAFF_ALL_UTILITIES_TRANSACTIONS',
         data: response.data.data
       })
     } else {
@@ -154,7 +154,7 @@ export const getFilteredStudentOrders = (orders, params) => {
       order => (order.orderNumber.toLowerCase().includes(queryLowered) || moment(order.createdAt).format('lll').toLowerCase().includes(queryLowered)))
     /* eslint-enable  */
     await dispatch({
-      type: 'GET_STUDENT_ORDERS',
+      type: 'GET_KITCHEN_STAFF_ORDERS',
       data: paginateArray(filteredData, perPage, page),
       totalPages: filteredData.length,
       params
@@ -173,7 +173,7 @@ export const getFilteredStudentBooks = (books, params) => {
       book => (book.name.toLowerCase().includes(queryLowered)))
     /* eslint-enable  */
     await dispatch({
-      type: 'GET_STUDENT_ORDERS',
+      type: 'GET_KITCHEN_STAFF_ORDERS',
       data: paginateArray(filteredData, perPage, page),
       totalPages: filteredData.length,
       params

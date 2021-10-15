@@ -102,11 +102,13 @@ const Login = props => {
             console.log('data', data)
             dispatch(handleLogin(data))
             ability.update(data.ability)
-            history.push(getHomeRouteForLoggedInUser('admin'))
             toast.success(
               <ToastContentValid name={`${data.firstName} ${data.lastName}` || data.fullName || data.username || 'John Doe'} role={data.role || 'admin'} />,
               { transition: Slide, hideProgressBar: true, autoClose: 2000 }
             )
+            window.location.href = getHomeRouteForLoggedInUser('admin')
+            // history.push(getHomeRouteForLoggedInUser('admin'))
+            
           } else {
             toast.error(
               <InvalidLoginToastContent message={`${res.data.message}` || 'Invalid Login'} />,

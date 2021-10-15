@@ -24,6 +24,7 @@ import appiaEscrow from '@src/views/appia/escrow/store/reducer'
 import appiaTransfers from '@src/views/appia/transfers/store/reducer'
 
 import students from '@src/views/tuck-shop/student/store/reducer'
+import kitchenStaffs from '@src/views/tuck-shop/kitchen-staffs/store/reducer'
 import admins from '@src/views/tuck-shop/admin/store/reducer'
 import products from '@src/views/tuck-shop/product/store/reducer'
 import orders from '@src/views/tuck-shop/order/store/reducer'
@@ -43,6 +44,7 @@ const rootReducer = combineReducers({
   email,
   users,
   students,
+  kitchenStaffs,
   admins,
   products,
   transactions,
