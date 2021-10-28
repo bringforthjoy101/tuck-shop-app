@@ -360,4 +360,4 @@ const StoreRoutes = [
   }
 ]
 
-export default userData?.role === 'manager' ? ManagerRoutes : userData?.role === 'busary' ? BusaryRoutes : userData?.role === 'sales res' ? SalesRepRoutes : StoreRoutes
+export default userData?.role === 'manager' ? ManagerRoutes : userData?.role === 'busary' ? BusaryRoutes : userData?.role === 'sales rep' ? SalesRepRoutes : StoreRoutes

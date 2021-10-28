@@ -77,7 +77,7 @@ const Login = props => {
   const ability = useContext(AbilityContext)
   const dispatch = useDispatch()
   const history = useHistory()
-  const [email, setEmail] = useState('adelugba.emma@gmail.com')
+  const [email, setEmail] = useState('admin@wexfordcollege.com')
   const [password, setPassword] = useState('000000')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
