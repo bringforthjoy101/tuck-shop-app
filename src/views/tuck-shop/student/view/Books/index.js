@@ -93,7 +93,7 @@ const TransactionList = () => {
   const allBooks = []
 
   const orders = store.studentDetails.orders.filter(order => { 
-    const products = JSON.parse(order.products)
+    const products = order.products
     console.log('hi', products)
     return products
   })
@@ -101,7 +101,7 @@ const TransactionList = () => {
 
   let counter = 1
   orders.forEach(item => { 
-    let products = JSON.parse(item.products)
+    let products = item.products
     products = products.filter(product => { return product.category === 'book' })
     products.forEach(product => { 
       allBooks.push({...product, id: counter}) 

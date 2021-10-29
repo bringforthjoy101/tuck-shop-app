@@ -17,7 +17,8 @@ import {
 
 const getItemNames = items => {
   const arr = []
-  JSON.parse(items).forEach(item => {
+  console.log(items)
+  items.forEach(item => {
     arr.push(item.name)
   })
   return arr.join(', ')
