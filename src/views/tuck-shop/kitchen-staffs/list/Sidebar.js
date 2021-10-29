@@ -21,7 +21,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
     className: 'senior',
     level: '1',
     group: 'A',
-    avatar: '',
+    avatar: 'https://wexfordcollege.com',
     role: 'kitchen'
   })
 
