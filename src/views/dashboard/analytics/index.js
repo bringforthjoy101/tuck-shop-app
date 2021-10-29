@@ -84,7 +84,7 @@ const AnalyticsDashboard = () => {
           <StatsVertical icon={<TrendingUp size={21} />} color='primary' stats={dashData.sales ? `₦${numFormatter(dashData.sales?.maxSales)}` : <Spinner className='mr-25' size='sm' />} statTitle='Max Sales' />
         </Col>
         <Col xl='2' md='4' sm='6'>
-          <StatsVertical icon={<TrendingUp size={21} />} color='primary' stats={dashData.sales ? `₦${numFormatter(dashData.sales?.avgSales?.toFixed(0))}` : <Spinner className='mr-25' size='sm' />} statTitle='Avg Sales' />
+          <StatsVertical icon={<TrendingUp size={21} />} color='primary' stats={dashData.sales ? `₦${numFormatter(dashData.sales?.avgSales?.toFixed(0) || 0)}` : <Spinner className='mr-25' size='sm' />} statTitle='Avg Sales' />
         </Col>
       </Row>
       <Row className='match-height'>
