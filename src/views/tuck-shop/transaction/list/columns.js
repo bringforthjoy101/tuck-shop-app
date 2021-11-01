@@ -32,14 +32,14 @@ const statusObj = {
 export const columns = [
   {
     name: 'Transaction Id',
-    minWidth: '200px',
+    minWidth: '150px',
     selector: 'transactionId',
     sortable: true,
     cell: row => row.transactionId
   },
   {
     name: 'Student',
-    minWidth: '297px',
+    minWidth: '250px',
     selector: 'student',
     sortable: true,
     cell: row => (
@@ -72,7 +72,7 @@ export const columns = [
   },
   {
     name: 'Status',
-    minWidth: '138px',
+    minWidth: '100px',
     selector: 'status',
     sortable: true,
     cell: row => (
@@ -83,9 +83,16 @@ export const columns = [
   },
   {
     name: 'Transaction Date',
-    minWidth: '250px',
+    minWidth: '150px',
     selector: 'createdAt',
     sortable: true,
     cell: row => moment(row.createdAt).format('lll')
+  },
+  {
+    name: 'Initiated By',
+    minWidth: '200px',
+    selector: 'admin',
+    sortable: true,
+    cell: row => <span className='font-weight-bold'>{row.admin.firstName} {row.admin.lastName}</span>
   }
 ]

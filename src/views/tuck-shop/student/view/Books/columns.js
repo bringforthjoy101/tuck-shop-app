@@ -51,5 +51,12 @@ export const columns = [
     sortable: true,
     minWidth: '200px',
     cell: row => moment(row.shippingDate).format('lll')
+  },
+  {
+    name: 'Initiated By',
+    minWidth: '200px',
+    selector: 'admin',
+    sortable: true,
+    cell: row => <span className='font-weight-bold'>{row.admin.firstName} {row.admin.lastName}</span>
   }
 ]

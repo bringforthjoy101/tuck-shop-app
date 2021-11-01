@@ -21,7 +21,9 @@ const getItemNames = items => {
   items.forEach(item => {
     arr.push(item.name)
   })
-  return arr.join(', ')
+  const string = arr.join(', ')
+  if (string.length < 35) return string
+  return `${string.substring(0, 35)}...`
 }
 
 // ** Table columns
@@ -52,5 +54,12 @@ export const columns = [
     sortable: true,
     minWidth: '200px',
     cell: row => moment(row.createdAt).format('lll')
+  },
+  {
+    name: 'Initiated By',
+    minWidth: '200px',
+    selector: 'admin',
+    sortable: true,
+    cell: row => <span className='font-weight-bold'>{row.admin.firstName} {row.admin.lastName}</span>
   }
 ]

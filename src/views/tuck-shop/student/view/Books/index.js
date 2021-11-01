@@ -104,7 +104,7 @@ const TransactionList = () => {
     let products = item.products
     products = products.filter(product => { return product.category === 'book' })
     products.forEach(product => { 
-      allBooks.push({...product, id: counter}) 
+      allBooks.push({...product, admin: item.admin, id: counter}) 
       counter++
     })
   })

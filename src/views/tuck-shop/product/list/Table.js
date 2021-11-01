@@ -34,6 +34,7 @@ const ProductTable = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [currentCategory, setCurrentCategory] = useState({ value: '', label: 'Select Status', number: 0 })
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   // ** Function to toggle sidebar
@@ -45,10 +46,18 @@ const ProductTable = () => {
       getFilteredData(store.allData, {
         page: currentPage,
         perPage: rowsPerPage,
+        category: currentCategory.value,
         q: searchTerm
       })
     )
   }, [dispatch])
+
+  const categoryOptions = [
+    { value: '', label: 'Select Category', number: 0 },
+    { value: 'shop', label: 'Shop', number: 1 },
+    { value: 'store', label: 'Store', number: 2 },
+    { value: 'book', label: 'Book', number: 3 }
+  ]
 
   // ** Function in get data on page change
   const handlePagination = page => {
@@ -56,6 +65,7 @@ const ProductTable = () => {
       getFilteredData(store.allData, {
         page: page.selected + 1,
         perPage: rowsPerPage,
+        category: currentCategory.value,
         q: searchTerm
       })
     )
@@ -69,6 +79,7 @@ const ProductTable = () => {
       getFilteredData(store.allData, {
         page: currentPage,
         perPage: value,
+        category: currentCategory.value,
         q: searchTerm
       })
     )
@@ -82,6 +93,7 @@ const ProductTable = () => {
       getFilteredData(store.allData, {
         page: currentPage,
         perPage: rowsPerPage,
+        category: currentCategory.value,
         q: val
       })
     )
@@ -197,6 +209,7 @@ const ProductTable = () => {
   // ** Table data to render
   const dataToRender = () => {
     const filters = {
+      category: currentCategory.value,
       q: searchTerm
     }
 
@@ -223,9 +236,35 @@ const ProductTable = () => {
         <Row  form className='mt-1 mb-50'>
             <Col lg='4' md='6'>
               <FormGroup>
-                <Label for='select'>Select Table:</Label>
+                <Label for='select'>Select Category:</Label>
+                <Select
+                  theme={selectThemeColors}
+                  isClearable={false}
+                  className='react-select'
+                  classNamePrefix='select'
+                  id='select'
+                  options={categoryOptions}
+                  value={currentCategory}
+                  onChange={data => {
+                    setCurrentCategory(data)
+                    console.log('ddada', data)
+                    dispatch(
+                      getFilteredData(store.allData, {
+                        page: currentPage,
+                        perPage: rowsPerPage,
+                        category: data.value,
+                        q: searchTerm
+                      })
+                    )
+                  }}
+                />
+              </FormGroup>
+            </Col>
+            <Col lg='4' md='6'>
+              <FormGroup>
+                <Label for='search-table'>Search Table:</Label>
                 <Input
-                id='search-invoice'
+                id='search-table'
                 className='ml-50 w-100'
                 type='text'
                 value={searchTerm}

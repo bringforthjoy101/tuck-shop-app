@@ -23,23 +23,25 @@ const renderClient = row => {
 
 const getItemNames = items => {
   const arr = []
-  JSON.parse(items).forEach(item => {
+  items.forEach(item => {
     arr.push(item.name)
   })
-  return arr.join(', ')
+  const string = arr.join(', ')
+  if (string.length < 35) return string
+  return `${string.substring(0, 35)}...`
 }
 
 export const columns = [
   {
     name: 'Order Id',
-    minWidth: '250px',
+    width: '150px',
     selector: 'trans_amount',
     sortable: true,
     cell: row => <span>#{row.orderNumber}</span>
   },
   {
     name: 'Order Amount',
-    minWidth: '150px',
+    width: '150px',
     selector: 'amount',
     sortable: true,
     cell: row => <span className="text-capitalize">{row?.amount?.toLocaleString('en-US', {style: 'currency', currency: 'NGN'})}</span>
@@ -53,7 +55,7 @@ export const columns = [
   },
   {
     name: 'Student',
-    minWidth: '297px',
+    minWidth: '200px',
     selector: 'student',
     sortable: true,
     cell: row => (
@@ -72,9 +74,16 @@ export const columns = [
   },
   {
     name: 'Order Date',
-    minWidth: '250px',
+    minWidth: '150px',
     selector: 'createdAt',
     sortable: true,
     cell: row => moment(row.createdAt).format('lll')
+  },
+  {
+    name: 'Initiated By',
+    minWidth: '200px',
+    selector: 'admin',
+    sortable: true,
+    cell: row => <span className='font-weight-bold'>{row.admin.firstName} {row.admin.lastName}</span>
   }
 ]
