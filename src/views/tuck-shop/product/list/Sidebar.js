@@ -144,7 +144,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
               onChange={e => setProductData({...productData, category: e.target.value})}
               required
             >
-              <option value=''>Select Product Unit</option>
+              <option value=''>Select Product Category</option>
               <option value='shop'>Shop</option>
               <option value='book'>Book</option>
               <option value='store'>Store</option>

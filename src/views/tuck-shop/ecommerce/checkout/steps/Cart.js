@@ -79,7 +79,7 @@ const Cart = props => {
             {/* <span className='text-success mb-1'>In Stock</span> */}
             <div className='item-quantity'>
               <span className='quantity-title mr-50'>Qty</span>
-              <NumberInput value={item.qty} min={1} max={10} dispatch={dispatch} productId={item.id} size='sm' style={{ width: '7rem', height: '2.15rem' }} />
+              <NumberInput value={item.qty} min={1} dispatch={dispatch} productId={item.id} size='sm' style={{ width: '7rem', height: '2.15rem' }} />
             </div>
             {/* <div className='delivery-date text-muted'>Delivery by, {formatDate(item.shippingDate)}</div>
             <span className='text-success'>

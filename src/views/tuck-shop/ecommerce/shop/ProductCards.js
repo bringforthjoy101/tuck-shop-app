@@ -57,9 +57,9 @@ const ProductCards = props => {
                 <div className='item-wrapper'>
                   <div className='item-rating'>
                   <h6 className='item-name'>
-                    <Link className='text-body' to={`/apps/ecommerce/product-detail/${item.id}`}>
+                    {/* <Link className='text-body' to={`/apps/ecommerce/product-detail/${item.id}`}> */}
                       {item.name}
-                    </Link>
+                    {/* </Link> */}
                   </h6>
                   </div>
                   <div className='item-cost'>

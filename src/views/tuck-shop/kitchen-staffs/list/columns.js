@@ -22,11 +22,11 @@ const renderClient = row => {
     states = ['light-success', 'light-danger', 'light-warning', 'light-info', 'light-primary', 'light-secondary'],
     color = states[stateNum]
 
-  if (row.avatar) {
-    return <Avatar className='mr-1' img={row.avatar} width='32' height='32' />
-  } else {
+  // if (row.avatar) {
+  //   return <Avatar className='mr-1' img={row.avatar} width='32' height='32' />
+  // } else {
     return <Avatar color={color || 'primary'} className='mr-1' content={`${row.firstName} ${row.lastName}` || 'John Doe'} initials />
-  }
+  // }
 }
 
 // ** Renders Role Columns

@@ -72,7 +72,6 @@ const CartDropdown = () => {
                     <div className='cart-item-qty'>
                       <NumberInput
                         min={1}
-                        max={10}
                         dispatch={dispatch}
                         productId={item.id}
                         size='sm'
