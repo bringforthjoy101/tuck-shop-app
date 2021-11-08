@@ -77,8 +77,8 @@ const Login = props => {
   const ability = useContext(AbilityContext)
   const dispatch = useDispatch()
   const history = useHistory()
-  const [email, setEmail] = useState('admin@wexfordcollege.com')
-  const [password, setPassword] = useState('000000')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const illustration = skin === 'dark' ? 'wexford-banner-1.jpg' : 'wexford-banner-1.jpg',
