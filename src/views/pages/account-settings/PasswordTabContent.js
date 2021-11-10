@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import { FormGroup, Row, Col, Button } from 'reactstrap'
+import { FormGroup, Row, Col, Button, Spinner } from 'reactstrap'
 import InputPasswordToggle from '@components/input-password-toggle'
 import InputEmailToggle from '@components/input-email-toggle'
 import { AvForm, AvInput } from 'availity-reactstrap-validation-safe'
@@ -8,28 +8,39 @@ import { useDispatch } from 'react-redux'
 
 const PasswordTabContent = () => {
   const dispatch = useDispatch()
+  const adminEmail = JSON.parse(localStorage.getItem('userData')).email
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [userData, setUserData] = useState({
-    old_password: '',
-    new_password: '',
-    email: ''
+    oldPassword: '',
+    newPassword: '',
+    email: adminEmail
   })
 
   const onSubmit = async (event, errors) => {
+    setIsSubmitting(true)
     event.preventDefault()
-    console.log({errors})
+    // console.log({errors})
     if (errors && !errors.length) {
       console.log({userData})
+      setIsSubmitting(true)
       const body = JSON.stringify(userData)
       try {
-        const response = await apiRequest({url:'/admin/change_password', method:'POST', body}, dispatch)
+        const response = await apiRequest({url:'/change-password', method:'POST', body}, dispatch)
         console.log({response})
-        if (response.data.success) {
+        if (response.data.status) {
+            setIsSubmitting(false)
             swal('Great job!', response.data.message, 'success')
-            toggleSidebar()
+            setUserData({
+              oldPassword: '',
+              newPassword: '',
+              email: adminEmail
+            })
         } else {
+          setIsSubmitting(false)
           swal('Oops!', response.data.message, 'error')
         }
       } catch (error) {
+        setIsSubmitting(false)
         console.error({error})
       }
     }
@@ -43,11 +54,11 @@ const PasswordTabContent = () => {
               tag={AvInput}
               className='input-group-merge'
               label='Old Password'
-              htmlFor='old_password'
-              name='old_password'
+              htmlFor='oldPassword'
+              name='oldPassword'
               required
-              value={userData.old_password}
-              onChange={e => setUserData({...userData, old_password: e.target.value})}
+              value={userData.oldPassword}
+              onChange={e => setUserData({...userData, oldPassword: e.target.value})}
             />
           </FormGroup>
         </Col>
@@ -62,8 +73,8 @@ const PasswordTabContent = () => {
               htmlFor='new_password'
               name='new_password'
               required
-              value={userData.new_password}
-              onChange={e => setUserData({...userData, new_password: e.target.value})}
+              value={userData.newPassword}
+              onChange={e => setUserData({...userData, newPassword: e.target.value})}
             />
           </FormGroup>
         </Col>
@@ -82,8 +93,9 @@ const PasswordTabContent = () => {
           </FormGroup>
         </Col>
         <Col className='mt-1' sm='12'>
-          <Button.Ripple className='mr-1' color='primary'>
-            Save changes
+          <Button.Ripple className='mr-1' color='primary' disabled={isSubmitting}>
+            {isSubmitting && <Spinner color='white' size='sm' />}
+            <span className='ml-50'>Save Changes</span>
           </Button.Ripple>
           <Button.Ripple color='secondary' outline>
             Cancel
