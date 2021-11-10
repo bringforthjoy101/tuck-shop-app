@@ -118,7 +118,7 @@ export const columns = [
           >
             <span className='font-weight-bold'>{row.firstName} {row.lastName} {row.otherName}</span>
           </Link>
-          <small className='text-truncate text-muted mb-0'>{row.class === 'junior' ? 'JSS' : 'SS'} {row.level} {row.group}</small>
+          <small className='text-truncate text-muted mb-0'>Year {row.year} {row.group}</small>
         </div>
       </div>
     )
@@ -128,7 +128,7 @@ export const columns = [
     minWidth: '150px',
     selector: 'class',
     sortable: true,
-    cell: row => <span>{row.class === 'junior' ? 'JSS' : 'SS'} {row.level} {row.group}</span>
+    cell: row => <span>Year {row.year} {row.group}</span>
   },
   {
     name: 'Type',

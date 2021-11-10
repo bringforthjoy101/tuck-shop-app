@@ -19,7 +19,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
     otherName: '',
     type: 'boarding',
     className: 'senior',
-    level: '1',
+    year: '10',
     group: 'A',
     avatar: 'https://res.cloudinary.com/bringforthjoy/image/upload/v1632178397/2.c8691d67.png',
     role: 'kitchen'

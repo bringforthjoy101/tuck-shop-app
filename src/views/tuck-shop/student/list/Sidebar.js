@@ -19,7 +19,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
     otherName: '',
     type: '',
     className: '',
-    level: '',
+    year: '',
     group: '',
     avatar: ''
   })
@@ -160,19 +160,22 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
             </AvInput>
           </FormGroup>
           <FormGroup>
-            <Label for='role'>Student Level</Label>
+            <Label for='role'>Student Year</Label>
             <AvInput 
               type='select' 
-              id='level' 
-              name='level' 
-              value={userData.level}
-              onChange={e => setUserData({...userData, level: e.target.value})}
+              id='year' 
+              name='year' 
+              value={userData.year}
+              onChange={e => setUserData({...userData, year: e.target.value})}
               required
             >
-              <option value=''>Select Student Level</option>
-              <option value='1'>One (1)</option>
-              <option value='2'>Two (2)</option>
-              <option value='3'>Three (3)</option>
+              <option value=''>Select Student Year</option>
+              <option value='7'>Seven (7)</option>
+              <option value='8'>Eight (8)</option>
+              <option value='9'>Nine (9)</option>
+              <option value='10'>Ten (10)</option>
+              <option value='11'>Eleven (11)</option>
+              <option value='12'>Twelve (12)</option>
             </AvInput>
           </FormGroup>
           <FormGroup>

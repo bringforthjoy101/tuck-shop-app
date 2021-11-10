@@ -104,7 +104,7 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                   <div className='user-info mb-1'>
                     <h4 className='mb-0'>{studentDetails !== null ? `${studentDetails.firstName} ${studentDetails.lastName} ${studentDetails.otherName}` : 'Student Name'}</h4>
                     <CardText tag='span'>
-                      {studentDetails?.class === 'junior' ? 'JSS' : 'SS'} {studentDetails?.level} {studentDetails?.group}
+                      Year {studentDetails?.year} {studentDetails?.group}
                     </CardText>
                   </div>
                   <div className='d-flex flex-wrap align-items-center'>
@@ -152,7 +152,7 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                       Class
                 </CardText>
                   </div>
-                  <CardText className='mb-0'>{studentDetails?.class === 'junior' ? 'JSS' : 'SS'} {studentDetails?.level} {studentDetails?.group}</CardText>
+                  <CardText className='mb-0'>Year {studentDetails?.year} {studentDetails?.group}</CardText>
                 </div>
                 <div className='d-flex flex-wrap align-items-center mt-1'>
                   <div className='user-info-title'>
