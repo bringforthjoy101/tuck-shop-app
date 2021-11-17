@@ -52,6 +52,18 @@ const ManagerRoutes = [
         }
       },
       {
+        path: '/admin/edit',
+        exact: true,
+        component: () => <Redirect to='/admin/edit/1' />
+      },
+      {
+        path: '/admin/edit/:id',
+        component: lazy(() => import('../../views/tuck-shop/admin/edit')),
+        meta: {
+          navLink: '/admin/edit'
+        }
+      },
+      {
         path: '/students/list',
         component: lazy(() => import('../../views/tuck-shop/student/list'))
       },

@@ -21,7 +21,7 @@ import '@styles/react/apps/app-users.scss'
 
 const AdminView = props => {
   // ** Vars
-  const store = useSelector(state => state.appiaAdmins),
+  const store = useSelector(state => state.admins),
     dispatch = useDispatch(),
     { id } = useParams()
 
@@ -36,7 +36,7 @@ const AdminView = props => {
   // ** Get Admin on mount
   useEffect(() => {
     dispatch(getAdmin(id))
-    dispatch(getAdminActivity(id))
+    // dispatch(getAdminActivity(id))
   }, [dispatch])
 
   return store.selectedAdmin !== null && store.selectedAdmin !== undefined ? (
@@ -45,11 +45,11 @@ const AdminView = props => {
         <Col xl='9' lg='8' md='7'>
           <AdminInfoCard selectedAdmin={store.selectedAdmin} />
         </Col>
-        {userData?.role_name === "Super Admin" ? <Col xl='3' lg='4' md='5'>
+        {userData?.role === "manager" ? <Col xl='3' lg='4' md='5'>
           <PlanCard selectedAdmin={store.selectedAdmin} />
         </Col> : ""}
       </Row>
-      {userData?.role_name === "Super Admin" ? <Row>
+      {userData?.role_name === "manager" ? <Row>
         <Col md='12'>
           <AdminTimeline selectedAdmin={store.selectedAdmin} data={store.adminActivities.sort((a, b) => moment(b.date).format('YYYYMMDD') - moment(a.date).format('YYYYMMDD'))} />
         </Col>

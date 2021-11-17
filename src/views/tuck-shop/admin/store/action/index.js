@@ -49,7 +49,7 @@ export const getFilteredData = (admins, params) => {
 // get Admin Details
 export const getAdmin = (id) => {
   return async dispatch => {
-    const response = await apiRequest({ url: `/admin/get-detail/${id}`, method: 'GET' }, dispatch)
+    const response = await apiRequest({ url: `/admins/get-detail/${id}`, method: 'GET' }, dispatch)
     if (response) {
       if (response.data.data && response.data.status) {
         await dispatch({
@@ -133,12 +133,12 @@ export const deactivateAdmin = (admins, id) => {
 }
 
 // Change admin role
-export const changeAdminRole = (admin_id, new_role_id) => {
+export const editAdmin = (adminId, adminData) => {
   return async dispatch => {
-    const body = JSON.stringify({admin_id, new_role_id})
-    const response = await apiRequest({ url: '/admin/change_role/', method: 'POST', body }, dispatch)
+    const body = JSON.stringify(adminData)
+    const response = await apiRequest({ url: `/admins/update/${adminId}`, method: 'POST', body }, dispatch)
     if (response) {
-      if (response.data.success) {
+      if (response.data.status) {
         swal('Good!', `${response.data.message}.`, 'success')
         dispatch(getAllData())
       } else {
@@ -149,6 +149,18 @@ export const changeAdminRole = (admin_id, new_role_id) => {
       swal('Oops!', 'Somthing went wrong with your network.', 'error')
     }
 
+  }
+}
+
+export const deleteAdmin = (id) => {
+  return async dispatch => {
+    const response = await apiRequest({url:`/admins/delete/${id}`, method:'GET'}, dispatch)
+    if (response && response.data.status) {
+        return response.data
+    } else {
+      console.log(response)
+      swal('Oops!', 'Something went wrong.', 'error')
+    }
   }
 }
 

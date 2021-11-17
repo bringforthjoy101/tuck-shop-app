@@ -23,7 +23,7 @@ const UserInfoCard = ({ selectedAdmin }) => {
           initials
           color={color}
           className='rounded'
-          content={`${selectedAdmin.first_name} ${selectedAdmin.last_name}`}
+          content={`${selectedAdmin.firstName} ${selectedAdmin.lastName}`}
           contentStyles={{
             borderRadius: 0,
             fontSize: 'calc(36px)',
@@ -49,7 +49,7 @@ const UserInfoCard = ({ selectedAdmin }) => {
                 {renderUserImg()}
                 <div className='d-flex flex-column ml-1'>
                   <div className='user-info mt-2'>
-                    <h4 className='mb-0'>{selectedAdmin !== null ? `${selectedAdmin.first_name} ${selectedAdmin.last_name}` : 'Invoice Admin'}</h4>
+                    <h4 className='mb-0'>{selectedAdmin !== null ? `${selectedAdmin.firstName} ${selectedAdmin.lastName}` : 'Invoice Admin'}</h4>
                     <CardText tag='span'>
                       {selectedAdmin !== null ? selectedAdmin.email : 'appia.admin@appiawave.com'}
                     </CardText>
@@ -68,7 +68,7 @@ const UserInfoCard = ({ selectedAdmin }) => {
                   </CardText>
                 </div>
                 <CardText className='mb-0'>
-                  {selectedAdmin !== null ? selectedAdmin.admin_id : ''}
+                  {selectedAdmin !== null ? selectedAdmin.id : ''}
                 </CardText>
               </div>
               <div className='d-flex flex-wrap align-items-center my-50'>
@@ -90,7 +90,7 @@ const UserInfoCard = ({ selectedAdmin }) => {
                   </CardText>
                 </div>
                 <CardText className='text-capitalize mb-0'>
-                  {selectedAdmin !== null ? selectedAdmin.role_name : 'Admin'}
+                  {selectedAdmin !== null ? selectedAdmin.role : 'Admin'}
                 </CardText>
               </div>
               <div className='d-flex flex-wrap align-items-center'>
