@@ -108,9 +108,10 @@ const AdminsTable = () => {
   // ** User filter options
   const roleOptions = [
     { value: '', label: 'Select Role', number: 0 },
-    { value: 'Control Admin', label: 'Control Admin', number: 1 },
-    { value: 'Financial Admin', label: 'Financial Admin', number: 2 },
-    { value: 'Super Admin', label: 'Super Admin', number: 3 }
+    { value: 'Manager', label: 'Manager', number: 1 },
+    { value: 'Busary', label: 'Busary', number: 2 },
+    { value: 'Sales Rep', label: 'Sales Rep', number: 3 },
+    { value: 'Store', label: 'Store', number: 4 }
   ]
 
   const statusOptions = [
@@ -237,7 +238,7 @@ const AdminsTable = () => {
                       getFilteredData(store.allData, {
                         page: currentPage,
                         perPage: rowsPerPage,
-                        role: data.value,
+                        role: currentRole.value,
                         status: currentStatus.value,
                         q: searchTerm
                       })
@@ -263,7 +264,7 @@ const AdminsTable = () => {
                       getFilteredData(store.allData, {
                         page: currentPage,
                         perPage: rowsPerPage,
-                        status: data.value,
+                        status: currentStatus.value,
                         q: searchTerm
                       })
                     )
