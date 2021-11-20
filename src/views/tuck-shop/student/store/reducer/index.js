@@ -20,7 +20,6 @@ const initialState = {
 const users = (state = initialState, action) => {
   switch (action.type) {
     case 'GET_ALL_DATA':
-      console.log(action.data)
       return { ...state, allData: action.data }
     case 'GET_FILTERED_STUDENT_DATA':
       return {

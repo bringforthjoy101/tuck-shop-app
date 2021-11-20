@@ -1,4 +1,5 @@
 // ** Custom Components
+import { useState, useEffect } from 'react'
 import Avatar from '@components/avatar'
 import moment from 'moment'
 
@@ -7,14 +8,15 @@ import { useDispatch } from 'react-redux'
 
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { deleteStudent, getAllData } from '../store/action'
+import { deleteStudent, getAllData, editStudent, getStudentDetails } from '../store/action'
 
 const MySwal = withReactContent(Swal)
 
 // ** Third Party Components
-import { Card, CardBody, CardText, Button, Row, Col } from 'reactstrap'
+import { Card, CardBody, CardText, Button, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Label, FormGroup, CustomInput } from 'reactstrap'
 import { Pocket, Award, Hexagon, UserPlus, Check, Star, Flag, Phone } from 'react-feather'
 import CardTitle from 'reactstrap/lib/CardTitle'
+import { AvForm, AvInput } from 'availity-reactstrap-validation-safe'
 
 const UserInfoCard = ({ studentDetails, userRole }) => {
 
@@ -92,6 +94,55 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
     return totalPrice
   }
 
+  const [userData, setUserData] = useState({
+    avatar: studentDetails.avatar,
+    firstName: studentDetails.firstName,
+    lastName: studentDetails.lastName,
+    otherName: studentDetails.otherName,
+    type: studentDetails.type,
+    class: studentDetails.class,
+    year: studentDetails.year,
+    group: studentDetails.group,
+    status: studentDetails.status,
+    role: studentDetails.role
+  })
+  const [formModal, setFormModal] = useState(false)
+
+  const onSubmit = async (event, errors) => {
+    event?.preventDefault()
+    if (errors && !errors.length) {
+      await dispatch(editStudent(studentDetails.id, userData))
+      dispatch(getStudentDetails(studentDetails.id))
+      setFormModal(!formModal)
+   }
+  }
+
+  const uploadImage = async (event) => {
+    event?.preventDefault()
+      const formData = new FormData()
+      formData.append("image", event.target.files[0])
+      try {
+        const response = await apiRequest({
+          url: "/upload-images",
+          method: "POST",
+          body: formData
+        })
+        if (response) {
+          if (response?.data?.status) {
+            const avatar = response.data.data
+            // setIsSubmitting(false)
+            setUserData({ ...userData, avatar })
+          } else {
+            swal("Oops!", response.data.message, "error")
+          }
+        } else {
+          swal("Oops!", "Something went wrong with your image.", "error")
+        }
+      } catch (error) {
+        console.error({ error })
+      }
+  }
+
   return (
     <Card>
       <CardBody>
@@ -108,9 +159,164 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                     </CardText>
                   </div>
                   <div className='d-flex flex-wrap align-items-center'>
-                    <Button.Ripple tag={Link} to={`/student/edit/${studentDetails.id}`} disabled color='primary'>
+                    {/* <Button.Ripple tag={Link} to={`/student/edit/${studentDetails.id}`} disabled color='primary'>
                       Edit
-                    </Button.Ripple>
+                    </Button.Ripple> */}
+                    {userRole === 'manager' || userRole === 'busary' ? <Button.Ripple className='text-center' color='primary' onClick={() => setFormModal(!formModal)}>
+                      Edit Student
+                    </Button.Ripple> : ''}
+                    <Modal isOpen={formModal} toggle={() => setFormModal(!formModal)} className='modal-dialog-centered modal-lg'>
+                      <ModalHeader toggle={() => setFormModal(!formModal)}>Edit Admin</ModalHeader>
+                      <AvForm onSubmit={onSubmit}>
+                        <ModalBody>
+                          <Row>
+                            <Col xl='6' lg='12'> 
+                              <FormGroup>
+                                <Label for='image'>Student Image</Label>
+                                <CustomInput type='file' id='image' name='image' accept='image/*' onChange={e => uploadImage(e)} required  />
+                              </FormGroup>
+                            </Col>
+                            <Col xl='6' lg='12'>
+                              <FormGroup>
+                                <Label for='firstName'>First Name</Label>
+                                <AvInput 
+                                  type='text' 
+                                  name='firstName' 
+                                  id='firstName' 
+                                  placeholder='First Name' 
+                                  value={studentDetails.firstName}
+                                  onChange={e => setUserData({...userData, firstName: e.target.value})}
+                                  required 
+                                />
+                              </FormGroup>
+                            </Col>
+                            <Col xl='6' lg='12'>
+                              <FormGroup>
+                                <Label for='lastName'>Last Name</Label>
+                                <AvInput 
+                                  type='text' 
+                                  name='lastName' 
+                                  id='lastName' 
+                                  placeholder='Last Name' 
+                                  value={studentDetails.lastName}
+                                  onChange={e => setUserData({...userData, lastName: e.target.value})}
+                                  required 
+                                />
+                              </FormGroup>
+                            </Col>
+                            <Col xl='6' lg='12'>
+                              <FormGroup>
+                                <Label for='otherName'>Other Name</Label>
+                                <AvInput 
+                                  type='text' 
+                                  name='otherName' 
+                                  id='otherName' 
+                                  placeholder='Other Name' 
+                                  value={studentDetails.otherName}
+                                  onChange={e => setUserData({...userData, otherName: e.target.value})}
+                                />
+                              </FormGroup>
+                            </Col>
+                            <Col xl='6' lg='12'>
+                              <FormGroup>
+                                <Label for='type'>Type</Label>
+                                <AvInput
+                                  type='select'
+                                  id='type'
+                                  name='type'
+                                  value={studentDetails.type}
+                                  onChange={e => setUserData({ ...userData, type: e.target.value })}
+                                  required
+                                >
+                                  <option value={studentDetails.type}>{studentDetails.type}</option>
+                                  <option value='boarding'>Boarding</option>
+                                  <option value='day'>Day</option>
+                                </AvInput>
+                              </FormGroup>
+                            </Col>
+                            <Col xl='6' lg='12'>
+                              <FormGroup>
+                                <Label for='class'>Class</Label>
+                                <AvInput
+                                  type='select'
+                                  id='class'
+                                  name='class'
+                                  value={studentDetails.class}
+                                  onChange={e => setUserData({ ...userData, class: e.target.value })}
+                                  required
+                                >
+                                  <option value={studentDetails.class}>{studentDetails.class}</option>
+                                  <option value='junior'>Junior</option>
+                                  <option value='senior'>Senior</option>
+                                </AvInput>
+                              </FormGroup>
+                            </Col>
+                            <Col xl='6' lg='12'>
+                              <FormGroup>
+                                <Label for='year'>Year</Label>
+                                <AvInput
+                                  type='select'
+                                  id='year'
+                                  name='year'
+                                  value={studentDetails.year}
+                                  onChange={e => setUserData({ ...userData, year: e.target.value })}
+                                  required
+                                >
+                                  <option value={studentDetails.year}>{studentDetails.year}</option>
+                                  <option value='7'>7</option>
+                                  <option value='8'>8</option>
+                                  <option value='9'>9</option>
+                                  <option value='10'>10</option>
+                                  <option value='11'>11</option>
+                                  <option value='12'>12</option>
+                                </AvInput>
+                              </FormGroup>
+                            </Col>
+                            <Col xl='6' lg='12'>
+                              <FormGroup>
+                                <Label for='group'>Group</Label>
+                                <AvInput
+                                  type='select'
+                                  id='group'
+                                  name='group'
+                                  value={studentDetails.group}
+                                  onChange={e => setUserData({ ...userData, group: e.target.value })}
+                                  required
+                                >
+                                  <option value={studentDetails.group}>{studentDetails.group}</option>
+                                  <option value='A'>A</option>
+                                  <option value='W'>W</option>
+                                  <option value='R'>R</option>
+                                </AvInput>
+                              </FormGroup>
+                            </Col>
+                            <Col xl='6' lg='12'>
+                              <FormGroup>
+                                <Label for='status'>User Status</Label>
+                                <AvInput
+                                  type='select'
+                                  id='status'
+                                  name='status'
+                                  value={studentDetails.status}
+                                  onChange={e => setUserData({ ...userData, status: e.target.value })}
+                                  required
+                                >
+                                  <option value={studentDetails.status}>{studentDetails.status}</option>
+                                  <option value='active'>Active</option>
+                                  <option value='inactive'>Inactive</option>
+                                </AvInput>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                        </ModalBody>
+                        <ModalFooter>
+                          <Button.Ripple color='primary' type='submit'>
+                            <span className='ml-50'>Save Changes</span>
+                          </Button.Ripple>
+                        </ModalFooter>
+                      </AvForm>
+
+                    </Modal>
                     {userRole === 'manager' || userRole === 'busary' ? <Button.Ripple className='ml-1' color='danger' outline onClick={() => handleDelete(studentDetails.id)}>
                       Delete
                     </Button.Ripple> : ''}

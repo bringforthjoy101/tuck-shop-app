@@ -48,7 +48,7 @@ export const getFilteredData = (students, params) => {
 export const getStudentDetails =  (id) => {
   return async dispatch => {
     const response = await apiRequest({ url: `/students/get-detail/${id}`, method: 'GET' }, dispatch)
-    console.log(response)
+    // console.log(response)
     if (response && response.data && response.data.status) {
       await dispatch({
         type: 'GET_STUDENT_DETAILS',
@@ -58,6 +58,25 @@ export const getStudentDetails =  (id) => {
       console.log(response)
       swal('Oops!', 'Something went wrong.', 'error')
     }
+  }
+}
+
+export const editStudent = (studnetId, studentData) => {
+  return async dispatch => {
+    const body = JSON.stringify(studentData)
+    const response = await apiRequest({ url: `/students/update/${studnetId}`, method: 'POST', body }, dispatch)
+    if (response) {
+      if (response.data.status) {
+        swal('Good!', `${response.data.message}.`, 'success')
+        dispatch(getAllData())
+      } else {
+        swal('Oops!', `${response.data.message}.`, 'error')
+      }
+    } else {
+      console.log(response.error)
+      swal('Oops!', 'Somthing went wrong with your network.', 'error')
+    }
+
   }
 }
 
