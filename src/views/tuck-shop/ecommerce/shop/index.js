@@ -30,6 +30,7 @@ const Shop = () => {
   // ** Vars
   const dispatch = useDispatch()
   const store = useSelector(state => state.ecommerce)
+  console.log('store', store.totalProducts)
 
   // ** Get products
   useEffect(() => {
@@ -37,7 +38,6 @@ const Shop = () => {
       getProducts({
         q: '',
         sortBy: 'featured',
-        perPage: 9,
         page: 1
       })
     )

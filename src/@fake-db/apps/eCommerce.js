@@ -371,7 +371,7 @@ const {users} = store.getState()
 
 const getProducts = async () => {
     const response = await apiRequest({ url: '/products', method: 'GET' })
-    console.log('response', response)
+    console.log('response', response, response.data.data.length)
     store.dispatch({ type: 'GET_T_PRODUCTS', data: response.data.data, params: { q: '', sortBy: 'featured', perPage: 9, page: 1 } })
     return response.data.data.filter(item => item.qty > 0)
 }
@@ -390,6 +390,7 @@ mock.onGet('/apps/ecommerce/products').reply(async config => {
   }
   // const products = store.getState().ecommerce.products.length ? store.getState().ecommerce.products : await getProducts()
   const products = await getProducts()
+  // console.log('hi pro', products)
   const filteredData = products?.filter(product => product.name.toLowerCase().includes(queryLowered))
 
   let sortDesc = false
@@ -408,7 +409,7 @@ mock.onGet('/apps/ecommerce/products').reply(async config => {
   const sortedData = filteredData.sort(sortCompare(sortByKey))
   if (sortDesc) sortedData.reverse()
 
-  const paginatedData = JSON.parse(JSON.stringify(paginateArray(sortedData, perPage, page)))
+  const paginatedData = JSON.parse(JSON.stringify(paginateArray(sortedData, products.length, page)))
 
   paginatedData.forEach(product => {
     /* eslint-disable no-param-reassign */
@@ -473,9 +474,14 @@ mock.onGet('/apps/ecommerce/wishlist').reply(() => {
 // GET: Return Cart Products
 // ------------------------------------------------
 mock.onGet('/apps/ecommerce/cart').reply(async () => {
-  const productsData = store.getState().ecommerce.products.length ? store.getState().ecommerce.products : await getProducts()
+  // const productsData = store.getState().ecommerce.products.length ? store.getState().ecommerce.products : await getProducts()
+  const productsData = await getProducts()
+  console.log(data.userCart)
   const products = data.userCart.map(cartProduct => {
-    const product = productsData.find(p => p.id === cartProduct.productId)
+    console.log('cartProduct', cartProduct)
+    console.log('productsData', productsData)
+    const product = productsData.find(p => p?.id === cartProduct?.productId)
+    console.log(product)
     // Other data
     product.isInWishlist = data.userWishlist.findIndex(p => p.productId === cartProduct.productId) > -1
     product.qty = cartProduct.qty
@@ -484,7 +490,8 @@ mock.onGet('/apps/ecommerce/cart').reply(async () => {
     product.offers = getRandomInt(1, 4)
     product.discountPercentage = getRandomInt(3, 20)
 
-    return product
+    console.log('produt again', product)
+      return product
   })
 
   return [200, { products }]
@@ -494,7 +501,7 @@ mock.onGet('/apps/ecommerce/cart').reply(async () => {
 // POST: Add Item in user Cart
 // ------------------------------------------------
 mock.onPost('/apps/ecommerce/cart').reply(config => {
-  console.log(config)
+  console.log('config at to cart', config)
   // Get product from post data
   const { productId } = JSON.parse(config.data)
 
@@ -503,7 +510,7 @@ mock.onPost('/apps/ecommerce/cart').reply(config => {
   if (length) lastId = data.userCart[length - 1].i
 
   data.userCart.push({
-    id: lastId + 1,
+    id: length + 1,
     productId,
     qty: 1
   })

@@ -47,7 +47,7 @@ const ProductCards = props => {
 
         return (
           
-            <Card className='ecommerce-card' key={item.name}>
+            <Card className='ecommerce-card' key={item.id}>
               {/* <div className='item-img text-center mx-auto'>
                 <Link to={`/apps/ecommerce/product-detail/${item.id}`}>
                   <img className='img-fluid card-img-top' src={item.image} alt={item.name} />

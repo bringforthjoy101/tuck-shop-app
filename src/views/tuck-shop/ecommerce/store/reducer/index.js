@@ -12,7 +12,7 @@ const ecommerceReducer = (state = initialState, action) => {
     case 'GET_PRODUCTS':
       return { ...state, products: action.data.products, params: action.params, totalProducts: action.data.total }
     case 'GET_T_PRODUCTS':
-      console.log(action)
+      console.log('action', action)
       return { ...state, products: action.data, params: action.params, totalProducts: action.data.length }
     case 'GET_WISHLIST':
       return { ...state, wishlist: action.data.products }
