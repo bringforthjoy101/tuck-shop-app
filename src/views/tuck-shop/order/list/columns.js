@@ -23,7 +23,7 @@ const renderClient = row => {
 
 const getItemNames = items => {
   const arr = []
-  items.forEach(item => {
+  JSON.parse(items).forEach(item => {
     arr.push(item.name)
   })
   const string = arr.join(', ')
