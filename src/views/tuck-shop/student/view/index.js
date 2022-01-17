@@ -7,7 +7,7 @@ import { getUser, getUserAllTransactions, getStudentDetails, trackUser } from '.
 import { useSelector, useDispatch } from 'react-redux'
 
 // ** Reactstrap
-import { Row, Col, Alert, Card, Nav, NavItem, NavLink } from 'reactstrap'
+import { Row, Col, Alert, Card, Nav, NavItem, NavLink, Spinner } from 'reactstrap'
 
 // ** User View Components
 import PlanCard from './PlanCard'
@@ -20,68 +20,93 @@ import { isUserLoggedIn } from '@utils'
 // ** Styles
 import '@styles/react/apps/app-users.scss'
 
-const UserView = props => {
-  // ** Vars
-  const store = useSelector(state => state.students),
-    dispatch = useDispatch(),
-    { id } = useParams()
+const UserView = (props) => {
+	// ** Vars
+	const store = useSelector((state) => state.students),
+		dispatch = useDispatch(),
+		{ id } = useParams()
 
-  const [userData, setUserData] = useState(null)
+	const [userData, setUserData] = useState(null)
 
-  const [activeTransaction, setActiveTransaction] = useState("transactions")
+	const [activeTransaction, setActiveTransaction] = useState('transactions')
 
-  // ** Get user on mount
-  useEffect(() => {
-    dispatch(getStudentDetails(id))
-    // dispatch(getUserAllTransactions(id))
-  }, [dispatch])
+	// ** Get user on mount
+	useEffect(() => {
+		dispatch({
+			type: 'GET_STUDENT_DETAILS',
+			studentDetails: null,
+		})
+		dispatch(getStudentDetails(id))
+		// dispatch(getUserAllTransactions(id))
+	}, [dispatch, id])
 
+	useEffect(() => {
+		if (isUserLoggedIn() !== null) {
+			setUserData(JSON.parse(localStorage.getItem('userData')))
+		}
+	}, [])
 
-  useEffect(() => {
-    if (isUserLoggedIn() !== null) {
-      setUserData(JSON.parse(localStorage.getItem('userData')))
-    }
-  }, [])
-
-  return store.studentDetails !== null && store.studentDetails !== undefined ? (
-    <div className='app-user-view'>
-      <Row>
-        <Col xl='9' lg='8' md='7'>
-          <UserInfoCard studentDetails={store.studentDetails} userRole={userData?.role} />
-        </Col>
-        {userData?.role === 'manager' || userData?.role === "busary" ? <Col xl='3' lg='4' md='5'>
-          <PlanCard  studentDetails={store.studentDetails} />
-        </Col> : ""}
-      </Row>
-      {userData?.role === 'manager' || userData?.role === "busary" ? (
-      <div>
-        <Card className="mb-3 d-flex justify-content-around">
-          <Row className="d-sm-block d-lg-flex justify-content-center">
-            <Nav pills className='nav-pill-primary my-2'>
-              <NavItem>
-                <NavLink onClick={() => setActiveTransaction('transactions')} active={activeTransaction === "transactions"}>Transactions</NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink onClick={() => setActiveTransaction('orders')} active={activeTransaction === "orders"}>Orders</NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink onClick={() => setActiveTransaction('books')} active={activeTransaction === "books"}>Books</NavLink>
-              </NavItem>
-            </Nav>
-          </Row>
-        </Card>
-        <Row>
-          {activeTransaction === "transactions" ? <Col sm='12'>
-            <AllTransactionList />
-          </Col> : activeTransaction === "orders" ? <Col sm='12'>
-            <AllOrders />
-          </Col> : activeTransaction === "books" ? <Col sm='12'>
-            <Books />
-          </Col>  : ""}
-        </Row>
-      </div>
-      ) : ''}
-    </div>
-  ) : ""
+	return store.studentDetails !== null && store.studentDetails !== undefined ? (
+		<div className="app-user-view">
+			<Row>
+				<Col xl="9" lg="8" md="7">
+					<UserInfoCard studentDetails={store.studentDetails} userRole={userData?.role} />
+				</Col>
+				{userData?.role === 'manager' || userData?.role === 'busary' ? (
+					<Col xl="3" lg="4" md="5">
+						<PlanCard studentDetails={store.studentDetails} />
+					</Col>
+				) : (
+					<Spinner color="primary" className="reload-spinner" />
+				)}
+			</Row>
+			{userData?.role === 'manager' || userData?.role === 'busary' ? (
+				<div>
+					<Card className="mb-3 d-flex justify-content-around">
+						<Row className="d-sm-block d-lg-flex justify-content-center">
+							<Nav pills className="nav-pill-primary my-2">
+								<NavItem>
+									<NavLink onClick={() => setActiveTransaction('transactions')} active={activeTransaction === 'transactions'}>
+										Transactions
+									</NavLink>
+								</NavItem>
+								<NavItem>
+									<NavLink onClick={() => setActiveTransaction('orders')} active={activeTransaction === 'orders'}>
+										Orders
+									</NavLink>
+								</NavItem>
+								<NavItem>
+									<NavLink onClick={() => setActiveTransaction('books')} active={activeTransaction === 'books'}>
+										Books
+									</NavLink>
+								</NavItem>
+							</Nav>
+						</Row>
+					</Card>
+					<Row>
+						{activeTransaction === 'transactions' ? (
+							<Col sm="12">
+								<AllTransactionList />
+							</Col>
+						) : activeTransaction === 'orders' ? (
+							<Col sm="12">
+								<AllOrders />
+							</Col>
+						) : activeTransaction === 'books' ? (
+							<Col sm="12">
+								<Books />
+							</Col>
+						) : (
+							''
+						)}
+					</Row>
+				</div>
+			) : (
+				''
+			)}
+		</div>
+	) : (
+		''
+	)
 }
 export default UserView
