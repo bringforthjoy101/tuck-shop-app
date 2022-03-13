@@ -3,22 +3,29 @@ import { Label } from 'reactstrap'
 import Flatpickr from 'react-flatpickr'
 
 const PickerRange = () => {
-  const [picker, setPicker] = useState(new Date())
-  return (
-    <Fragment>
-      <Label for='range-picker'>Range</Label>
-      <Flatpickr
-        value={picker}
-        id='range-picker'
-        className='form-control'
-        onChange={date => setPicker(date)}
-        options={{
-          mode: 'range',
-          defaultDate: ['2020-02-01', '2020-02-15']
-        }}
-      />
-    </Fragment>
-  )
+	const [picker, setPicker] = useState(new Date())
+	console.log(
+		'picker',
+		picker.map((date) => {
+			return new Date(date).getTime()
+		})
+	)
+
+	return (
+		<Fragment>
+			<Label for="range-picker">Range</Label>
+			<Flatpickr
+				value={picker.map((date) => new Date(date).getTime())}
+				id="range-picker"
+				className="form-control"
+				onChange={(date) => setPicker(date)}
+				options={{
+					mode: 'range',
+					defaultDate: ['2020-02-01', '2020-02-15'],
+				}}
+			/>
+		</Fragment>
+	)
 }
 
 export default PickerRange

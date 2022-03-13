@@ -20,281 +20,287 @@ import '@styles/react/apps/app-invoice.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
+import moment from 'moment'
 
 // custom Header
 const CustomHeader = ({ handleFilter, searchTerm, handlePerPage, rowsPerPage, downloadCSV, storeData, downloadPDF, studentDetails }) => {
-  return (
-    <div className='invoice-list-table-header w-100 py-2'>
-      <Row>
-        <Col lg='6'sm="12" className='d-flex align-items-center px-0 px-lg-1 mb-2'>
-          <div className='d-flex align-items-center mr-2'>
-            <Label for='rows-per-page'>Show</Label>
-            <CustomInput
-              className='form-control ml-50 pr-3'
-              type='select'
-              id='rows-per-page'
-              value={rowsPerPage}
-              onChange={handlePerPage}
-            >
-              <option value='10'>10</option>
-              <option value='25'>25</option>
-              <option value='50'>50</option>
-            </CustomInput>
-          </div>
-          <h3 className="d-none d-lg-block">{studentDetails.firstName}'s Transactions</h3>
-        </Col>
-        <Col
-          lg='3' sm="6"
-          className='actions-right d-flex align-items-center justify-content-lg-end flex-lg-nowrap flex-wrap mt-lg-0 mt-1 pr-lg-1 p-0 mb-2'
-        >
-          <div className='d-flex align-items-center'>
-            <Label for='search-invoice'>Search</Label>
-            <Input
-              id='search-invoice'
-              className='ml-50 mr-2 w-100'
-              type='text'
-              value={searchTerm}
-              onChange={e => handleFilter(e.target.value)}
-              placeholder='Search'
-            />
-          </div>
-          
-        </Col>
-        <Col lg="3" sm="12">
-        <UncontrolledButtonDropdown>
-            <DropdownToggle color='secondary' caret outline>
-              <Share size={15} />
-              <span className='align-middle ml-50'>Download Table</span>
-            </DropdownToggle>
-            <DropdownMenu right>
-              <DropdownItem className='w-100' onClick={() => downloadCSV(storeData)}>
-                <FileText size={15} />
-                <span className='align-middle ml-50'>CSV</span>
-              </DropdownItem>
-              <DropdownItem className='w-100' onClick={() => downloadPDF()}>
-                <FileText size={15} />
-                <span className='align-middle ml-50'>PDF</span>
-              </DropdownItem>
-            </DropdownMenu>
-          </UncontrolledButtonDropdown>
-        </Col>
-      </Row>
-    </div>
-  )
+	return (
+		<div className="invoice-list-table-header w-100 py-2">
+			<Row>
+				<Col lg="6" sm="12" className="d-flex align-items-center px-0 px-lg-1 mb-2">
+					<div className="d-flex align-items-center mr-2">
+						<Label for="rows-per-page">Show</Label>
+						<CustomInput className="form-control ml-50 pr-3" type="select" id="rows-per-page" value={rowsPerPage} onChange={handlePerPage}>
+							<option value="10">10</option>
+							<option value="25">25</option>
+							<option value="50">50</option>
+						</CustomInput>
+					</div>
+					<h3 className="d-none d-lg-block">{studentDetails.firstName}'s Transactions</h3>
+				</Col>
+				<Col
+					lg="3"
+					sm="6"
+					className="actions-right d-flex align-items-center justify-content-lg-end flex-lg-nowrap flex-wrap mt-lg-0 mt-1 pr-lg-1 p-0 mb-2"
+				>
+					<div className="d-flex align-items-center">
+						<Label for="search-invoice">Search</Label>
+						<Input
+							id="search-invoice"
+							className="ml-50 mr-2 w-100"
+							type="text"
+							value={searchTerm}
+							onChange={(e) => handleFilter(e.target.value)}
+							placeholder="Search"
+						/>
+					</div>
+				</Col>
+				<Col lg="3" sm="12">
+					<UncontrolledButtonDropdown>
+						<DropdownToggle color="secondary" caret outline>
+							<Share size={15} />
+							<span className="align-middle ml-50">Download Table</span>
+						</DropdownToggle>
+						<DropdownMenu right>
+							{/* <DropdownItem className="w-100" onClick={() => downloadCSV(storeData)}>
+								<FileText size={15} />
+								<span className="align-middle ml-50">CSV</span>
+							</DropdownItem> */}
+							<DropdownItem className="w-100" onClick={() => downloadPDF()}>
+								<FileText size={15} />
+								<span className="align-middle ml-50">PDF</span>
+							</DropdownItem>
+						</DropdownMenu>
+					</UncontrolledButtonDropdown>
+				</Col>
+			</Row>
+		</div>
+	)
 }
 
 const TransactionList = () => {
-  const dispatch = useDispatch()
-  const store = useSelector(state => state.students)
+	const dispatch = useDispatch()
+	const store = useSelector((state) => state.students)
 
-  const [searchTerm, setSearchTerm] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
+	const [searchTerm, setSearchTerm] = useState('')
+	const [currentPage, setCurrentPage] = useState(1)
+	const [rowsPerPage, setRowsPerPage] = useState(10)
 
-  // useEffect(() => {
-  //   dispatch(getUserAllTransactions(store.userDetails.user_details.user_id))
-  //   dispatch(
-  //     getFilteredUserTransactions(store.selectedUserAllTransactions, {
-  //       page: currentPage,
-  //       perPage: rowsPerPage,
-  //       q: searchTerm
-  //     })
-  //   )
-  // }, [dispatch])
+	// useEffect(() => {
+	//   dispatch(getUserAllTransactions(store.userDetails.user_details.user_id))
+	//   dispatch(
+	//     getFilteredUserTransactions(store.selectedUserAllTransactions, {
+	//       page: currentPage,
+	//       perPage: rowsPerPage,
+	//       q: searchTerm
+	//     })
+	//   )
+	// }, [dispatch])
 
+	const handleFilter = (val) => {
+		setSearchTerm(val)
+		dispatch(
+			getFilteredUserTransactions(store.studentDetails.transactions, {
+				page: currentPage,
+				perPage: rowsPerPage,
+				q: val,
+			})
+		)
+	}
 
-  const handleFilter = val => {
-    setSearchTerm(val)
-    dispatch(
-      getFilteredUserTransactions(store.studentDetails.transactions, {
-        page: currentPage,
-        perPage: rowsPerPage,
-        q: val
-      })
-    )
-  }
+	const handlePerPage = (e) => {
+		const value = parseInt(e.currentTarget.value)
+		dispatch(
+			getFilteredUserTransactions(store.studentDetails.transactions, {
+				page: currentPage,
+				perPage: value,
+				q: searchTerm,
+			})
+		)
+		setRowsPerPage(value)
+	}
 
-  const handlePerPage = e => {
-    const value = parseInt(e.currentTarget.value)
-    dispatch(
-      getFilteredUserTransactions(store.studentDetails.transactions, {
-        page: currentPage,
-        perPage: value,
-        q: searchTerm
-      })
-    )
-    setRowsPerPage(value)
-  }
+	const handlePagination = (page) => {
+		dispatch(
+			getFilteredUserTransactions(store.studentDetails.transactions, {
+				page: page.selected + 1,
+				perPage: rowsPerPage,
+				q: searchTerm,
+			})
+		)
+		setCurrentPage(page.selected + 1)
+	}
 
-  const handlePagination = page => {
-    dispatch(
-      getFilteredUserTransactions(store.studentDetails.transactions, {
-        page: page.selected + 1,
-        perPage: rowsPerPage,
-        q: searchTerm
-      })
-    )
-    setCurrentPage(page.selected + 1)
-  }
+	const filteredData = store?.studentDetails.transactions.filter((item) => item?.transactionId?.toLowerCase() || item?.status?.toLowerCase())
 
-  const filteredData = store?.studentDetails.transactions.filter(
-    item => (item?.transactionId?.toLowerCase() || item?.status?.toLowerCase())
-  )
+	const CustomPagination = () => {
+		const count = Math.ceil(store?.studentDetails.transactions.length / rowsPerPage)
 
-  const CustomPagination = () => {
-    const count = Math.ceil(filteredData.length / rowsPerPage)
+		return (
+			<ReactPaginate
+				previousLabel={''}
+				nextLabel={''}
+				pageCount={count || 1}
+				activeClassName="active"
+				forcePage={currentPage !== 0 ? currentPage - 1 : 0}
+				onPageChange={(page) => handlePagination(page)}
+				pageClassName={'page-item'}
+				nextLinkClassName={'page-link'}
+				nextClassName={'page-item next'}
+				previousClassName={'page-item prev'}
+				previousLinkClassName={'page-link'}
+				pageLinkClassName={'page-link'}
+				containerClassName={'pagination react-paginate justify-content-end my-2 pr-1'}
+			/>
+		)
+	}
 
-    return (
-      <ReactPaginate
-      previousLabel={''}
-      nextLabel={''}
-      pageCount={count || 1}
-      activeClassName='active'
-      forcePage={currentPage !== 0 ? currentPage - 1 : 0}
-      onPageChange={page => handlePagination(page)}
-      pageClassName={'page-item'}
-      nextLinkClassName={'page-link'}
-      nextClassName={'page-item next'}
-      previousClassName={'page-item prev'}
-      previousLinkClassName={'page-link'}
-      pageLinkClassName={'page-link'}
-      containerClassName={'pagination react-paginate justify-content-end my-2 pr-1'}
-    />
-    )
-  }
+	// ** Converts table to CSV
+	function convertArrayOfObjectsToCSV(array) {
+		let result
 
-  // ** Converts table to CSV
-  function convertArrayOfObjectsToCSV(array) {
-    let result
+		const columnDelimiter = ','
+		const lineDelimiter = '\n'
+		const keys = Object.keys(store.studentDetails.transactions[0])
+		console.log('keyss', keys)
 
-    const columnDelimiter = ','
-    const lineDelimiter = '\n'
-    const keys = Object.keys(store.studentDetails.transactions[0])
-    console.log("keyss", keys)
+		result = ''
+		result += keys.join(columnDelimiter)
+		result += lineDelimiter
 
-    result = ''
-    result += keys.join(columnDelimiter)
-    result += lineDelimiter
+		array.forEach((item) => {
+			let ctr = 0
+			keys.forEach((key) => {
+				if (ctr > 0) result += columnDelimiter
 
-    array.forEach(item => {
-      let ctr = 0
-      keys.forEach(key => {
-        if (ctr > 0) result += columnDelimiter
+				result += item[key]
 
-        result += item[key]
+				ctr++
+			})
+			result += lineDelimiter
+			console.log('esults', result)
+		})
 
-        ctr++
-      })
-      result += lineDelimiter
-      console.log('esults', result)
-    })
+		return result
+	}
 
-    return result
-  }
+	// ** Downloads CSV
+	function downloadCSV(array) {
+		const link = document.createElement('a')
+		let csv = convertArrayOfObjectsToCSV(array)
+		if (csv === null) return
 
-  // ** Downloads CSV
-  function downloadCSV(array) {
-    const link = document.createElement('a')
-    let csv = convertArrayOfObjectsToCSV(array)
-    if (csv === null) return
+		const filename = 'export.csv'
 
-    const filename = 'export.csv'
+		if (!csv.match(/^data:text\/csv/i)) {
+			csv = `data:text/csv;charset=utf-8,${csv}`
+		}
 
-    if (!csv.match(/^data:text\/csv/i)) {
-      csv = `data:text/csv;charset=utf-8,${csv}`
-    }
+		link.setAttribute('href', encodeURI(csv))
+		link.setAttribute('download', filename)
+		link.click()
+	}
 
-    link.setAttribute('href', encodeURI(csv))
-    link.setAttribute('download', filename)
-    link.click()
-  }
+	// download PDF
+	const downloadPDF = () => {
+		const doc = new jsPDF({
+			orientation: 'landscape',
+		})
 
-  // download PDF
-  const downloadPDF = () => {
-    const doc = new jsPDF({
-      orientation: "landscape"
-    })
+		doc.autoTable({
+			styles: { halign: 'left' },
+			columnStyles: {
+				0: { cellWidth: 'auto' },
+				1: { cellWidth: 'auto' },
+				2: { cellWidth: 'auto' },
+				3: { cellWidth: 'auto' },
+				4: { cellWidth: 'auto' },
+				5: { cellWidth: 'auto' },
+				6: { cellWidth: 'auto' },
+			},
+			head: [['Id', 'Amount', 'Type', 'Balance', 'Narration', 'Date', 'Initiated By']],
+		})
+		store.studentDetails.transactions.map((arr) => {
+			doc.autoTable({
+				styles: { halign: 'left' },
+				theme: 'grid',
+				columnStyles: {
+					0: { cellWidth: 'auto' },
+					1: { cellWidth: 'auto' },
+					2: { cellWidth: 'auto' },
+					3: { cellWidth: 'auto' },
+					4: { cellWidth: 'auto' },
+					5: { cellWidth: 'auto' },
+					6: { cellWidth: 'auto' },
+				},
+				body: [
+					[
+						arr.transactionId,
+						arr.amount.toLocaleString('en-US', { style: 'currency', currency: 'NGN' }),
+						arr.type,
+						arr.balance.toLocaleString('en-US', { style: 'currency', currency: 'NGN' }),
+						arr.narration,
+						moment(arr.createdAt).format('lll'),
+						`${arr.admin.firstName} ${arr.admin.lastName}`,
+					],
+				],
+			})
+		})
+		doc.save(`${store.studentDetails.firstName} ${store.studentDetails.lastName}_transactions.pdf`)
+	}
 
-    doc.autoTable({
-        styles: { halign: 'center'},
-        columnStyles: {
-          0: {cellWidth: 30},
-          1: {cellWidth: 70},
-          2: {cellWidth: 30},
-          3: {cellWidth: 30},
-          4: {cellWidth: 60}
-        },
-        head: [['Id', 'Status', 'Amount', 'Balance', 'Date']]
-    })
-    store.studentDetails.transactions.map(arr => {
-      doc.autoTable({
-        styles: { halign: 'left' },
-        columnStyles: {
-          0: {cellWidth: 40},
-          1: {cellWidth: 70},
-          2: {cellWidth: 70},
-          3: {cellWidth: 30},
-          4: {cellWidth: 100}
-        },
-        body: [[(arr.transactionId), (arr.status), (arr.amount), (arr.balance), (arr.createdAt)]]
-      })
-    })
-    doc.save("export.pdf")
-  }
+	// Data to Render
+	const dataToRender = () => {
+		const filters = {
+			q: searchTerm,
+		}
 
+		const isFiltered = Object.keys(filters).some(function (k) {
+			return filters[k].length > 0
+		})
+		if (store.studentDetails.transactions.length > 0) {
+			return store.studentDetails.transactions
+		} else if (store.studentDetails.transactions.length === 0 && isFiltered) {
+			return []
+		} else {
+			return store.studentDetails.transactions.slice(0, rowsPerPage)
+		}
+	}
 
-  // Data to Render
-  const dataToRender = () => {
-    const filters = {
-      q: searchTerm
-    }
-
-    const isFiltered = Object.keys(filters).some(function (k) {
-      return filters[k].length > 0
-    })
-    if (store.studentDetails.transactions.length > 0) {
-      return store.studentDetails.transactions
-    } else if (store.studentDetails.transactions.length === 0 && isFiltered) {
-      return []
-    } else {
-      return store.studentDetails.transactions.slice(0, rowsPerPage)
-    }
-  }
-
-  return (
-    <div className='invoice-list-wrapper'>
-      <Card>
-        <div className='invoice-list-dataTable'>
-          <DataTable
-            noHeader
-            pagination
-            paginationServer
-            subHeader={true}
-            columns={columns}
-            responsive={true}
-            sortIcon={<ChevronDown />}
-            className='react-dataTable'
-            defaultSortField='invoiceId'
-            paginationDefaultPage={currentPage}
-            paginationComponent={CustomPagination}
-            data={dataToRender()}
-            subHeaderComponent={
-              <CustomHeader
-                rowsPerPage={rowsPerPage}
-                handleFilter={handleFilter}
-                handlePerPage={handlePerPage}
-                downloadCSV={downloadCSV}
-                storeData={store.studentDetails.transactions}
-                downloadPDF={downloadPDF}
-                searchTerm={searchTerm}
-                studentDetails={store.studentDetails}
-              />
-            }
-          />
-        </div>
-      </Card>
-    </div>
-  )
+	return (
+		<div className="invoice-list-wrapper">
+			<Card>
+				<div className="invoice-list-dataTable">
+					<DataTable
+						noHeader
+						pagination
+						paginationServer
+						subHeader={true}
+						columns={columns}
+						responsive={true}
+						sortIcon={<ChevronDown />}
+						className="react-dataTable"
+						defaultSortField="invoiceId"
+						paginationDefaultPage={currentPage}
+						paginationComponent={CustomPagination}
+						data={dataToRender()}
+						subHeaderComponent={
+							<CustomHeader
+								rowsPerPage={rowsPerPage}
+								handleFilter={handleFilter}
+								handlePerPage={handlePerPage}
+								downloadCSV={downloadCSV}
+								storeData={store.studentDetails.transactions}
+								downloadPDF={downloadPDF}
+								searchTerm={searchTerm}
+								studentDetails={store.studentDetails}
+							/>
+						}
+					/>
+				</div>
+			</Card>
+		</div>
+	)
 }
 
 export default TransactionList
