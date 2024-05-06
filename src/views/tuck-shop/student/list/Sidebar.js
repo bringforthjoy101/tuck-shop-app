@@ -21,7 +21,9 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
     className: '',
     year: '',
     group: '',
-    avatar: ''
+    avatar: '',
+    parentName: '',
+    parentEmail: '',
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -160,6 +162,28 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
             </AvInput>
           </FormGroup>
           <FormGroup>
+            <Label for='parentName'>Parent Name</Label>
+            <AvInput 
+              name='parentName' 
+              id='parentName' 
+              placeholder='Parent Name' 
+              value={userData.parentName}
+              onChange={e => setUserData({...userData, parentName: e.target.value})}
+              required 
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for='parentEmail'>Parent Email</Label>
+            <AvInput 
+              name='parentEmail' 
+              id='parentEmail' 
+              placeholder='Parent Email' 
+              value={userData.parentEmail}
+              onChange={e => setUserData({...userData, parentEmail: e.target.value})}
+              required 
+            />
+          </FormGroup>
+          {/* <FormGroup>
             <Label for='role'>Student Year</Label>
             <AvInput 
               type='select' 
@@ -177,8 +201,8 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
               <option value='11'>Eleven (11)</option>
               <option value='12'>Twelve (12)</option>
             </AvInput>
-          </FormGroup>
-          <FormGroup>
+          </FormGroup> */}
+          {/* <FormGroup>
             <Label for='role'>Student Group</Label>
             <AvInput 
               type='select' 
@@ -193,7 +217,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
               <option value='W'>W</option>
               <option value='R'>R</option>
             </AvInput>
-          </FormGroup>
+          </FormGroup> */}
           <Button type='submit' className='mr-1' color='primary' disabled={isSubmitting}>
             {isSubmitting && <Spinner color='white' size='sm' />}
             <span className='ml-50'>Submit</span>

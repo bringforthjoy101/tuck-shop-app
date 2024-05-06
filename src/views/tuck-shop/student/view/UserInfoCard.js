@@ -99,6 +99,8 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
     firstName: studentDetails.firstName,
     lastName: studentDetails.lastName,
     otherName: studentDetails.otherName,
+    parentName: studentDetails.parentName,
+    parentEmail: studentDetails.parentEmail,
     type: studentDetails.type,
     class: studentDetails.class,
     year: studentDetails.year,
@@ -253,6 +255,32 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                             </Col>
                             <Col xl='6' lg='12'>
                               <FormGroup>
+                                <Label for='parentName'>Parent Name</Label>
+                                <AvInput 
+                                  type='text' 
+                                  name='parentName' 
+                                  id='parentName' 
+                                  placeholder='Parent Name' 
+                                  value={studentDetails.parentName}
+                                  onChange={e => setUserData({...userData, parentName: e.target.value})}
+                                />
+                              </FormGroup>
+                            </Col>
+                            <Col xl='6' lg='12'>
+                              <FormGroup>
+                                <Label for='parentEmail'>Parent Email</Label>
+                                <AvInput 
+                                  type='text' 
+                                  name='parentEmail' 
+                                  id='parentEmail' 
+                                  placeholder='Parent Email' 
+                                  value={studentDetails.parentEmail}
+                                  onChange={e => setUserData({...userData, parentEmail: e.target.value})}
+                                />
+                              </FormGroup>
+                            </Col>
+                            {/* <Col xl='6' lg='12'>
+                              <FormGroup>
                                 <Label for='year'>Year</Label>
                                 <AvInput
                                   type='select'
@@ -271,8 +299,8 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                                   <option value='12'>12</option>
                                 </AvInput>
                               </FormGroup>
-                            </Col>
-                            <Col xl='6' lg='12'>
+                            </Col> */}
+                            {/* <Col xl='6' lg='12'>
                               <FormGroup>
                                 <Label for='group'>Group</Label>
                                 <AvInput
@@ -289,7 +317,7 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                                   <option value='R'>R</option>
                                 </AvInput>
                               </FormGroup>
-                            </Col>
+                            </Col> */}
                             <Col xl='6' lg='12'>
                               <FormGroup>
                                 <Label for='status'>User Status</Label>
@@ -358,7 +386,7 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                       Class
                 </CardText>
                   </div>
-                  <CardText className='mb-0'>Year {studentDetails?.year} {studentDetails?.group}</CardText>
+                  <CardText className='mb-0 text-capitalize'>{studentDetails?.class} Class</CardText>
                 </div>
                 <div className='d-flex flex-wrap align-items-center mt-1'>
                   <div className='user-info-title'>

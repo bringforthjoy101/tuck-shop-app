@@ -371,9 +371,9 @@ const {users} = store.getState()
 
 const getProducts = async () => {
     const response = await apiRequest({ url: '/products', method: 'GET' })
-    console.log('response', response, response.data.data.length)
-    store.dispatch({ type: 'GET_T_PRODUCTS', data: response.data.data, params: { q: '', sortBy: 'featured', perPage: 9, page: 1 } })
-    return response.data.data.filter(item => item.qty > 0)
+    console.log('response', response, response?.data.data.length)
+    store.dispatch({ type: 'GET_T_PRODUCTS', data: response?.data.data, params: { q: '', sortBy: 'featured', perPage: 9, page: 1 } })
+    return response?.data.data.filter(item => item.qty > 0)
 }
 
 
@@ -406,8 +406,8 @@ mock.onGet('/apps/ecommerce/products').reply(async config => {
     return 'id'
   })()
 
-  const sortedData = filteredData.sort(sortCompare(sortByKey))
-  if (sortDesc) sortedData.reverse()
+  const sortedData = filteredData?.sort(sortCompare(sortByKey))
+  if (sortDesc) sortedData?.reverse()
 
   const paginatedData = JSON.parse(JSON.stringify(paginateArray(sortedData, products.length, page)))
 

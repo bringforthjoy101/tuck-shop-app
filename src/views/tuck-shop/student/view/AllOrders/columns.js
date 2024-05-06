@@ -11,7 +11,7 @@ import { Send, CheckCircle, Save, ArrowDownCircle, Info, PieChart } from 'react-
 const getItemNames = (items) => {
 	const arr = []
 	// console.log(JSON.parse(items))
-	const _items = process.env.NODE_ENV === 'production' ? JSON.parse(items) : items
+	const _items = process.env.NODE_ENV === 'production' ? JSON.parse(items) : JSON.parse(items)
 	_items.forEach((item) => {
 		arr.push(item.name)
 	})

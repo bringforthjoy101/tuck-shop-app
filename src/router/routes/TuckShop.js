@@ -128,15 +128,15 @@ const ManagerRoutes = [
         component: lazy(() => import('../../views/tuck-shop/order/list'))
       },
       {
-        path: '/order/view',
+        path: '/order/preview',
         exact: true,
-        component: () => <Redirect to='/tuck-shop/order/view/1' />
+        component: () => <Redirect to='/tuck-shop/order/preview/1' />
       },
       {
-        path: '/order/view/:id',
-        component: lazy(() => import('../../views/tuck-shop/order/view')),
+        path: '/order/preview/:id',
+        component: lazy(() => import('../../views/tuck-shop/order/preview')),
         meta: {
-          navLink: '/tuck-shop/order/view'
+          navLink: '/tuck-shop/order/preview'
         }
       },
       {

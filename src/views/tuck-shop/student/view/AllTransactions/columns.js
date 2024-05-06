@@ -21,6 +21,11 @@ const statusObj = {
   failed: 'light-danger'
 }
 
+const transactionTypeObj = {
+  credit: 'light-success',
+  debit: 'light-danger'
+}
+
 // ** Table columns
 export const columns = [
   {
@@ -30,17 +35,28 @@ export const columns = [
     cell: row => <span>{ `#${row.transactionId}` }</span>
   },
   {
+    name: 'Type',
+    selector: 'type',
+    sortable: true,
+    minWidth: '80px',
+    cell: row => (
+      <Badge className='text-capitalize' color={transactionTypeObj[row.type]} pill>
+        {row.type}
+      </Badge>
+    )
+  },
+  {
     name: 'Amount',
     selector: 'amount',
     sortable: true,
-    minWidth: '100px',
+    minWidth: '150px',
     cell: row => <span>{(row.amount || 0).toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}</span>
   },
   {
     name: 'Balance',
     selector: 'balance',
     sortable: true,
-    minWidth: '100px',
+    minWidth: '150px',
     cell: row => {
       return row.balance !== 0 ? (
         <span>{(row.balance || 0).toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}</span>
@@ -52,30 +68,23 @@ export const columns = [
     }
   },
   {
-    name: 'Type',
-    selector: 'type',
-    sortable: true,
-    minWidth: '80px',
-    cell: row => <span className='text-capitalize'>{row.type}</span>
-  },
-  {
     name: 'Narration',
     selector: 'narration',
     sortable: true,
     minWidth: '80px',
     cell: row => <span>{row.narration}</span>
   },
-  {
-    name: 'Status',
-    selector: 'status',
-    sortable: true,
-    minWidth: '80px',
-    cell: row => (
-      <Badge className='text-capitalize' color={statusObj[row.status]} pill>
-        {row.status}
-      </Badge>
-    )
-  },
+  // {
+  //   name: 'Status',
+  //   selector: 'status',
+  //   sortable: true,
+  //   minWidth: '80px',
+  //   cell: row => (
+  //     <Badge className='text-capitalize' color={statusObj[row.status]} pill>
+  //       {row.status}
+  //     </Badge>
+  //   )
+  // },
   {
     name: 'Date',
     selector: 'createdAt',

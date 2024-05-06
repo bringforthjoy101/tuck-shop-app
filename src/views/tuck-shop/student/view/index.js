@@ -75,11 +75,11 @@ const UserView = (props) => {
 										Orders
 									</NavLink>
 								</NavItem>
-								<NavItem>
+								{/* <NavItem>
 									<NavLink onClick={() => setActiveTransaction('books')} active={activeTransaction === 'books'}>
 										Books
 									</NavLink>
-								</NavItem>
+								</NavItem> */}
 							</Nav>
 						</Row>
 					</Card>

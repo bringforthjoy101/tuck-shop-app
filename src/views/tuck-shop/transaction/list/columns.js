@@ -29,6 +29,11 @@ const statusObj = {
   failed: 'light-danger'
 }
 
+const transactionTypeObj = {
+  debit: 'light-danger',
+  credit: 'light-success'
+}
+
 export const columns = [
   {
     name: 'Transaction Id',
@@ -57,6 +62,17 @@ export const columns = [
     )
   },
   {
+    name: 'Type',
+    minWidth: '150px',
+    selector: 'type',
+    sortable: true,
+    cell: row => (
+      <Badge className='text-capitalize' color={transactionTypeObj[row.type]} pill>
+        {row.type}
+      </Badge>
+    )
+  },
+  {
     name: 'Amount',
     minWidth: '150px',
     selector: 'amount',
@@ -70,17 +86,17 @@ export const columns = [
     sortable: true,
     cell: row => <span className="text-capitalize">{row?.balance?.toLocaleString('en-US', {style: 'currency', currency: 'NGN'})}</span>
   },
-  {
-    name: 'Status',
-    minWidth: '100px',
-    selector: 'status',
-    sortable: true,
-    cell: row => (
-      <Badge className='text-capitalize' color={statusObj[row.status]} pill>
-        {row.status}
-      </Badge>
-    )
-  },
+  // {
+  //   name: 'Status',
+  //   minWidth: '100px',
+  //   selector: 'status',
+  //   sortable: true,
+  //   cell: row => (
+  //     <Badge className='text-capitalize' color={statusObj[row.status]} pill>
+  //       {row.status}
+  //     </Badge>
+  //   )
+  // },
   {
     name: 'Transaction Date',
     minWidth: '150px',
