@@ -51,13 +51,13 @@ export const columns = [
 		sortable: true,
 		cell: (row) => <span className="text-capitalize">{row?.amount?.toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}</span>,
 	},
-	{
-		name: 'Products ',
-		minWidth: '150px',
-		selector: 'products',
-		sortable: true,
-		cell: (row) => <span className="text-capitalize">{getItemNames(row.products)}</span>,
-	},
+	// {
+	// 	name: 'Products ',
+	// 	minWidth: '150px',
+	// 	selector: 'products',
+	// 	sortable: true,
+	// 	cell: (row) => <span className="text-capitalize">{getItemNames(row.products)}</span>,
+	// },
 	{
 		name: 'Student',
 		minWidth: '200px',

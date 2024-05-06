@@ -141,7 +141,7 @@ export const editAdmin = (adminId, adminData) => {
 				swal("Oops!", `${response.data.message}.`, "error");
 			}
 		} else {
-			console.log(response.error);
+			console.log(response);
 			swal("Oops!", "Somthing went wrong with your network.", "error");
 		}
 	};

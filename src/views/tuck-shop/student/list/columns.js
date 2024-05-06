@@ -128,7 +128,7 @@ export const columns = [
     minWidth: '150px',
     selector: 'class',
     sortable: true,
-    cell: row => <span>Year {row.year} {row.group}</span>
+    cell: row => <span className="text-capitalize"> {row.class} Class</span>
   },
   {
     name: 'Type',
