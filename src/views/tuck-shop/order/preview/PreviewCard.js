@@ -10,8 +10,9 @@ const PreviewCard = ({ data }) => {
 		if (isUserLoggedIn()) setUserData(JSON.parse(localStorage.getItem('userData')))
 	}, [])
 	const renderTable = (products) => {
+		console.log(process.env.NODE_ENV)
 		// products = process.env.NODE_ENV === 'production' ? JSON.parse(products) : products
-		products = JSON.parse(products)
+		// products = JSON.parse(products)
 		return products.map((product) => {
 			return (
 				<tr key={product.id}>
