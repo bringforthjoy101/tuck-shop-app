@@ -155,7 +155,7 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
               {renderStudentImg()}
                 <div className='d-flex flex-column ml-1'>
                   <div className='user-info mb-1'>
-                    <h4 className='mb-0'>{studentDetails !== null ? `${studentDetails.firstName} ${studentDetails.lastName} ${studentDetails?.otherName}` : 'Student Name'}</h4>
+                    <h4 className='mb-0'>{studentDetails !== null ? `${studentDetails.firstName} ${studentDetails.lastName}` : 'Student Name'}</h4>
                     <CardText tag='span' className='text-captalize'>
                       {studentDetails?.class} class
                     </CardText>
