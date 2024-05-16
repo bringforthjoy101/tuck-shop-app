@@ -141,7 +141,7 @@ const Cart = props => {
 
   const renderStudents = (students) => {
     console.log(students)
-    return students.map(student => {
+    return students.filter(student => student.status === 'active').map(student => {
       return {value: student.id, label: `${student.firstName} ${student.lastName} ${student.otherName} (₦${student.wallet.toLocaleString()})`}
     })
   }
