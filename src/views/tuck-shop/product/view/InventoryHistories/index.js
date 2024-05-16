@@ -35,7 +35,7 @@ const CustomHeader = ({ handleFilter, searchTerm, handlePerPage, rowsPerPage, do
 							<option value="50">50</option>
 						</CustomInput>
 					</div>
-					<h3 className="d-none d-lg-block">{InventoryDetails.name}'s History</h3>
+					<h3 className="d-none d-lg-block">{InventoryDetails.name}'s Stock History</h3>
 				</Col>
 				<Col
 					lg="3"

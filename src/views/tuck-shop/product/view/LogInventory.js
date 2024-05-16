@@ -31,6 +31,12 @@ export const LogInventory = ({ selectedInventory }) => {
 		event?.preventDefault()
 		if (errors && !errors.length) {
 			await dispatch(logInventory(id, inventoryData))
+			setInventoryData({
+				qty: null,
+				type: null,
+				department: null,
+				description: null,
+			})
 			dispatch(getAllData())
 			setFormModal(!formModal)
 			setIsSubmitting(false)
@@ -41,14 +47,14 @@ export const LogInventory = ({ selectedInventory }) => {
 	return (
 		<div>
 			<Button.Ripple className="text-center mb-1" color="primary" outline block onClick={() => setFormModal(!formModal)}>
-				Log Inventory
+				Update Stock
 			</Button.Ripple>
 			<Modal isOpen={formModal} toggle={() => setFormModal(!formModal)} className="modal-dialog-centered">
-				<ModalHeader toggle={() => setFormModal(!formModal)}>Log Inventory</ModalHeader>
+				<ModalHeader toggle={() => setFormModal(!formModal)}>Update Stock</ModalHeader>
 				<AvForm onSubmit={onSubmit}>
 					<ModalBody>
 						<FormGroup>
-							<Label for="type">Inventory Type</Label>
+							<Label for="type">Stock Type</Label>
 							<AvInput
 								type="select"
 								id="type"

@@ -126,7 +126,7 @@ const UserAccountTab = ({ selectedProduct }) => {
           <Media className='mt-50' body>
             <h4>{selectedProduct.fullName} </h4>
             <div className='d-flex flex-wrap mt-1 px-0'>
-              <Button.Ripple id='change-img' tag={Label} className='mr-75 mb-0' color='primary'>
+              {/* <Button.Ripple id='change-img' tag={Label} className='mr-75 mb-0' color='primary'>
                 <span className='d-none d-sm-block'>Change</span>
                 <span className='d-block d-sm-none'>
                   <Edit size={14} />
@@ -138,7 +138,7 @@ const UserAccountTab = ({ selectedProduct }) => {
                 <span className='d-block d-sm-none'>
                   <Trash2 size={14} />
                 </span>
-              </Button.Ripple>
+              </Button.Ripple> */}
             </div>
           </Media>
         </Media>
@@ -174,7 +174,7 @@ const UserAccountTab = ({ selectedProduct }) => {
                 {/* <Input type='text' id='price' placeholder='Price' defaultValue={selectedProduct.price} /> */}
               </FormGroup>
             </Col>
-            <Col md='6' sm='12'>
+            {/* <Col md='6' sm='12'>
               <FormGroup>
                 <Label for='qty'>Product Qty</Label>
                 <AvInput 
@@ -185,9 +185,8 @@ const UserAccountTab = ({ selectedProduct }) => {
                   onChange={e => setProductData({...productData, qty: e.target.value})}
                   required 
                 />
-                {/* <Input type='text' id='qty' placeholder='Qty' defaultValue={selectedProduct.qty} /> */}
               </FormGroup>
-            </Col>
+            </Col> */}
             <Col md='6' sm='12'>
               <FormGroup>
                 <Label for='unit'>Unit</Label>
@@ -213,9 +212,9 @@ const UserAccountTab = ({ selectedProduct }) => {
                 </AvInput>
               </FormGroup>
             </Col>
-            <Col md='6' sm='12'>
+            {/* <Col md='6' sm='12'>
               <FormGroup>
-                <Label for='category'>Status</Label>
+                <Label for='category'>Category</Label>
                 <AvInput 
                   type='select' 
                   id='category' 
@@ -230,8 +229,8 @@ const UserAccountTab = ({ selectedProduct }) => {
                   <option value='store'>Store</option>
                 </AvInput>
               </FormGroup>
-            </Col>
-            <Col md='6' sm='12'>
+            </Col> */}
+            {/* <Col md='6' sm='12'>
               <FormGroup>
                 <Label for='status'>Status</Label>
                 <AvInput 
@@ -247,7 +246,7 @@ const UserAccountTab = ({ selectedProduct }) => {
                   <option value='out of stock'>Out Of Stock</option>
                 </AvInput>
               </FormGroup>
-            </Col>
+            </Col> */}
             
             <Col className='d-flex flex-sm-row flex-column mt-2' sm='12'>
               <Button className='mb-1 mb-sm-0 mr-0 mr-sm-1' type='submit' color='primary'>
