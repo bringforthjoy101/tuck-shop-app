@@ -8,12 +8,12 @@ import { useDispatch } from 'react-redux'
 
 const PasswordTabContent = () => {
   const dispatch = useDispatch()
-  const adminEmail = JSON.parse(localStorage.getItem('userData')).email
+  const adminPhone = JSON.parse(localStorage.getItem('userData')).phone
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [userData, setUserData] = useState({
     oldPassword: '',
     newPassword: '',
-    email: adminEmail
+    phone: adminPhone
   })
 
   const onSubmit = async (event, errors) => {
@@ -33,7 +33,7 @@ const PasswordTabContent = () => {
             setUserData({
               oldPassword: '',
               newPassword: '',
-              email: adminEmail
+              phone: adminPhone
             })
         } else {
           setIsSubmitting(false)
@@ -83,12 +83,12 @@ const PasswordTabContent = () => {
             <InputEmailToggle
               tag={AvInput}
               className='input-group-merge'
-              label='Email'
-              htmlFor='email'
-              name='email'
+              label='Phone'
+              htmlFor='phone'
+              name='phone'
               required
-              value={userData.email}
-              onChange={e => setUserData({...userData, email: e.target.value})}
+              value={userData.phone}
+              onChange={e => setUserData({...userData, phone: e.target.value})}
             />
           </FormGroup>
         </Col>

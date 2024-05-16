@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux'
 import classnames from 'classnames'
 import { X, Heart, Star } from 'react-feather'
 import Select from 'react-select'
-import { Card, CardBody, CardText, Button, Badge, FormGroup, Label, InputGroup, InputGroupAddon, Input, InputGroupText } from 'reactstrap'
+import { Card, CardBody, CardText, Button, Badge, FormGroup, Label, Spinner, InputGroup, InputGroupAddon, Input, InputGroupText } from 'reactstrap'
 import { AvForm, AvInput } from 'availity-reactstrap-validation-safe'
 import { swal, apiRequest, selectThemeColors } from '@utils'
 
@@ -134,8 +134,8 @@ const Cart = props => {
   // ** Get data on mount
   useEffect(() => {
     dispatch(getAllData(JSON.parse(localStorage.getItem('userData')).role))
-    setOrderData({...orderData, studentId: selectedOption.value})
-  }, [dispatch, selectedOption])
+    setOrderData({...orderData, amount, studentId: selectedOption.value})
+  }, [dispatch, amount, products, selectedOption])
 
   const store = useSelector(state => state.students)
 
@@ -145,18 +145,23 @@ const Cart = props => {
       return {value: student.id, label: `${student.firstName} ${student.lastName} ${student.otherName} (₦${student.wallet.toLocaleString()})`}
     })
   }
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
   
   // ** Function to handle form submit
   const onSubmit = async (event, errors) => {
     event.preventDefault()
     console.log({errors})
+    setIsSubmitting(true)
     if (errors && !errors.length) {
+      setIsSubmitting(true)
       console.log({orderData})
       const body = JSON.stringify(orderData)
       try {
         const response = await apiRequest({url:'/orders/create', method:'POST', body}, dispatch)
         console.log({response})
         if (response.data.status) {
+          setIsSubmitting(false)
             swal('Great job!', response.data.message, 'success')
             dispatch(getAllData())
             dispatch(deleteAllCartItem())
@@ -167,6 +172,7 @@ const Cart = props => {
             })
             history.push(`/apps/ecommerce/shop`)
         } else {
+          setIsSubmitting(false)
           swal('Oops!', response.data.message, 'error')
           dispatch(deleteAllCartItem())
           setOrderData({
@@ -177,6 +183,7 @@ const Cart = props => {
           history.push(`/apps/ecommerce/shop`)
         }
       } catch (error) {
+        setIsSubmitting(false)
         console.error({error})
       }
     }
@@ -227,9 +234,10 @@ const Cart = props => {
                   classnames='btn-next place-order'
                   block
                   type='submit'
-                  // disabled={!products.length}
+                  disabled={isSubmitting}
                   // onClick={onSubmit}
                 >
+                  {isSubmitting && <Spinner color='white' size='sm' />}
                   Place Order
                 </Button.Ripple>
               </div>

@@ -328,7 +328,7 @@ const UsersList = () => {
         className='d-flex align-items-sm-center justify-content-lg-end justify-content-start flex-lg-nowrap flex-wrap flex-sm-row flex-column pr-lg-1 p-0 mt-lg-0 mt-1'
       >
         {
-          userData?.role === 'manager' || userData?.role === 'busary' ? <Button.Ripple color='primary' onClick={toggleSidebar}> Add New Student </Button.Ripple> : ''
+          userData?.role === 'manager' || userData?.role === 'bursary' ? <Button.Ripple color='primary' onClick={toggleSidebar}> Add New Student </Button.Ripple> : ''
         }
       </Col>
       </Row>

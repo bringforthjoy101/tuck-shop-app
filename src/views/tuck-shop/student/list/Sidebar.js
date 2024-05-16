@@ -169,7 +169,6 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
               placeholder='Parent Name' 
               value={userData.parentName}
               onChange={e => setUserData({...userData, parentName: e.target.value})}
-              required 
             />
           </FormGroup>
           <FormGroup>
@@ -180,7 +179,6 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
               placeholder='Parent Email' 
               value={userData.parentEmail}
               onChange={e => setUserData({...userData, parentEmail: e.target.value})}
-              required 
             />
           </FormGroup>
           {/* <FormGroup>

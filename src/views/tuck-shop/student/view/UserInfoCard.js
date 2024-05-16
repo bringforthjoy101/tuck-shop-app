@@ -156,15 +156,15 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                 <div className='d-flex flex-column ml-1'>
                   <div className='user-info mb-1'>
                     <h4 className='mb-0'>{studentDetails !== null ? `${studentDetails.firstName} ${studentDetails.lastName} ${studentDetails.otherName}` : 'Student Name'}</h4>
-                    <CardText tag='span'>
-                      Year {studentDetails?.year} {studentDetails?.group}
+                    <CardText tag='span' className='text-captalize'>
+                      {studentDetails?.class} class
                     </CardText>
                   </div>
                   <div className='d-flex flex-wrap align-items-center'>
                     {/* <Button.Ripple tag={Link} to={`/student/edit/${studentDetails.id}`} disabled color='primary'>
                       Edit
                     </Button.Ripple> */}
-                    {userRole === 'manager' || userRole === 'busary' ? <Button.Ripple className='text-center' color='primary' onClick={() => setFormModal(!formModal)}>
+                    {userRole === 'manager' || userRole === 'bursary' ? <Button.Ripple className='text-center' color='primary' onClick={() => setFormModal(!formModal)}>
                       Edit Student
                     </Button.Ripple> : ''}
                     <Modal isOpen={formModal} toggle={() => setFormModal(!formModal)} className='modal-dialog-centered modal-lg'>
@@ -345,7 +345,7 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                       </AvForm>
 
                     </Modal>
-                    {userRole === 'manager' || userRole === 'busary' ? <Button.Ripple className='ml-1' color='danger' outline onClick={() => handleDelete(studentDetails.id)}>
+                    {userRole === 'manager' || userRole === 'bursary' ? <Button.Ripple className='ml-1' color='danger' outline onClick={() => handleDelete(studentDetails.id)}>
                       Delete
                     </Button.Ripple> : ''}
                     {/* <Button.Ripple className='ml-1' color='danger' outline onClick={() => handleDelete(studentDetails.id)}>
@@ -371,7 +371,7 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                 </div>
                 <div className='ml-1'>
                   <h5 className='mb-0'>{getTotalSpent(studentDetails.transactions).toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}</h5>
-                  <small>Spent So Far</small>
+                  <small>Total Spent</small>
                 </div>
               </div>
             </div>

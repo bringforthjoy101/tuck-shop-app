@@ -7,7 +7,7 @@ import { swal, apiRequest } from '@utils'
 import { getAllData, getFilteredData } from '../store/action'
 
 // ** Third Party Components
-import { Button, FormGroup, Label, FormText } from 'reactstrap'
+import { Button, FormGroup, Label, FormText, Spinner } from 'reactstrap'
 import { AvForm, AvInput } from 'availity-reactstrap-validation-safe'
 
 const SidebarNewUsers = ({ open, toggleSidebar }) => {
@@ -16,36 +16,40 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
   const [userData, setUserData] = useState({
     firstName: '',
     lastName: '',
-    email: '',
     password: '',
     phone: '',
     role: ''
   })
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
   // ** Function to handle form submit
   const onSubmit = async (event, errors) => {
+    setIsSubmitting(true)
     event?.preventDefault()
     if (errors && !errors.length) {
+      setIsSubmitting(true)
       const body = JSON.stringify(userData)
       try {
+        setIsSubmitting(true)
         const response = await apiRequest({url:'/register', method:'POST', body}, dispatch)
         if (response) {
           if (response.data.status) {
+            setIsSubmitting(false)
             swal('Great job!', response.data.message, 'success')
             dispatch(getAllData())
             setUserData({
               firstName: '',
               lastName: '',
-              email: '',
               password: '',
               phone: '',
               role: ''
             })
             toggleSidebar()
           } else {
+            setIsSubmitting(false)
             setUserData({
               firstName: '',
               lastName: '',
-              email: '',
               password: '',
               phone: '',
               role: ''
@@ -53,17 +57,19 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
             swal('Oops!', response.data.message, 'error')
           }
         } else {
+          setIsSubmitting(false)
           swal('Oops!', 'Something went wrong with your network.', 'error')
         }
         
       } catch (error) {
+        setIsSubmitting(false)
         console.error({error})
       }
     }
   }
 
   useEffect(() => {
-    onSubmit()
+    // onSubmit()
     dispatch(getAllData())
   }, [dispatch])
 
@@ -100,19 +106,6 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
             />
           </FormGroup>
           <FormGroup>
-            <Label for='email'>Email</Label>
-            <AvInput 
-              type='email' 
-              name='email' 
-              id='email' 
-              placeholder='admin.user@mail.com' 
-              value={userData.email}
-              onChange={e => setUserData({...userData, email: e.target.value})}
-              required 
-            />
-            <FormText color='muted'>You can use letters, numbers & periods</FormText>
-          </FormGroup>
-          <FormGroup>
             <Label for='password'>Password</Label>
             <AvInput 
               type='password' 
@@ -146,13 +139,14 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
               required
             >
               <option value=''>Select Role</option>
-              <option value='sales rep'>Sales Rep</option>
+              <option value='sales-rep'>Sales Rep</option>
               <option value='store'>Store</option>
-              <option value='busary'>Busary</option>
+              <option value='bursary'>Bursary</option>
               <option value='manager'>Manager</option>
             </AvInput>
           </FormGroup>
-          <Button type='submit' className='mr-1' color='primary'>
+          <Button type='submit' className='mr-1' color='primary' disabled={isSubmitting}>
+            {isSubmitting && <Spinner color='white' size='sm' />}
             Submit
           </Button>
           <Button type='reset' color='secondary' outline onClick={toggleSidebar}>

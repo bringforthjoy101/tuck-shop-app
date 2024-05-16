@@ -112,17 +112,17 @@ export const columns = [
           >
             <span className='font-weight-bold'>{row.firstName} {row.lastName}</span>
           </Link>
-          <small className='text-truncate text-muted mb-0'>{row.email}</small>
+          <small className='text-truncate text-muted mb-0'>{row.phone}</small>
         </div>
       </div>
     )
   },
   {
-    name: 'Email',
+    name: 'Phone',
     minWidth: '320px',
-    selector: 'email',
+    selector: 'phone',
     sortable: true,
-    cell: row => row.email
+    cell: row => row.phone
   },
   {
     name: 'Role',

@@ -161,7 +161,7 @@ const ManagerRoutes = [
       }
 ]
 
-const BusaryRoutes = [
+const BursaryRoutes = [
   {
     path: '/apps/ecommerce/shop',
     className: 'ecommerce-application',
@@ -372,4 +372,4 @@ const StoreRoutes = [
   }
 ]
 
-export default userData?.role === 'manager' ? ManagerRoutes : userData?.role === 'busary' ? BusaryRoutes : userData?.role === 'sales rep' ? SalesRepRoutes : StoreRoutes
+export default userData?.role === 'manager' ? ManagerRoutes : userData?.role === 'bursary' ? BursaryRoutes : userData?.role === 'sales rep' ? SalesRepRoutes : StoreRoutes

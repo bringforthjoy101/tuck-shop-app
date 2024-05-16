@@ -69,3 +69,41 @@ export const deleteProduct = (productId) => {
   }
 }
 
+export const getFilteredinventoryHistories = (histories, params) => {
+	return async (dispatch) => {
+		const { q = '', perPage = 10, page = 1 } = params
+		/* eslint-enable */
+
+		const queryLowered = q.toLowerCase()
+		const filteredData = histories?.filter(
+			(history) => history?.department?.toLowerCase().includes(queryLowered) || moment(history?.createdAt).format('lll').toLowerCase().includes(queryLowered)
+		)
+		/* eslint-enable  */
+		await dispatch({
+			type: 'GET_INVENTORY_HISTORIES',
+			data: paginateArray(filteredData, perPage, page),
+			totalPages: filteredData?.length,
+			params,
+		})
+	}
+}
+
+export const logInventory = (productId, inventoryData) => {
+	return async (dispatch) => {
+		const body = JSON.stringify({ ...inventoryData })
+		const response = await apiRequest({ url: `/products/update-stock/${productId}`, method: 'POST', body }, dispatch)
+		if (response) {
+			if (response.data.status) {
+				swal('Good!', `${response.data.message}.`, 'success')
+				dispatch(getAllData())
+				dispatch(getProduct(productId))
+			} else {
+				swal('Oops!', `${response.data.message}.`, 'error')
+			}
+		} else {
+			console.log(response.error)
+			swal('Oops!', 'Somthing went wrong with your network.', 'error')
+		}
+	}
+}
+

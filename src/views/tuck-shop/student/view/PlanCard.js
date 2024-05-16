@@ -34,7 +34,7 @@ const PlanCard = ({ studentDetails }) => {
          Activate Student
        </Button.Ripple>
         }
-        {userData?.role === "manager" || userData?.role === "busary" ? <div><AddFunds studentDetails={studentDetails} /> <DeductFunds studentDetails={studentDetails} /> </div> : ''}
+        {userData?.role === "manager" || userData?.role === "bursary" ? <div><AddFunds studentDetails={studentDetails} /> <DeductFunds studentDetails={studentDetails} /> </div> : ''}
       </CardBody>
     </Card>
   )

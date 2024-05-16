@@ -11,4 +11,4 @@ import transaction from './transaction'
 const userData = JSON.parse(localStorage.getItem('userData'))
 
 // ** Merge & Export
-export default userData?.role === 'manager' ? [...dashboards, ...tuckShop, ...students, ...products, ...orders, ...transaction, ...admins] : userData?.role === 'busary' ? [...dashboards, ...tuckShop, ...students, ...transaction] : userData?.role === 'sales rep' ? [...dashboards, ...tuckShop, ...students] : [...dashboards, ...tuckShop]
+export default userData?.role === 'manager' ? [...dashboards, ...tuckShop, ...students, ...products, ...orders, ...transaction, ...admins] : userData?.role === 'bursary' ? [...dashboards, ...tuckShop, ...students, ...transaction] : userData?.role === 'sales rep' ? [...dashboards, ...tuckShop, ...students] : [...dashboards, ...tuckShop]

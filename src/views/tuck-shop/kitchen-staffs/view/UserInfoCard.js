@@ -111,7 +111,7 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                     <Button.Ripple tag={Link} to={`/student/edit/${studentDetails.id}`} disabled color='primary'>
                       Edit
                     </Button.Ripple>
-                    {userRole === 'manager' || userRole === 'busary' ? <Button.Ripple className='ml-1' color='danger' outline onClick={() => handleDelete(studentDetails.id)}>
+                    {userRole === 'manager' || userRole === 'bursary' ? <Button.Ripple className='ml-1' color='danger' outline onClick={() => handleDelete(studentDetails.id)}>
                       Delete
                     </Button.Ripple> : ''}
                     {/* <Button.Ripple className='ml-1' color='danger' outline onClick={() => handleDelete(studentDetails.id)}>

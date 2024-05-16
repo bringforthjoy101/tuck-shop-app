@@ -1,5 +1,6 @@
 // ** React Imports
 import moment from 'moment'
+import { Link } from 'react-router-dom'
 
 // ** Custom Components
 import Avatar from '@components/avatar'
@@ -26,7 +27,11 @@ export const columns = [
 		name: 'Order ID',
 		minWidth: '180px',
 		selector: 'orderNumber',
-		cell: (row) => <span>{`#${row.orderNumber}`}</span>,
+		cell: (row) => (
+			<Link to={`/order/preview/${row.id}`}>
+				<span>#{row.orderNumber}</span>
+			</Link>
+		),
 	},
 	{
 		name: 'Amount',
