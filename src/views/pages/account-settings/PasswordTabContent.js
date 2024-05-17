@@ -56,7 +56,6 @@ const PasswordTabContent = () => {
 							label="Old Password"
 							htmlFor="oldPassword"
 							name="oldPassword"
-							required
 							value={userData.oldPassword}
 							onChange={(e) => setUserData({ ...userData, oldPassword: e.target.value })}
 						/>
@@ -72,7 +71,6 @@ const PasswordTabContent = () => {
 							label="New Password"
 							htmlFor="new_password"
 							name="new_password"
-							required
 							value={userData.newPassword}
 							onChange={(e) => setUserData({ ...userData, newPassword: e.target.value })}
 						/>

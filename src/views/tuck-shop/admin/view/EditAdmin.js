@@ -1,37 +1,36 @@
-import { useState, useEffect } from "react";
-import { isUserLoggedIn } from "@utils";
-import { Button, Spinner, Modal, ModalHeader, ModalBody, ModalFooter, Label, FormGroup, Input } from "reactstrap";
-import { Formik, Field, Form, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { AvForm, AvInput } from "availity-reactstrap-validation-safe";
-import { getAllData, getAdmin, editAdmin } from "../store/action";
-import { store } from "@store/storeConfig/store";
-import Row from "reactstrap/lib/Row";
-import Col from "reactstrap/lib/Col";
+import { useState, useEffect } from 'react'
+import { isUserLoggedIn } from '@utils'
+import { Button, Spinner, Modal, ModalHeader, ModalBody, ModalFooter, Label, FormGroup, Input } from 'reactstrap'
+import { Formik, Field, Form, ErrorMessage } from 'formik'
+import * as Yup from 'yup'
+import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
+import { AvForm, AvInput } from 'availity-reactstrap-validation-safe'
+import { getAllData, getAdmin, editAdmin } from '../store/action'
+import { store } from '@store/storeConfig/store'
+import Row from 'reactstrap/lib/Row'
+import Col from 'reactstrap/lib/Col'
 
 export const EditAdmin = ({ selectedAdmin }) => {
-	const dispatch = useDispatch();
-	const { id } = useParams();
+	const dispatch = useDispatch()
+	const { id } = useParams()
 	const [userData, setUserData] = useState({
 		firstName: selectedAdmin.firstName,
 		lastName: selectedAdmin.lastName,
-		email: selectedAdmin.email,
 		phone: selectedAdmin.phone,
 		status: selectedAdmin.status,
 		role: selectedAdmin.role,
-	});
-	const [formModal, setFormModal] = useState(false);
+	})
+	const [formModal, setFormModal] = useState(false)
 
 	const onSubmit = async (event, errors) => {
-		event?.preventDefault();
+		event?.preventDefault()
 		if (errors && !errors.length) {
-			await dispatch(editAdmin(id, userData));
-			dispatch(getAdmin(id));
-			setFormModal(!formModal);
+			await dispatch(editAdmin(id, userData))
+			dispatch(getAdmin(id))
+			setFormModal(!formModal)
 		}
-	};
+	}
 
 	return (
 		<div>
@@ -69,21 +68,6 @@ export const EditAdmin = ({ selectedAdmin }) => {
 										onChange={(e) => setUserData({ ...userData, lastName: e.target.value })}
 										required
 									/>
-								</FormGroup>
-							</Col>
-							<Col xl="6" lg="12">
-								<FormGroup>
-									<Label for="email">Email</Label>
-									<AvInput
-										type="email"
-										name="email"
-										id="email"
-										placeholder="Email"
-										value={selectedAdmin.email}
-										onChange={(e) => setUserData({ ...userData, email: e.target.value })}
-										required
-									/>
-									{/* <FormText color='muted'>You can use letters, numbers & periods</FormText> */}
 								</FormGroup>
 							</Col>
 							<Col xl="6" lg="12">
@@ -146,6 +130,6 @@ export const EditAdmin = ({ selectedAdmin }) => {
 				</AvForm>
 			</Modal>
 		</div>
-	);
-};
-export default EditAdmin;
+	)
+}
+export default EditAdmin
