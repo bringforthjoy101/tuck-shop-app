@@ -118,27 +118,27 @@ export const columns = [
           >
             <span className='font-weight-bold'>{row.firstName} {row.lastName} {row.otherName}</span>
           </Link>
-          <small className='text-truncate text-muted mb-0'>Year {row.year} {row.group}</small>
+          <small className='text-truncate text-muted text-capitalize mb-0'>{row.class} Class</small>
         </div>
       </div>
     )
   },
+  // {
+  //   name: 'Class',
+  //   minWidth: '150px',
+  //   selector: 'class',
+  //   sortable: true,
+  //   cell: row => <span className="text-capitalize"> {row.class} Class</span>
+  // },
+  // {
+  //   name: 'Type',
+  //   minWidth: '150px',
+  //   selector: 'type',
+  //   sortable: true,
+  //   cell: row => <span className="text-capitalize">{row.type}</span>
+  // },
   {
-    name: 'Class',
-    minWidth: '150px',
-    selector: 'class',
-    sortable: true,
-    cell: row => <span>Year {row.year} {row.group}</span>
-  },
-  {
-    name: 'Type',
-    minWidth: '150px',
-    selector: 'type',
-    sortable: true,
-    cell: row => <span className="text-capitalize">{row.type}</span>
-  },
-  {
-    name: 'Wallet',
+    name: 'Wallet Balance',
     minWidth: '150px',
     selector: 'wallet',
     sortable: true,

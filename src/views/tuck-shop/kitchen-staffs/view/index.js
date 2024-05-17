@@ -49,11 +49,11 @@ const UserView = props => {
         <Col xl='9' lg='8' md='7'>
           <UserInfoCard studentDetails={store.studentDetails} userRole={userData?.role} />
         </Col>
-        {userData?.role === 'manager' || userData?.role === "busary" ? <Col xl='3' lg='4' md='5'>
+        {userData?.role === 'manager' || userData?.role === "bursary" ? <Col xl='3' lg='4' md='5'>
           {/* <PlanCard  studentDetails={store.studentDetails} /> */}
         </Col> : ""}
       </Row>
-      {userData?.role === 'manager' || userData?.role === "busary" || userData?.role === "store" ? (
+      {userData?.role === 'manager' || userData?.role === "bursary" || userData?.role === "store" ? (
       <div>
         <Card className="mb-3 d-flex justify-content-around">
           <Row className="d-sm-block d-lg-flex justify-content-center">

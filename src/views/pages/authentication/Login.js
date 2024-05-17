@@ -1,4 +1,4 @@
-import { useState, useContext, Fragment } from 'react'
+import { useState, useContext, useEffect, Fragment } from 'react'
 import Avatar from '@components/avatar'
 import Logo from '../../../assets/images/logo/favicon.png'
 import { useSkin } from '@hooks/useSkin'
@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux'
 import { toast, Slide } from 'react-toastify'
 import { handleLogin } from '@store/actions/auth'
 import { AbilityContext } from '@src/utility/context/Can'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useHistory, useParams } from 'react-router-dom'
 import InputPasswordToggle from '@components/input-password-toggle'
 import { getHomeRouteForLoggedInUser } from '@utils'
 import { Facebook, Twitter, Mail, GitHub, HelpCircle, Coffee } from 'react-feather'
@@ -37,7 +37,7 @@ const ToastContentValid = ({ name, role }) => (
       </div>
     </div>
     <div className='toastify-body'>
-      <span>You have successfully logged in as an {role} user to Appia. Now you can start to explore. Enjoy!</span>
+      <span>You have successfully logged in as an {role} user to TuckShop. Now you can start to explore. Enjoy!</span>
     </div>
   </Fragment>
 )
@@ -51,7 +51,7 @@ const ToastContentNotVerified = ({ name, role }) => (
       </div>
     </div>
     <div className='toastify-body'>
-      <span>You have successfully logged in as an {role} user to Appia. Kindly change your password to continue. Thank you!</span>
+      <span>You have successfully logged in as an {role} user to TuckShop. Kindly change your password to continue. Thank you!</span>
     </div>
   </Fragment>
 )
@@ -77,20 +77,26 @@ const Login = props => {
   const ability = useContext(AbilityContext)
   const dispatch = useDispatch()
   const history = useHistory()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const { code } = useParams()
+  const [phone, setPhone] = useState('')
+	const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const illustration = skin === 'dark' ? 'wexford-banner-1.jpg' : 'wexford-banner-1.jpg',
+  const illustration = skin === 'dark' ? 'tuckshop-banner.png' : 'tuckshop-banner.png',
     source = require(`@src/assets/images/pages/${illustration}`).default
+
+    useEffect(() => {
+      console.log({code})
+    }, [])
 
   const handleSubmit = async (event, errors) => {
     if (errors && !errors.length) {
       setIsSubmitting(true)
       await useJwt
-        .login({ email, password })
+        .login({ phone, password, code })
         .then(res => {
-          if (res.data.success) {
+          console.log({res})
+          if (res.data.status) {
             const data = {
               ...res.data.admin,
               accessToken: res.data.token,
@@ -108,7 +114,7 @@ const Login = props => {
             )
             window.location.href = getHomeRouteForLoggedInUser('admin')
             // history.push(getHomeRouteForLoggedInUser('admin'))
-            
+        
           } else {
             toast.error(
               <InvalidLoginToastContent message={`${res.data.message}` || 'Invalid Login'} />,
@@ -117,7 +123,14 @@ const Login = props => {
             setIsSubmitting(false)
           }
         })
-        .catch(err => { console.log(err); setIsSubmitting(false) })
+        .catch(err => { 
+          console.log(err.response); 
+          toast.error(
+            <InvalidLoginToastContent message={'Invalid Login'} />,
+            { transition: Slide, hideProgressBar: true, autoClose: 2000 }
+          )
+          setIsSubmitting(false) 
+        })
     }
   }
 
@@ -142,20 +155,20 @@ const Login = props => {
             <CardText className='mb-2'>Please sign-in to your account and start the adventure</CardText>
             <AvForm className='auth-login-form mt-2' onSubmit={handleSubmit}>
               <FormGroup>
-                <Label className='form-label' for='login-email'>
-                  Email
-                </Label>
-                <AvInput
-                  required
-                  autoFocus
-                  type='email'
-                  value={email}
-                  id='login-email'
-                  name='login-email'
-                  placeholder='john@example.com'
-                  onChange={e => setEmail(e.target.value)}
-                />
-              </FormGroup>
+								<Label className="form-label" for="login-phone">
+									Phone Number
+								</Label>
+								<AvInput
+									required
+									autoFocus
+									type="text"
+									value={phone}
+									id="login-phone"
+									name="login-phone"
+									placeholder="07012345678"
+									onChange={(e) => setPhone(e.target.value)}
+								/>
+							</FormGroup>
               <FormGroup>
                 <div className='d-flex justify-content-between'>
                   <Label className='form-label' for='login-password'>

@@ -99,6 +99,8 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
     firstName: studentDetails.firstName,
     lastName: studentDetails.lastName,
     otherName: studentDetails.otherName,
+    parentName: studentDetails.parentName,
+    parentEmail: studentDetails.parentEmail,
     type: studentDetails.type,
     class: studentDetails.class,
     year: studentDetails.year,
@@ -153,16 +155,16 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
               {renderStudentImg()}
                 <div className='d-flex flex-column ml-1'>
                   <div className='user-info mb-1'>
-                    <h4 className='mb-0'>{studentDetails !== null ? `${studentDetails.firstName} ${studentDetails.lastName} ${studentDetails.otherName}` : 'Student Name'}</h4>
-                    <CardText tag='span'>
-                      Year {studentDetails?.year} {studentDetails?.group}
+                    <h4 className='mb-0'>{studentDetails !== null ? `${studentDetails.firstName} ${studentDetails.lastName}` : 'Student Name'}</h4>
+                    <CardText tag='span' className='text-captalize'>
+                      {studentDetails?.class} class
                     </CardText>
                   </div>
                   <div className='d-flex flex-wrap align-items-center'>
                     {/* <Button.Ripple tag={Link} to={`/student/edit/${studentDetails.id}`} disabled color='primary'>
                       Edit
                     </Button.Ripple> */}
-                    {userRole === 'manager' || userRole === 'busary' ? <Button.Ripple className='text-center' color='primary' onClick={() => setFormModal(!formModal)}>
+                    {userRole === 'manager' || userRole === 'bursary' ? <Button.Ripple className='text-center' color='primary' onClick={() => setFormModal(!formModal)}>
                       Edit Student
                     </Button.Ripple> : ''}
                     <Modal isOpen={formModal} toggle={() => setFormModal(!formModal)} className='modal-dialog-centered modal-lg'>
@@ -253,6 +255,32 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                             </Col>
                             <Col xl='6' lg='12'>
                               <FormGroup>
+                                <Label for='parentName'>Parent Name</Label>
+                                <AvInput 
+                                  type='text' 
+                                  name='parentName' 
+                                  id='parentName' 
+                                  placeholder='Parent Name' 
+                                  value={studentDetails.parentName}
+                                  onChange={e => setUserData({...userData, parentName: e.target.value})}
+                                />
+                              </FormGroup>
+                            </Col>
+                            <Col xl='6' lg='12'>
+                              <FormGroup>
+                                <Label for='parentEmail'>Parent Email</Label>
+                                <AvInput 
+                                  type='text' 
+                                  name='parentEmail' 
+                                  id='parentEmail' 
+                                  placeholder='Parent Email' 
+                                  value={studentDetails.parentEmail}
+                                  onChange={e => setUserData({...userData, parentEmail: e.target.value})}
+                                />
+                              </FormGroup>
+                            </Col>
+                            {/* <Col xl='6' lg='12'>
+                              <FormGroup>
                                 <Label for='year'>Year</Label>
                                 <AvInput
                                   type='select'
@@ -271,8 +299,8 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                                   <option value='12'>12</option>
                                 </AvInput>
                               </FormGroup>
-                            </Col>
-                            <Col xl='6' lg='12'>
+                            </Col> */}
+                            {/* <Col xl='6' lg='12'>
                               <FormGroup>
                                 <Label for='group'>Group</Label>
                                 <AvInput
@@ -289,7 +317,7 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                                   <option value='R'>R</option>
                                 </AvInput>
                               </FormGroup>
-                            </Col>
+                            </Col> */}
                             <Col xl='6' lg='12'>
                               <FormGroup>
                                 <Label for='status'>User Status</Label>
@@ -317,7 +345,7 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                       </AvForm>
 
                     </Modal>
-                    {userRole === 'manager' || userRole === 'busary' ? <Button.Ripple className='ml-1' color='danger' outline onClick={() => handleDelete(studentDetails.id)}>
+                    {userRole === 'manager' || userRole === 'bursary' ? <Button.Ripple className='ml-1' color='danger' outline onClick={() => handleDelete(studentDetails.id)}>
                       Delete
                     </Button.Ripple> : ''}
                     {/* <Button.Ripple className='ml-1' color='danger' outline onClick={() => handleDelete(studentDetails.id)}>
@@ -343,7 +371,7 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                 </div>
                 <div className='ml-1'>
                   <h5 className='mb-0'>{getTotalSpent(studentDetails.transactions).toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}</h5>
-                  <small>Spent So Far</small>
+                  <small>Total Spent</small>
                 </div>
               </div>
             </div>
@@ -358,7 +386,7 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                       Class
                 </CardText>
                   </div>
-                  <CardText className='mb-0'>Year {studentDetails?.year} {studentDetails?.group}</CardText>
+                  <CardText className='mb-0 text-capitalize'>{studentDetails?.class} Class</CardText>
                 </div>
                 <div className='d-flex flex-wrap align-items-center mt-1'>
                   <div className='user-info-title'>

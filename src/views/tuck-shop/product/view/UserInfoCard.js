@@ -93,10 +93,10 @@ const UserInfoCard = ({ selectedProduct }) => {
                 {renderImg()}
                 <div className='d-flex flex-column ml-1'>
                   <div className='user-info mt-2'>
-                    <h4 className='mb-0'>{selectedProduct.name}</h4>
-                    <CardText tag='span'>
+                    <h4 className='mb-2'>{selectedProduct.name}</h4>
+                    {/* <CardText tag='span'>
                       ID: {selectedProduct.status}
-                    </CardText>
+                    </CardText> */}
                   </div>
                   <div className='d-flex flex-wrap align-items-center'>
                     <Button.Ripple tag={Link} to={`/product/edit/${selectedProduct.id}`} color='primary'>

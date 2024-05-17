@@ -7,7 +7,7 @@ const initialState = {
   selectedOrder: null
 }
 
-const oders = (state = initialState, action) => {
+const orders = (state = initialState, action) => {
   switch (action.type) {
     case 'GET_ALL_ORDERS_DATA':
       return { ...state, allData: action.data }
@@ -24,4 +24,4 @@ const oders = (state = initialState, action) => {
       return { ...state }
   }
 }
-export default oders
+export default orders

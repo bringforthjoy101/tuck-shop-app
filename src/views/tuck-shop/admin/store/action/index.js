@@ -29,7 +29,7 @@ export const getFilteredData = (admins, params) => {
 		const queryLowered = q.toLowerCase();
 		const filteredData = admins.filter(
 			(admin) =>
-				(admin.email.toLowerCase().includes(queryLowered) ||
+				(admin.phone.toLowerCase().includes(queryLowered) ||
 					admin.firstName.toLowerCase().includes(queryLowered) ||
 					admin.lastName.toLowerCase().includes(queryLowered)) &&
 				admin.role === (role || admin.role) &&
@@ -65,24 +65,6 @@ export const getAdmin = (id) => {
 	};
 };
 
-// get admin activity log
-export const getAdminActivity = (id) => {
-	return async (dispatch) => {
-		const response = await apiRequest({ url: `/admin/activity/${id}`, method: "GET" }, dispatch);
-		if (response) {
-			if (response.data.data && response.data.status) {
-				await dispatch({
-					type: "GET_ALL_ADMIN_ACTIVITY",
-					data: response.data.data,
-				});
-			} else {
-				console.log(response.error);
-			}
-		} else {
-			swal("Oops!", "Something went wrong with your network.", "error");
-		}
-	};
-};
 
 // activate admin account
 export const activateAdmin = (admins, id) => {
@@ -141,7 +123,7 @@ export const editAdmin = (adminId, adminData) => {
 				swal("Oops!", `${response.data.message}.`, "error");
 			}
 		} else {
-			console.log(response.error);
+			console.log(response);
 			swal("Oops!", "Somthing went wrong with your network.", "error");
 		}
 	};

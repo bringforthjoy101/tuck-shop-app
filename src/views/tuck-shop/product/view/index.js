@@ -11,7 +11,9 @@ import { Row, Col, Alert, Button } from 'reactstrap'
 
 // ** User View Components
 import UserInfoCard from './UserInfoCard'
+import PlanCard from './PlanCard'
 import { isUserLoggedIn, apiRequest, swal } from '@utils'
+import InventoryHistories from './InventoryHistories'
 
 // ** Styles
 import '@styles/react/apps/app-users.scss'
@@ -41,10 +43,18 @@ const ProductView = props => {
   return store.selectedProduct !== null && store.selectedProduct !== undefined ? (
     <div className='app-user-view'>
       <Row>
-        <Col xl='12' lg='12' md='12'>
+        <Col xl='9' lg='9' md='12'>
           <UserInfoCard selectedProduct={store.selectedProduct} detail={detail} />
         </Col>
+        <Col xl="3" lg="3" md="12">
+					<PlanCard selectedInventory={store.selectedProduct} detail={detail} />
+				</Col>
       </Row>
+      <Row>
+				<Col sm="12">
+					<InventoryHistories inventoryHistories={store.selectedProduct.productStockHistories.sort((a, b) => b.id - a.id)} product={store.selectedProduct} />
+				</Col>
+			</Row>
     </div>
   ) : ""
 }

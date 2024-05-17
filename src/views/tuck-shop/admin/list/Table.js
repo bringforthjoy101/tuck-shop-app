@@ -109,7 +109,7 @@ const AdminsTable = () => {
   const roleOptions = [
     { value: '', label: 'Select Role', number: 0 },
     { value: 'Manager', label: 'Manager', number: 1 },
-    { value: 'Busary', label: 'Busary', number: 2 },
+    { value: 'Bursary', label: 'Bursary', number: 2 },
     { value: 'Sales Rep', label: 'Sales Rep', number: 3 },
     { value: 'Store', label: 'Store', number: 4 }
   ]
@@ -165,7 +165,7 @@ const AdminsTable = () => {
   }
 
   const filteredData = store.allData.filter(
-    item => (item.email.toLowerCase() || item.firstName.toLowerCase() || item.lastName.toLowerCase())
+    item => (item.phone.toLowerCase() || item.firstName.toLowerCase() || item.lastName.toLowerCase())
   )
 
   // ** Custom Pagination

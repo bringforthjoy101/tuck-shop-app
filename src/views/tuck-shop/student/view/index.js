@@ -52,7 +52,7 @@ const UserView = (props) => {
 				<Col xl="9" lg="8" md="7">
 					<UserInfoCard studentDetails={store.studentDetails} userRole={userData?.role} />
 				</Col>
-				{userData?.role === 'manager' || userData?.role === 'busary' ? (
+				{userData?.role === 'manager' || userData?.role === 'bursary' ? (
 					<Col xl="3" lg="4" md="5">
 						<PlanCard studentDetails={store.studentDetails} />
 					</Col>
@@ -60,7 +60,7 @@ const UserView = (props) => {
 					<Spinner color="primary" className="reload-spinner" />
 				)}
 			</Row>
-			{userData?.role === 'manager' || userData?.role === 'busary' ? (
+			{userData?.role === 'manager' || userData?.role === 'bursary' ? (
 				<div>
 					<Card className="mb-3 d-flex justify-content-around">
 						<Row className="d-sm-block d-lg-flex justify-content-center">
@@ -75,11 +75,11 @@ const UserView = (props) => {
 										Orders
 									</NavLink>
 								</NavItem>
-								<NavItem>
+								{/* <NavItem>
 									<NavLink onClick={() => setActiveTransaction('books')} active={activeTransaction === 'books'}>
 										Books
 									</NavLink>
-								</NavItem>
+								</NavItem> */}
 							</Nav>
 						</Row>
 					</Card>

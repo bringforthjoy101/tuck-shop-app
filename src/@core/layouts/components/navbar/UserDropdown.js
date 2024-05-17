@@ -37,7 +37,7 @@ const UserDropdown = () => {
     <UncontrolledDropdown tag='li' className='dropdown-user nav-item'>
       <DropdownToggle href='/' tag='a' className='nav-link dropdown-user-link' onClick={e => e.preventDefault()}>
         <div className='user-nav d-sm-flex d-none'>
-          <span className='user-name font-weight-bold text-capitalize'>{`${userData?.firstName} ${userData?.lastName}` || 'Wexford Admin'}</span>
+          <span className='user-name font-weight-bold text-capitalize'>{`${userData?.firstName} ${userData?.lastName}` || 'Admin'}</span>
           <span className='user-status text-capitalize'>{(userData && userData.role) || 'Admin'}</span>
         </div>
         <Avatar img={Logo} imgHeight='40' imgWidth='40' status='online' />
@@ -48,7 +48,7 @@ const UserDropdown = () => {
           <Settings size={14} className='mr-75' />
           <span className='align-middle'>Settings</span>
         </DropdownItem>
-        <DropdownItem tag={Link} to='/login' onClick={() => dispatch(handleLogout())}>
+        <DropdownItem tag={Link} to={`/auth/login/${userData?.businessData.businessCode}`} onClick={() => dispatch(handleLogout())}>
           <Power size={14} className='mr-75' />
           <span className='align-middle'>Logout</span>
         </DropdownItem>

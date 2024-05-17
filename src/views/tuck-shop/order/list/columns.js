@@ -22,7 +22,8 @@ const renderClient = (row) => {
 
 const getItemNames = (items) => {
 	const arr = []
-	const _items = process.env.NODE_ENV === 'production' ? JSON.parse(items) : items
+	console.log(items)
+	const _items = process.env.NODE_ENV === 'production' ? JSON.parse(items) : JSON.parse(items)
 	_items.forEach((item) => {
 		arr.push(item.name)
 	})
@@ -37,7 +38,11 @@ export const columns = [
 		width: '150px',
 		selector: 'trans_amount',
 		sortable: true,
-		cell: (row) => <span>#{row.orderNumber}</span>,
+		cell: (row) => (
+			<Link to={`/order/preview/${row.id}`}>
+				<span>#{row.orderNumber}</span>
+			</Link>
+		),
 	},
 	{
 		name: 'Order Amount',
@@ -46,13 +51,13 @@ export const columns = [
 		sortable: true,
 		cell: (row) => <span className="text-capitalize">{row?.amount?.toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}</span>,
 	},
-	{
-		name: 'Products ',
-		minWidth: '150px',
-		selector: 'products',
-		sortable: true,
-		cell: (row) => <span className="text-capitalize">{getItemNames(row.products)}</span>,
-	},
+	// {
+	// 	name: 'Products ',
+	// 	minWidth: '150px',
+	// 	selector: 'products',
+	// 	sortable: true,
+	// 	cell: (row) => <span className="text-capitalize">{getItemNames(row.products)}</span>,
+	// },
 	{
 		name: 'Student',
 		minWidth: '200px',

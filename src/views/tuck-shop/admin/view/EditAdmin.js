@@ -113,7 +113,7 @@ export const EditAdmin = ({ selectedAdmin }) => {
 									>
 										<option value={selectedAdmin.role}>{selectedAdmin.role}</option>
 										<option value="manager">Manager</option>
-										<option value="busary">Busary</option>
+										<option value="bursary">Bursary</option>
 										<option value="sales rep">Sales Rep</option>
 										<option value="store">Store</option>
 									</AvInput>
