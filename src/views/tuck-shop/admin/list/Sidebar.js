@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux'
 
 import { swal, apiRequest } from '@utils'
 import { getAllData, getFilteredData } from '../store/action'
+import InputPasswordToggle from '@components/input-password-toggle'
 
 // ** Third Party Components
 import { Button, FormGroup, Label, FormText, Spinner } from 'reactstrap'
