@@ -80,7 +80,16 @@ const PasswordTabContent = () => {
 				</Col>
 				<Col sm="6">
 					<FormGroup>
-						<InputEmailToggle
+						<Label for="phone">Phone</Label>
+						<AvInput
+							id="phone"
+							name="phone"
+							value={userData.phone}
+							onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
+							placeholder="Phone number"
+							disabled
+						/>
+						{/* <InputEmailToggle
 							tag={AvInput}
 							className="input-group-merge"
 							label="Phone"
@@ -88,7 +97,7 @@ const PasswordTabContent = () => {
 							name="phone"
 							value={userData.phone}
 							onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
-						/>
+						/> */}
 					</FormGroup>
 				</Col>
 				<Col className="mt-1" sm="12">
