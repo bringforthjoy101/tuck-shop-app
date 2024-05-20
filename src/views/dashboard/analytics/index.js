@@ -10,105 +10,147 @@ import { Eye, TrendingUp } from 'react-feather'
 
 import '@styles/react/libs/charts/apex-charts.scss'
 
-
 const AnalyticsDashboard = () => {
-  const { colors } = useContext(ThemeColors)
+	const { colors } = useContext(ThemeColors)
 
+	const [userData, setUserData] = useState(null)
+	const [dashData, setDashData] = useState({})
 
-  const [userData, setUserData] = useState(null)
-  const [dashData, setDashData] = useState({})
+	useEffect(() => {
+		if (isUserLoggedIn) {
+			setUserData(JSON.parse(localStorage.getItem('userData')))
+		}
+	}, [])
 
-  useEffect(() => {
-    if (isUserLoggedIn) {
-      setUserData(JSON.parse(localStorage.getItem('userData')))
-    }
-  }, [])
+	// ** Get all Dashboard Data
+	const dashboardData = async () => {
+		const response = await apiRequest({ url: '/dashboard', method: 'GET' })
+		if (response) {
+			if (response?.data?.data && response?.data?.status) {
+				await setDashData(response.data.data)
+			} else {
+				console.log(response.error)
+			}
+		} else {
+			swal('Oops!', 'Somthing went wrong with your network.', 'error')
+		}
+	}
 
-  // ** Get all Dashboard Data
-  const dashboardData = async () => {
-    const response = await apiRequest({ url: '/dashboard', method: 'GET' })
-    if (response) {
-      if (response?.data?.data && response?.data?.status) {
-        await setDashData(response.data.data)
-      } else {
-        console.log(response.error)
-      }
-    } else {
-      swal('Oops!', 'Somthing went wrong with your network.', 'error')
-    }
+	// ** Get admin activities
+	useEffect(() => {
+		dashboardData()
+	}, [])
 
-  }
+	const numFormatter = (num) => {
+		if (num > 999 && num < 1000000) {
+			return `${(num / 1000).toFixed(1)}K`
+		} else if (num > 1000000) {
+			return `${(num / 1000000).toFixed(1)}M`
+		} else if (num < 900) {
+			return num
+		}
+	}
 
-  // ** Get admin activities
-  useEffect(() => {
-    dashboardData()
-  }, [])
-
-  const numFormatter = (num) => {
-      if (num > 999 && num < 1000000) {
-          return `${(num / 1000).toFixed(1)}K`
-      } else if (num > 1000000) {
-          return `${(num / 1000000).toFixed(1)}M`
-      } else if (num < 900) {
-          return num
-      }
-  }
-
-  return (
-    <div id='dashboard-analytics'>
-      <Row className='match-height'>
-        <Col lg='6' sm='12'>
-          <CardCongratulations userData={userData} />
-        </Col>
-        <Col lg='3' sm='6'>
-          <SubscribersGained kFormatter={kFormatter} dashData={dashData} />
-        </Col>
-        <Col lg='3' sm='6'>
-          <ContactsCount kFormatter={kFormatter} warning={colors.warning.main} dashData={dashData} />
-        </Col>
-      </Row>
-      <Row className='match-height'>
-        <Col xl='2' md='4' sm='6'>
-          <StatsVertical icon={<Eye size={21} />} color='primary' stats={numFormatter(dashData.totalProduct)} statTitle='Products' />
-        </Col>
-        <Col xl='2' md='4' sm='6'>
-          <StatsVertical icon={<Eye size={21} />} color='warning' stats={numFormatter(dashData.totalOrders)} statTitle='Orders' />
-        </Col>
-        <Col xl='2' md='4' sm='6'>
-          <StatsVertical icon={<Eye size={21} />} color='secondary' stats={numFormatter(dashData.totalTransactions)} statTitle='Transactions' />
-        </Col>
-        <Col xl='2' md='4' sm='6'>
-          <StatsVertical icon={<TrendingUp size={21} />} color='primary' stats={dashData.sales ? `₦${numFormatter(dashData.sales.totalSales)}` : <Spinner className='mr-25' size='sm' />} statTitle='Sales' />
-        </Col>
-        <Col xl='2' md='4' sm='6'>
-          <StatsVertical icon={<TrendingUp size={21} />} color='primary' stats={dashData.sales ? `₦${numFormatter(dashData.sales?.maxSales)}` : <Spinner className='mr-25' size='sm' />} statTitle='Max Sales' />
-        </Col>
-        <Col xl='2' md='4' sm='6'>
-          <StatsVertical icon={<TrendingUp size={21} />} color='primary' stats={dashData.sales ? `₦${numFormatter(dashData.sales?.avgSales?.toFixed(0) || 0)}` : <Spinner className='mr-25' size='sm' />} statTitle='Avg Sales' />
-        </Col>
-      </Row>
-      <Row className='match-height'>
-        <Col xl='2' md='4' sm='6'>
-          <StatsVertical icon={<TrendingUp size={21} />} color='primary' stats={dashData.sales ? `₦${numFormatter(dashData.sales?.salesToday)}` : <Spinner className='mr-25' size='sm' />} statTitle='Today' />
-        </Col>
-        <Col xl='2' md='4' sm='6'>
-          <StatsVertical icon={<TrendingUp size={21} />} color='primary' stats={dashData.sales ? `₦${numFormatter(dashData.sales?.salesYesterday)}` : <Spinner className='mr-25' size='sm' />} statTitle='Yesterday' />
-        </Col>
-        <Col xl='2' md='4' sm='6'>
-          <StatsVertical icon={<TrendingUp size={21} />} color='primary' stats={dashData.sales ? `₦${numFormatter(dashData.sales?.salesThisWeek)}` : <Spinner className='mr-25' size='sm' />} statTitle='This Week' />
-        </Col>
-        <Col xl='2' md='4' sm='6'>
-          <StatsVertical icon={<TrendingUp size={21} />} color='primary' stats={dashData.sales ? `₦${numFormatter(dashData.sales?.salesThisMonth)}` : <Spinner className='mr-25' size='sm' />} statTitle='This Month' />
-        </Col>
-        <Col xl='2' md='4' sm='6'>
-          <StatsVertical icon={<TrendingUp size={21} />} color='primary' stats={dashData.sales ? `₦${numFormatter(dashData.sales?.salesThisYear)}` : <Spinner className='mr-25' size='sm' />} statTitle='This Year' />
-        </Col>
-        <Col xl='2' md='4' sm='6'>
-          <StatsVertical icon={<TrendingUp size={21} />} color='primary' stats={dashData.sales ? `₦${numFormatter(dashData.sales?.salesSoFar.toFixed(0))}` : <Spinner className='mr-25' size='sm' />} statTitle='So Far' />
-        </Col>
-      </Row>
-    </div>
-  )
+	return (
+		<div id="dashboard-analytics">
+			<Row className="match-height">
+				<Col lg="6" sm="12">
+					<CardCongratulations userData={userData} />
+				</Col>
+				<Col lg="3" sm="6">
+					<SubscribersGained kFormatter={kFormatter} dashData={dashData} />
+				</Col>
+				<Col lg="3" sm="6">
+					<ContactsCount kFormatter={kFormatter} warning={colors.warning.main} dashData={dashData} />
+				</Col>
+			</Row>
+			<Row className="match-height">
+				<Col xl="2" md="4" sm="6">
+					<StatsVertical icon={<Eye size={21} />} color="primary" stats={numFormatter(dashData.totalProduct)} statTitle="Products" />
+				</Col>
+				<Col xl="2" md="4" sm="6">
+					<StatsVertical icon={<Eye size={21} />} color="warning" stats={numFormatter(dashData.totalOrders)} statTitle="Orders" />
+				</Col>
+				<Col xl="2" md="4" sm="6">
+					<StatsVertical icon={<Eye size={21} />} color="secondary" stats={numFormatter(dashData.totalTransactions)} statTitle="Transactions" />
+				</Col>
+				<Col xl="2" md="4" sm="6">
+					<StatsVertical
+						icon={<TrendingUp size={21} />}
+						color="primary"
+						stats={dashData.sales ? `₦${numFormatter(dashData.sales.totalSales)}` : <Spinner className="mr-25" size="sm" />}
+						statTitle="Sales"
+					/>
+				</Col>
+				<Col xl="2" md="4" sm="6">
+					<StatsVertical
+						icon={<TrendingUp size={21} />}
+						color="primary"
+						stats={dashData.sales ? `₦${numFormatter(dashData.sales?.maxSales)}` : <Spinner className="mr-25" size="sm" />}
+						statTitle="Max Sales"
+					/>
+				</Col>
+				<Col xl="2" md="4" sm="6">
+					<StatsVertical
+						icon={<TrendingUp size={21} />}
+						color="primary"
+						stats={dashData.sales ? `₦${numFormatter(dashData.sales?.avgSales.toFixed(0))}` : <Spinner className="mr-25" size="sm" />}
+						statTitle="Avg Sales"
+					/>
+				</Col>
+			</Row>
+			<Row className="match-height">
+				<Col xl="2" md="4" sm="6">
+					<StatsVertical
+						icon={<TrendingUp size={21} />}
+						color="primary"
+						stats={dashData.sales ? `₦${numFormatter(dashData.sales?.salesToday) || 0}` : <Spinner className="mr-25" size="sm" />}
+						statTitle="Today"
+					/>
+				</Col>
+				<Col xl="2" md="4" sm="6">
+					<StatsVertical
+						icon={<TrendingUp size={21} />}
+						color="primary"
+						stats={dashData.sales ? `₦${numFormatter(dashData.sales?.salesYesterday) || 0}` : <Spinner className="mr-25" size="sm" />}
+						statTitle="Yesterday"
+					/>
+				</Col>
+				<Col xl="2" md="4" sm="6">
+					<StatsVertical
+						icon={<TrendingUp size={21} />}
+						color="primary"
+						stats={dashData.sales ? `₦${numFormatter(dashData.sales?.salesThisWeek) || 0}` : <Spinner className="mr-25" size="sm" />}
+						statTitle="This Week"
+					/>
+				</Col>
+				<Col xl="2" md="4" sm="6">
+					<StatsVertical
+						icon={<TrendingUp size={21} />}
+						color="primary"
+						stats={dashData.sales ? `₦${numFormatter(dashData.sales?.salesThisMonth) || 0}` : <Spinner className="mr-25" size="sm" />}
+						statTitle="This Month"
+					/>
+				</Col>
+				<Col xl="2" md="4" sm="6">
+					<StatsVertical
+						icon={<TrendingUp size={21} />}
+						color="primary"
+						stats={dashData.sales ? `₦${numFormatter(dashData.sales?.salesThisYear) || 0}` : <Spinner className="mr-25" size="sm" />}
+						statTitle="This Year"
+					/>
+				</Col>
+				<Col xl="2" md="4" sm="6">
+					<StatsVertical
+						icon={<TrendingUp size={21} />}
+						color="primary"
+						stats={dashData.sales ? `₦${numFormatter(dashData.sales?.salesSoFar.toFixed(0))}` : <Spinner className="mr-25" size="sm" />}
+						statTitle="So Far"
+					/>
+				</Col>
+			</Row>
+		</div>
+	)
 }
 
 export default AnalyticsDashboard
