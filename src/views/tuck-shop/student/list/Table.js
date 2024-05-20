@@ -115,7 +115,7 @@ const UsersList = () => {
 		)
 	}
 
-	const filteredData = store.allData.filter((student) => student.firstName?.toLowerCase() || student?.lastName?.toString())
+	const filteredData = store.allData.filter((student) => student.firstName?.toLowerCase() || student?.lastName?.toLowerCase())
 
 	// ** Custom Pagination
 	const CustomPagination = () => {
