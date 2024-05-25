@@ -36,6 +36,7 @@ export default class JwtService {
       error => {
         // ** const { config, response: { status } } = error
         const { config, response } = error
+        return response
         const originalRequest = config
 
         // ** if (status === 401) {
