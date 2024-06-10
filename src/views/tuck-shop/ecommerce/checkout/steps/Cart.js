@@ -133,7 +133,7 @@ const Cart = (props) => {
 	// ** Get data on mount
 	useEffect(() => {
 		dispatch(getAllData(JSON.parse(localStorage.getItem('userData')).role))
-		setOrderData({ ...orderData, amount, studentId: selectedOption.value })
+		setOrderData({ ...orderData, amount, studentId: selectedOption.value, products })
 	}, [dispatch, amount, products, selectedOption])
 
 	const store = useSelector((state) => state.students)
