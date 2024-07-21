@@ -156,6 +156,14 @@ const ManagerRoutes = [
         }
       },
       {
+        path: '/settlements/list',
+        component: lazy(() => import('../../views/tuck-shop/settlement/list'))
+      },
+      {
+        path: '/service-fees/list',
+        component: lazy(() => import('../../views/tuck-shop/service-fee/list'))
+      },
+      {
         path: '/settings/list',
         component: lazy(() => import('../../views/tuck-shop/settings/list'))
       }
@@ -271,7 +279,15 @@ const BursaryRoutes = [
     meta: {
       navLink: '/tuck-shop/transaction/view'
     }
-  }
+  },
+  {
+    path: '/settlements/list',
+    component: lazy(() => import('../../views/tuck-shop/settlement/list'))
+  },
+  {
+    path: '/service-fees/list',
+    component: lazy(() => import('../../views/tuck-shop/service-fee/list'))
+  },
 ]
 
 const SalesRepRoutes = [
@@ -309,18 +325,18 @@ const SalesRepRoutes = [
     path: '/students/list',
     component: lazy(() => import('../../views/tuck-shop/student/list'))
   },
-  {
-    path: '/student/view',
-    exact: true,
-    component: () => <Redirect to='/tuck-shop/student/view/1' />
-  },
-  {
-    path: '/student/view/:id',
-    component: lazy(() => import('../../views/tuck-shop/student/view')),
-    meta: {
-      navLink: '/tuck-shop/student/view'
-    }
-  }
+  // {
+  //   path: '/student/view',
+  //   exact: true,
+  //   component: () => <Redirect to='/tuck-shop/student/view/1' />
+  // },
+  // {
+  //   path: '/student/view/:id',
+  //   component: lazy(() => import('../../views/tuck-shop/student/view')),
+  //   meta: {
+  //     navLink: '/tuck-shop/student/view'
+  //   }
+  // }
 ]
 
 const StoreRoutes = [
@@ -372,4 +388,4 @@ const StoreRoutes = [
   }
 ]
 
-export default userData?.role === 'manager' ? ManagerRoutes : userData?.role === 'bursary' ? BursaryRoutes : userData?.role === 'sales rep' ? SalesRepRoutes : StoreRoutes
+export default userData?.role === 'manager' ? ManagerRoutes : userData?.role === 'bursary' ? BursaryRoutes : userData?.role === 'sales-rep' ? SalesRepRoutes : StoreRoutes

@@ -388,8 +388,8 @@ mock.onGet('/apps/ecommerce/products').reply(async config => {
   if (!store.getState().ecommerce.products.length) {
     await getProducts()
   }
-  // const products = store.getState().ecommerce.products.length ? store.getState().ecommerce.products : await getProducts()
-  const products = await getProducts()
+  const products = store.getState().ecommerce.products.length ? store.getState().ecommerce.products : await getProducts()
+  // const products = await getProducts()
   // console.log('hi pro', products)
   const filteredData = products?.filter(product => product.name.toLowerCase().includes(queryLowered))
 
@@ -421,8 +421,8 @@ mock.onGet('/apps/ecommerce/products').reply(async config => {
   return [
     200,
     {
-      products: paginatedData,
-      filtered: products,
+      products,
+      filtered: paginatedData,
       total: filteredData.length,
       userWishlist: data.userWishlist,
       userCart: data.userCart
@@ -474,8 +474,9 @@ mock.onGet('/apps/ecommerce/wishlist').reply(() => {
 // GET: Return Cart Products
 // ------------------------------------------------
 mock.onGet('/apps/ecommerce/cart').reply(async () => {
-  // const productsData = store.getState().ecommerce.products.length ? store.getState().ecommerce.products : await getProducts()
-  const productsData = await getProducts()
+  console.log({staue: store.getState().ecommerce.products.length})
+  const productsData = store.getState().ecommerce.products.length ? store.getState().ecommerce.products : await getProducts()
+  // const productsData = await getProducts()
   console.log(data.userCart)
   const products = data.userCart.map(cartProduct => {
     console.log('cartProduct', cartProduct)

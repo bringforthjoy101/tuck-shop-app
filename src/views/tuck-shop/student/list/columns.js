@@ -102,6 +102,8 @@ const handleDelete = async (id) => {
   })
 }
 
+const userData = JSON.parse(localStorage.getItem('userData'))
+
 export const columns = [
   {
     name: 'Studnet',
@@ -112,12 +114,13 @@ export const columns = [
       <div className='d-flex justify-content-left align-items-center'>
         {renderClient(row)}
         <div className='d-flex flex-column'>
-          <Link
+          {userData.role === 'manager' || userData.role === 'bursary' ? <Link
             to={`/student/view/${row.id}`}
             className='user-name text-truncate mb-0'
           >
             <span className='font-weight-bold'>{row.firstName} {row.lastName} {row.otherName}</span>
-          </Link>
+          </Link> : <span className='font-weight-bold'>{row.firstName} {row.lastName} {row.otherName}</span>
+          }
           <small className='text-truncate text-muted text-capitalize mb-0'>{row.class} Class</small>
         </div>
       </div>

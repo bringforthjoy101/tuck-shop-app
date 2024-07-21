@@ -3,7 +3,6 @@ import { Fragment, useState, useEffect } from 'react'
 
 // ** Columns
 import { columns } from './columns'
-import Sidebar from './Sidebar'
 
 // ** Store & Actions
 import { getAllData, getFilteredData } from '../store/action'
@@ -14,7 +13,7 @@ import Select from 'react-select'
 import ReactPaginate from 'react-paginate'
 import { ChevronDown, Share, Printer, FileText } from 'react-feather'
 import DataTable from 'react-data-table-component'
-import { selectThemeColors, isUserLoggedIn } from '@utils'
+import { selectThemeColors } from '@utils'
 import {
 	Card,
 	CardHeader,
@@ -38,42 +37,29 @@ import '@styles/react/libs/tables/react-dataTable-component.scss'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
 import FormGroup from 'reactstrap/lib/FormGroup'
+import moment from 'moment'
 
-const UsersList = () => {
+const TransactionTable = () => {
 	// ** Store Vars
 	const dispatch = useDispatch()
-	const store = useSelector((state) => state.students)
+	const store = useSelector((state) => state.serviceFees)
 
 	// ** States
 	const [searchTerm, setSearchTerm] = useState('')
 	const [currentPage, setCurrentPage] = useState(1)
 	const [rowsPerPage, setRowsPerPage] = useState(10)
-	const [currentStatus, setCurrentStatus] = useState({ value: '', label: 'Select Status', number: 0 })
-	const [sidebarOpen, setSidebarOpen] = useState(false)
 
-	// ** Function to toggle sidebar
-	const toggleSidebar = () => setSidebarOpen(!sidebarOpen)
-
-	// ** Get data on mount
 	useEffect(() => {
+		console.log('store', store)
 		dispatch(getAllData())
 		dispatch(
-			getFilteredData(store.allData, {
+			getFilteredData(store?.allData, {
 				page: currentPage,
 				perPage: rowsPerPage,
-				status: currentStatus.value,
 				q: searchTerm,
 			})
 		)
 	}, [dispatch])
-
-	const statusOptions = [
-		{ value: '', label: 'Select Status', number: 0 },
-		{ value: 'suspended', label: 'Blacklisted', number: 1 },
-		{ value: 'active', label: 'Active', number: 2 },
-		{ value: 'expelled', label: 'Expelled', number: 3 },
-		{ value: 'graduated', label: 'Graduated', number: 3 },
-	]
 
 	// ** Function in get data on page change
 	const handlePagination = (page) => {
@@ -81,7 +67,6 @@ const UsersList = () => {
 			getFilteredData(store.allData, {
 				page: page.selected + 1,
 				perPage: rowsPerPage,
-				status: currentStatus.value,
 				q: searchTerm,
 			})
 		)
@@ -92,10 +77,9 @@ const UsersList = () => {
 	const handlePerPage = (e) => {
 		const value = parseInt(e.currentTarget.value)
 		dispatch(
-			getFilteredData(store.allData, {
+			getFilteredData(store?.allData, {
 				page: currentPage,
 				perPage: value,
-				status: currentStatus.value,
 				q: searchTerm,
 			})
 		)
@@ -106,20 +90,21 @@ const UsersList = () => {
 	const handleFilter = (val) => {
 		setSearchTerm(val)
 		dispatch(
-			getFilteredData(store.allData, {
+			getFilteredData(store?.allData, {
 				page: currentPage,
 				perPage: rowsPerPage,
-				status: currentStatus.value,
 				q: val,
 			})
 		)
 	}
 
-	const filteredData = store.allData.filter((student) => student.firstName?.toLowerCase() || student?.lastName?.toLowerCase())
+	const filteredData = store?.allData.filter(
+		(item) => item.transactionId?.toLowerCase() || item.student.firstName?.toLowerCase() || moment(item.createdAt).format('lll')?.toLowerCase()
+	)
 
 	// ** Custom Pagination
 	const CustomPagination = () => {
-		const count = Math.ceil(filteredData.length / rowsPerPage)
+		const count = Math.ceil(store.total / rowsPerPage)
 
 		return (
 			<ReactPaginate
@@ -193,36 +178,55 @@ const UsersList = () => {
 		})
 
 		doc.autoTable({
-			styles: { halign: 'center' },
-			head: [['User', 'Email', 'Balance', 'Naira Wallet', 'Status']],
+			styles: { halign: 'left' },
+			columnStyles: {
+				0: { cellWidth: 'auto' },
+				1: { cellWidth: 'auto' },
+				2: { cellWidth: 'auto' },
+				3: { cellWidth: 'auto' },
+				4: { cellWidth: 'auto' },
+				5: { cellWidth: 'auto' },
+				6: { cellWidth: 'auto' },
+				7: { cellWidth: 'auto' },
+			},
+			head: [['Id', 'Student', 'Amount', 'Type', 'Balance', 'Narration', 'Date', 'Initiated By']],
 		})
 		store.allData.map((arr) => {
 			doc.autoTable({
 				styles: { halign: 'left' },
 				columnStyles: {
-					0: { cellWidth: 40 },
-					1: { cellWidth: 70 },
-					2: { cellWidth: 70 },
-					3: { cellWidth: 60 },
-					4: { cellWidth: 30 },
+					0: { cellWidth: 'auto' },
+					1: { cellWidth: 'auto' },
+					2: { cellWidth: 'auto' },
+					3: { cellWidth: 'auto' },
+					4: { cellWidth: 'auto' },
+					5: { cellWidth: 'auto' },
+					6: { cellWidth: 'auto' },
+					7: { cellWidth: 'auto' },
 				},
-				body: [[arr.names, arr.email, arr.balance, arr.naira_wallet, arr.status]],
+				body: [
+					[
+						arr.transactionId,
+						`${arr.student.firstName} ${arr.student.lastName}`,
+						arr.amount.toLocaleString('en-US', { style: 'currency', currency: 'NGN' }),
+						arr.type,
+						arr.balance.toLocaleString('en-US', { style: 'currency', currency: 'NGN' }),
+						arr.narration,
+						moment(arr.createdAt).format('lll'),
+						`${arr.admin.firstName} ${arr.admin.lastName}`,
+					],
+				],
 			})
 		})
-		doc.save('export.pdf')
+		const date = new Date()
+		doc.save(
+			`tuckshop_transactions_${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}_${date.getDate()}-${date.getMonth()}-${date.getFullYear()}.pdf`
+		)
 	}
-
-	const [userData, setUserData] = useState(null)
-	useEffect(() => {
-		if (isUserLoggedIn() !== null) {
-			setUserData(JSON.parse(localStorage.getItem('userData')))
-		}
-	}, [])
 
 	// ** Table data to render
 	const dataToRender = () => {
 		const filters = {
-			status: currentStatus.value,
 			q: searchTerm,
 		}
 
@@ -230,12 +234,12 @@ const UsersList = () => {
 			return filters[k].length > 0
 		})
 
-		if (store.data.length > 0) {
-			return store.data
-		} else if (store.data.length === 0 && isFiltered) {
+		if (store?.data.length > 0) {
+			return store?.data
+		} else if (store?.data.length === 0 && isFiltered) {
 			return []
 		} else {
-			return store.allData.slice(0, rowsPerPage)
+			return store?.allData.slice(0, rowsPerPage)
 		}
 	}
 
@@ -249,38 +253,13 @@ const UsersList = () => {
 					<Row form className="mt-1 mb-50">
 						<Col lg="4" md="6">
 							<FormGroup>
-								<Label for="select">Select Status:</Label>
-								<Select
-									theme={selectThemeColors}
-									isClearable={false}
-									className="react-select"
-									classNamePrefix="select"
-									id="select"
-									options={statusOptions}
-									value={currentStatus}
-									onChange={(data) => {
-										setCurrentStatus(data)
-										dispatch(
-											getFilteredData(store.allData, {
-												page: currentPage,
-												perPage: rowsPerPage,
-												status: data.value,
-												q: searchTerm,
-											})
-										)
-									}}
-								/>
-							</FormGroup>
-						</Col>
-						<Col lg="4" md="6">
-							<FormGroup>
 								<Label for="select">Select Table:</Label>
 								<Input
 									id="search-invoice"
 									className="ml-50 w-100"
 									type="text"
 									value={searchTerm}
-									placeholder="Name Email Search & Phone Search"
+									placeholder="Search"
 									onChange={(e) => handleFilter(e.target.value)}
 								/>
 							</FormGroup>
@@ -290,7 +269,7 @@ const UsersList = () => {
 			</Card>
 			<Card>
 				<Row className="mx-0 mt-3">
-					<Col xl="4" sm="12" className="d-flex align-items-center pl-3">
+					<Col xl="6" sm="12" className="d-flex align-items-center pl-3">
 						<div className="d-flex align-items-center w-100">
 							<Label for="rows-per-page">Show</Label>
 							<CustomInput
@@ -312,38 +291,27 @@ const UsersList = () => {
 							<Label for="rows-per-page">Entries</Label>
 						</div>
 					</Col>
-
-					<Col xl="4" sm="12" className="d-flex align-items-sm-center justify-content-lg-end justify-content-center pr-lg-3 p-0 mt-lg-0 mt-1">
+					<Col xl="6" sm="12" className="d-flex align-items-sm-center justify-content-lg-end justify-content-center pr-lg-3 p-0 mt-lg-0 mt-1">
 						<UncontrolledButtonDropdown>
 							<DropdownToggle className="mr-lg-0 mr-5" color="secondary" caret outline>
 								<Share size={15} />
 								<span className="align-middle ml-lg-50">Download Table</span>
 							</DropdownToggle>
 							<DropdownMenu right>
-								<DropdownItem className="w-100" onClick={() => downloadCSV(store.allData)}>
+								{/* <DropdownItem className="w-100" onClick={() => downloadCSV(store.allData)}>
 									<FileText size={15} />
 									<span className="align-middle ml-50">CSV</span>
-								</DropdownItem>
+								</DropdownItem> */}
 								<DropdownItem className="w-100" onClick={() => downloadPDF()}>
 									<FileText size={15} />
 									<span className="align-middle ml-50">PDF</span>
 								</DropdownItem>
+								{/* <DropdownItem className="w-100" onClick={() => printOrder(filteredData)}>
+									<Printer size={15} />
+									<span className="align-middle ml-50">Print</span>
+								</DropdownItem> */}
 							</DropdownMenu>
 						</UncontrolledButtonDropdown>
-					</Col>
-					<Col
-						xl="4"
-						sm="12"
-						className="d-flex align-items-sm-center justify-content-lg-end justify-content-start flex-lg-nowrap flex-wrap flex-sm-row flex-column pr-lg-1 p-0 mt-lg-0 mt-1"
-					>
-						{userData?.role === 'manager' || userData?.role === 'bursary' ? (
-							<Button.Ripple color="primary" onClick={toggleSidebar}>
-								{' '}
-								Add New Student{' '}
-							</Button.Ripple>
-						) : (
-							''
-						)}
 					</Col>
 				</Row>
 				<DataTable
@@ -352,16 +320,15 @@ const UsersList = () => {
 					subHeader
 					responsive
 					paginationServer
-					columns={userData?.role === 'manager' || userData?.role === 'bursary' ? columns : columns.filter((col) => col.name !== 'Actions')}
+					columns={columns}
 					sortIcon={<ChevronDown />}
 					className="react-dataTable"
 					paginationComponent={CustomPagination}
 					data={dataToRender()}
 				/>
 			</Card>
-			<Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} />
 		</Fragment>
 	)
 }
 
-export default UsersList
+export default TransactionTable

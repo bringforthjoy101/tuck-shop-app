@@ -5,9 +5,38 @@ export const getProducts = params => {
   return dispatch => {
     return axios.get('/apps/ecommerce/products', { params }).then(res => {
       console.log('data length', res.data.total)
+      console.log('data', res.data)
       dispatch({ type: 'GET_PRODUCTS', data: res.data, params: {...params, perPage: res.data.total} })
     })
   }
+}
+
+export const getFilteredProducts = (products, params) => {
+	return async (dispatch) => {
+		const { q = '', perPage = 10, number = '', page = 1, status = null, className = null, level = null, group = null } = params
+
+		/* eslint-disable  */
+		const queryLowered = q.toLowerCase()
+		const filteredData = products.filter(
+			(product) =>
+				(product.firstName.toLowerCase().includes(queryLowered) ||
+					product.lastName?.toString().toLowerCase().includes(queryLowered) ||
+					product.type.toLowerCase().includes(queryLowered)) &&
+				product.class === (className || product.class) &&
+				product.level === (level || product.level) &&
+				product.group === (group || product.group) &&
+				product.status === (status || product.status)
+		)
+
+		/* eslint-enable  */
+
+		dispatch({
+			type: 'GET_FILTERED_STUDENT_DATA',
+			data: paginateArray(filteredData, perPage, page),
+			totalPages: filteredData.length,
+			params,
+		})
+	}
 }
 
 // ** Add Item to Cart

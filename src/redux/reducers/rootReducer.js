@@ -29,16 +29,19 @@ import admins from '@src/views/tuck-shop/admin/store/reducer'
 import products from '@src/views/tuck-shop/product/store/reducer'
 import orders from '@src/views/tuck-shop/order/store/reducer'
 import transactions from '@src/views/tuck-shop/transaction/store/reducer'
+import settlements from '@src/views/tuck-shop/settlement/store/reducer'
+import serviceFees from '@src/views/tuck-shop/service-fee/store/reducer'
 
 import email from '@src/views/apps/email/store/reducer'
 // import invoice from '@src/views/apps/invoice/store/reducer'
 import invoice from '@src/views/invoiceApp/store/reducer'
 import calendar from '@src/views/apps/calendar/store/reducer'
-import ecommerce from '@src/views/apps/ecommerce/store/reducer'
+import ecommerce from '@src/views/tuck-shop/ecommerce/store/reducer'
 import dataTables from '@src/views/tables/data-tables/store/reducer'
 
 const rootReducer = combineReducers({
   auth,
+  ecommerce,
   todo,
   chat,
   email,
@@ -48,6 +51,8 @@ const rootReducer = combineReducers({
   admins,
   products,
   transactions,
+  settlements,
+  serviceFees,
   orders,
   appiaFunds,
   appiaWithdrawals,
@@ -65,7 +70,6 @@ const rootReducer = combineReducers({
   layout,
   invoice,
   calendar,
-  ecommerce,
   dataTables
 })
 
