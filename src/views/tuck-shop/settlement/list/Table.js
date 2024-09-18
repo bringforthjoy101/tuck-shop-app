@@ -103,7 +103,7 @@ const TransactionTable = () => {
 
 	// ** Custom Pagination
 	const CustomPagination = () => {
-		const count = Math.ceil(store.total / rowsPerPage)
+		const count = Math.ceil(store.allData.length / rowsPerPage)
 
 		return (
 			<ReactPaginate

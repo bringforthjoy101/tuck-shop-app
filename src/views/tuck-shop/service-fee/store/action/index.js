@@ -20,15 +20,15 @@ export const getAllData = () => {
 }
 
 // All Users Filtered Data
-export const getFilteredData = (settlements, params) => {
+export const getFilteredData = (fees, params) => {
   return async dispatch => {
     const { q = '', perPage = 100,  page = 1 } = params
-    console.log({settlements})
+    console.log({fees})
     /* eslint-disable  */
     const queryLowered = q?.toLowerCase()
-    const filteredData = settlements?.filter(
-      settlement => 
-        (settlement?.settlementId?.toLowerCase()?.includes(queryLowered) || moment(settlement?.createdAt).format('lll')?.toLowerCase()?.includes(queryLowered) || transaction?.student?.firstName?.toLowerCase()?.includes(queryLowered))
+    const filteredData = fees?.filter(
+      fee => 
+        (fee?.transactionId?.toLowerCase()?.includes(queryLowered) || moment(fee?.createdAt).format('lll')?.toLowerCase()?.includes(queryLowered) || fee?.student?.firstName?.toLowerCase()?.includes(queryLowered))
       )
   
     /* eslint-enable  */

@@ -50,7 +50,7 @@ const TransactionTable = () => {
 	// ** States
 	const [searchTerm, setSearchTerm] = useState('')
 	const [currentPage, setCurrentPage] = useState(1)
-	const [rowsPerPage, setRowsPerPage] = useState(100)
+	const [rowsPerPage, setRowsPerPage] = useState(10)
 	const [picker, setPicker] = useState([new Date(), new Date()])
 
 	useEffect(() => {
@@ -114,7 +114,7 @@ const TransactionTable = () => {
 
 	// ** Custom Pagination
 	const CustomPagination = () => {
-		const count = Math.ceil(store.total / rowsPerPage)
+		const count = Math.ceil(store.allData.length / rowsPerPage)
 
 		return (
 			<ReactPaginate
@@ -311,9 +311,10 @@ const TransactionTable = () => {
 									backgroundPosition: 'calc(100% - 3px) 11px, calc(100% - 20px) 13px, 100% 0',
 								}}
 							>
+								<option value="10">10</option>
+								<option value="25">25</option>
+								<option value="50">50</option>
 								<option value="100">100</option>
-								<option value="250">250</option>
-								<option value="500">500</option>
 							</CustomInput>
 							<Label for="rows-per-page">Entries</Label>
 						</div>
