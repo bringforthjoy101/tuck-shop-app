@@ -133,8 +133,10 @@ const ProductTable = () => {
 
     const columnDelimiter = ','
     const lineDelimiter = '\n'
-    const keys = Object.keys(store.allData[0])
+    let keys = Object.keys(store.allData[0])
     console.log("keyss", keys)
+    const keysToRemove = ['id', 'image', 'status', 'updatedAt', 'createdAt', 'adminId', 'businessId']
+		keys = keys.filter((key) => !keysToRemove.includes(key))
 
     result = ''
     result += keys.join(columnDelimiter)
@@ -176,27 +178,54 @@ const ProductTable = () => {
   // download PDF
   const downloadPDF = () => {
     const doc = new jsPDF({
-      orientation: "landscape"
+      orientation: "portrait",
     })
 
+    const tableData = store.allData.map((arr, index) => [
+      index + 1,
+      arr.name,
+      arr.description,
+      arr.price.toLocaleString('en-US', { style: 'currency', currency: 'NGN' }),
+      arr.qty.toLocaleString(),
+      arr.unit,
+      arr.category
+    ]);
+
     doc.autoTable({
-        styles: { halign: 'center'},
-        head: [['User', 'Email', 'Balance', 'Naira Wallet', 'Status']]
-    })
-    store.allData.map(arr => {
-      doc.autoTable({
-        styles: { halign: 'left' },
-        columnStyles: {
-          0: {cellWidth: 40},
-          1: {cellWidth: 70},
-          2: {cellWidth: 70},
-          3: {cellWidth: 60},
-          4: {cellWidth: 30}
-        },
-        body: [[(arr.names), (arr.email), (arr.balance), (arr.naira_wallet), (arr.status)]]
-      })
-    })
-    doc.save("export.pdf")
+      styles: { halign: 'left' },
+      head: [['SN', 'Name', 'Description', 'Price', 'Qty', 'Unit', 'Category']],
+      body: tableData,
+      columnStyles: {
+        0: { cellWidth: 'auto' },
+        1: { cellWidth: 'auto' },
+        2: { cellWidth: 'auto' },
+        3: { cellWidth: 'auto' },
+        4: { cellWidth: 'auto' },
+        5: { cellWidth: 'auto' },
+        6: { cellWidth: 'auto' }
+      }
+    });
+
+    // doc.autoTable({
+    //     styles: { halign: 'left'},
+    //     head: [['Name', 'Description', 'Price', 'Qty', 'Unit', 'Category']]
+    // })
+    // store.allData.map(arr => {
+    //   doc.autoTable({
+    //     styles: { halign: 'left' },
+    //     columnStyles: {
+    //       0: {cellWidth: 'auto'},
+    //       1: {cellWidth: 'auto'},
+    //       2: {cellWidth: 'auto'},
+    //       3: {cellWidth: 'auto'},
+    //       4: {cellWidth: 'auto'},
+    //       5: {cellWidth: 'auto'}
+    //     },
+    //     body: [[arr.name, arr.description, arr.price, arr.qty, arr.unit, arr.category]]
+    //   })
+    // })
+
+    doc.save("products_export.pdf")
   }
 
   const [userData, setUserData] = useState(null)
@@ -318,10 +347,10 @@ const ProductTable = () => {
                   <FileText size={15} />
                   <span className='align-middle ml-50'>PDF</span>
                 </DropdownItem>
-                <DropdownItem className='w-100' onClick={() => printOrder(filteredData)}>
+                {/* <DropdownItem className='w-100' onClick={() => printOrder(filteredData)}>
                   <Printer size={15} />
                   <span className='align-middle ml-50'>Print</span>
-                </DropdownItem>
+                </DropdownItem> */}
               </DropdownMenu>
             </UncontrolledButtonDropdown>
         </Col>
