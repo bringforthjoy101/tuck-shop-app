@@ -111,6 +111,8 @@ const CalendarComponent = () => {
               calendarApi={calendarApi}
               selectEvent={selectEvent}
               updateEvent={updateEvent}
+              addEvent={addEvent}
+              refetchEvents={refetchEvents}
               toggleSidebar={toggleSidebar}
               calendarsColor={calendarsColor}
               setCalendarApi={setCalendarApi}

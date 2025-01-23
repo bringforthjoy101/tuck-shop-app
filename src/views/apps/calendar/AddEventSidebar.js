@@ -90,7 +90,7 @@ const AddEventSidebar = props => {
     return (
       <components.Option {...props}>
         <span className={`bullet bullet-${data.color} bullet-sm mr-50`}></span>
-        {data.label}
+        {data.label} 
       </components.Option>
     )
   }
