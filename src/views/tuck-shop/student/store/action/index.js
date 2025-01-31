@@ -4,10 +4,21 @@ import moment from 'moment'
 export const apiUrl = process.env.REACT_APP_API_ENDPOINT
 
 // ** Get all User Data
-export const getAllData = (role) => {
+export const getAllData = (params = {}) => {
 	return async (dispatch) => {
-		const url = role === 'store' ? '/students/kitchen' : '/students'
-		const response = await apiRequest({ url, method: 'GET' }, dispatch)
+		const { status, year, group } = params
+		const url = '/students'
+		const queryParams = new URLSearchParams()
+		
+		if (status) queryParams.append('status', status)
+		if (year) queryParams.append('year', year)
+		if (group) queryParams.append('group', group)
+		
+		const queryString = queryParams.toString()
+		const finalUrl = `${url}${queryString ? `?${queryString}` : ''}`
+		console.log({ finalUrl })
+		
+		const response = await apiRequest({ url: finalUrl, method: 'GET' }, dispatch)
 		if (response && response.data.data && response.data.status) {
 			await dispatch({
 				type: 'GET_ALL_DATA',
@@ -23,7 +34,7 @@ export const getAllData = (role) => {
 // All Users Filtered Data
 export const getFilteredData = (students, params) => {
 	return async (dispatch) => {
-		const { q = '', perPage = 10, number = '', page = 1, status = null, className = null, level = null, group = null } = params
+		const { q = '', perPage = 10, number = '', page = 1, status = null, year = null, group = null } = params
 
 		/* eslint-disable  */
 		const queryLowered = q.toLowerCase()
@@ -32,10 +43,9 @@ export const getFilteredData = (students, params) => {
 				(student.firstName.toLowerCase().includes(queryLowered) ||
 					student.lastName?.toString().toLowerCase().includes(queryLowered) ||
 					student.type.toLowerCase().includes(queryLowered)) &&
-				student.class === (className || student.class) &&
-				student.level === (level || student.level) &&
-				student.group === (group || student.group) &&
-				student.status === (status || student.status)
+				student.status === (status || student.status) &&
+				student.year === (year || student.year) &&
+				student.group === (group || student.group)
 		)
 
 		/* eslint-enable  */

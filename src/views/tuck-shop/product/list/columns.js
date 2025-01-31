@@ -91,18 +91,11 @@ export const columns = [
     cell: row => <span>{(row.price || 0).toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}</span>
   },
   {
-    name: 'Qty',
+    name: 'Type',
     minWidth: '150px',
-    selector: 'qty',
+    selector: 'type',
     sortable: true,
-    cell: row => <span className="text-capitalize">{row.qty}</span>
-  },
-  {
-    name: 'Unit',
-    minWidth: '150px',
-    selector: 'unit',
-    sortable: true,
-    cell: row => <span className="text-capitalize">{row.unit}</span>
+    cell: row => <span className="text-capitalize">{row.type}</span>
   },
   {
     name: 'Category',
@@ -112,49 +105,56 @@ export const columns = [
     cell: row => <span className="text-capitalize">{row.category}</span>
   },
   {
+    name: 'Status',
+    minWidth: '150px',
+    selector: 'status',
+    sortable: true,
+    cell: row => <span className="text-capitalize">{row.status}</span>
+  },
+  {
     name: 'Cretaed Date',
     minWidth: '250px',
     selector: 'createdAt',
     sortable: true,
     cell: row => moment(row.createdAt).format('lll')
   },
-  {
-    name: 'Actions',
-    minWidth: '100px',
-    selector: 'name',
-    sortable: true,
-    cell: row => (
-      <UncontrolledDropdown>
-        <DropdownToggle tag='div' className='btn btn-sm'>
-          <MoreVertical size={14} className='cursor-pointer' />
-        </DropdownToggle>
-        <DropdownMenu right>
-          <DropdownItem
-            tag={Link}
-            to={`/product/view/${row.id}`}
-            className='w-100'
-          >
-            <FileText size={14} className='mr-50' />
-            <span className='align-middle'>Details</span>
-          </DropdownItem>
-          <DropdownItem
-            tag={Link}
-            to={`/product/edit/${row.id}`}
-            className='w-100'
-            // onClick={() => store.dispatch(getUser(row.id))}
-          >
-            <Archive size={14} className='mr-50' />
-            <span className='align-middle'>Edit</span>
-          </DropdownItem>
-          <DropdownItem 
-            className='w-100' 
-            onClick={() => handleDelete(row.id)}
-          >
-            <Trash2 size={14} className='mr-50' />
-            <span className='align-middle'>Delete</span>
-          </DropdownItem>
-        </DropdownMenu>
-      </UncontrolledDropdown>
-    )
-  }
+  // {
+  //   name: 'Actions',
+  //   minWidth: '100px',
+  //   selector: 'name',
+  //   sortable: true,
+  //   cell: row => (
+  //     <UncontrolledDropdown>
+  //       <DropdownToggle tag='div' className='btn btn-sm'>
+  //         <MoreVertical size={14} className='cursor-pointer' />
+  //       </DropdownToggle>
+  //       <DropdownMenu right>
+  //         <DropdownItem
+  //           tag={Link}
+  //           to={`/product/view/${row.id}`}
+  //           className='w-100'
+  //         >
+  //           <FileText size={14} className='mr-50' />
+  //           <span className='align-middle'>Details</span>
+  //         </DropdownItem>
+  //         <DropdownItem
+  //           tag={Link}
+  //           to={`/product/edit/${row.id}`}
+  //           className='w-100'
+  //           // onClick={() => store.dispatch(getUser(row.id))}
+  //         >
+  //           <Archive size={14} className='mr-50' />
+  //           <span className='align-middle'>Edit</span>
+  //         </DropdownItem>
+  //         <DropdownItem 
+  //           className='w-100' 
+  //           onClick={() => handleDelete(row.id)}
+  //         >
+  //           <Trash2 size={14} className='mr-50' />
+  //           <span className='align-middle'>Delete</span>
+  //         </DropdownItem>
+  //       </DropdownMenu>
+  //     </UncontrolledDropdown>
+  //   )
+  // }
 ]

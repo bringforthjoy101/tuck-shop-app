@@ -37,6 +37,12 @@ const calendarsColor = {
   ETC: 'info'
 }
 
+const snackPackageObj = {
+  evening: { color: 'primary', className: 'bg-light-primary', startTime: '15:00', endTime: '15:30' },
+  morning: { color: 'success', className: 'bg-light-success', startTime: '10:00', endTime: '10:30' },
+  afternoon: { color: 'info', className: 'bg-light-info', startTime: '12:00', endTime: '13:00' }
+}
+
 const CalendarComponent = () => {
   // ** Variables
   const dispatch = useDispatch()
@@ -80,7 +86,7 @@ const CalendarComponent = () => {
 
   // ** Fetch Events On Mount
   useEffect(() => {
-    dispatch(fetchEvents(store.selectedCalendars))
+    // dispatch(fetchEvents(store.selectedCalendars))
   }, [])
 
   return (
@@ -112,6 +118,7 @@ const CalendarComponent = () => {
               selectEvent={selectEvent}
               updateEvent={updateEvent}
               addEvent={addEvent}
+              removeEvent={removeEvent}
               refetchEvents={refetchEvents}
               toggleSidebar={toggleSidebar}
               calendarsColor={calendarsColor}

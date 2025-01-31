@@ -61,7 +61,7 @@ export const columns = [
 		sortable: true,
 		cell: (row) => (
 			<span className="font-weight-bold">
-				{row.admin.firstName} {row.admin.lastName}
+				{row.admin?.fullName || 'N/A'}
 			</span>
 		),
 	},

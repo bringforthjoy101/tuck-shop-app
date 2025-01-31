@@ -104,6 +104,17 @@ const handleDelete = async (id) => {
 
 const userData = JSON.parse(localStorage.getItem('userData'))
 
+const classObj = {
+  7: 'JSS 1',
+  8: 'JSS 2',
+  9: 'JSS 3',
+  10: 'SSS 1',
+  11: 'SSS 2',
+  12: 'SSS 3',
+  0: 'Graduated'
+}
+
+
 export const columns = [
   {
     name: 'Studnet',
@@ -121,18 +132,25 @@ export const columns = [
             <span className='font-weight-bold'>{row.firstName} {row.lastName} {row.otherName}</span>
           </Link> : <span className='font-weight-bold'>{row.firstName} {row.lastName} {row.otherName}</span>
           }
-          <small className='text-truncate text-muted text-capitalize mb-0'>{row.class} Class</small>
+          <small className='text-truncate text-muted text-capitalize mb-0'> {Number(row.year) !== 0 ? `${classObj[row.year]} ${row.group}` : 'Graduated'}</small>
         </div>
       </div>
     )
   },
-  // {
-  //   name: 'Class',
-  //   minWidth: '150px',
-  //   selector: 'class',
-  //   sortable: true,
-  //   cell: row => <span className="text-capitalize"> {row.class} Class</span>
-  // },
+  {
+    name: 'Tag Number',
+    minWidth: '150px',
+    selector: 'tagNumber',
+    sortable: true,
+    cell: row => <span className="text-capitalize"> {row.tagNumber}</span>
+  },
+  {
+    name: 'Class',
+    minWidth: '150px',
+    selector: 'class',
+    sortable: true,
+    cell: row => <span className="text-capitalize"> {Number(row.year) !== 0 ? `${classObj[row.year]} ${row.group}` : 'Graduated'}</span>
+  },
   // {
   //   name: 'Type',
   //   minWidth: '150px',

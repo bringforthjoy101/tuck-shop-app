@@ -2,12 +2,13 @@
 import Avatar from '@components/avatar'
 
 // ** Third Party Components
-import { Card, CardBody, CardText, Row, Col, Button } from 'reactstrap'
+import { Card, CardBody, CardText, Row, Col, Button, Badge } from 'reactstrap'
 import moment from 'moment'
 
 import {useHistory, Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
+import { Hexagon, Star, UserPlus, Calendar, Check, DollarSign, User } from 'react-feather'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { deleteProduct, getAllData } from '../store/action'
@@ -93,9 +94,9 @@ const UserInfoCard = ({ selectedProduct }) => {
                 {renderImg()}
                 <div className='d-flex flex-column ml-1'>
                   <div className='user-info mt-2'>
-                    <h4 className='mb-2'>{selectedProduct.name}</h4>
+                    <h4 className='mb-1'>{selectedProduct.name}</h4>
                     {/* <CardText tag='span'>
-                      ID: {selectedProduct.status}
+                      <Badge color='primary' pill>{selectedProduct.type}</Badge>
                     </CardText> */}
                   </div>
                   <div className='d-flex flex-wrap align-items-center'>
@@ -118,34 +119,68 @@ const UserInfoCard = ({ selectedProduct }) => {
               </div>
             </div>
           </Col>
-          <Col xl='6' lg='12' className='d-flex flex-column justify-content-between border-container-lg'>
-            <div className='user-avatar-section'>
-              {/* <h3>Product Details</h3> */}
-              <div className='d-flex align-items-center mr-2 mt-1'>
-                <div className='color-box'>
-                  <span>Product Id: </span>
+          <Col xl='6' lg='12' className='mt-2 mt-xl-0'>
+          <div className='user-info-wrapper d-flex justify-content-between'>
+            <div>
+              <div className='d-flex flex-wrap align-items-center mt-0'>
+                <div className='user-info-title'>
+                  <Hexagon className='mr-1' size={14} />
+                  <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
+                    Product Type
+                  </CardText>
                 </div>
-                <div className='ml-1'>
-                  <h6 className='mb-0'>{selectedProduct.id}</h6>
-                </div>
+                <CardText className='text-capitalize mb-0'>{selectedProduct?.type}</CardText>
               </div>
-              <div className='d-flex align-items-center mr-2 mt-1'>
-                <div className='color-box'>
-                  <span>Product Price: </span>
+              <div className='d-flex flex-wrap align-items-center mt-1'>
+                <div className='user-info-title'>
+                  <Star className='mr-1' size={14} />
+                  <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
+                    Category
+                  </CardText>
                 </div>
-                <div className='ml-1'>
-                  <h6 className='mb-0'>{selectedProduct.price.toLocaleString()}</h6>
-                </div>
+                <CardText className='text-capitalize mb-0'>{selectedProduct?.category}</CardText>
               </div>
-              <div className='d-flex align-items-center mr-2 mt-1'>
-                <div className='color-box'>
-                  <span>Product Qty: </span>
+              <div className='d-flex flex-wrap align-items-center mt-1'>
+                <div className='user-info-title'>
+                  <DollarSign className='mr-1' size={14} />
+                  <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
+                    Price
+                  </CardText>
                 </div>
-                <div className='ml-1'>
-                  <h6 className='mb-0'>{selectedProduct.qty}</h6>
-                </div>
+                <CardText className='text-capitalize mb-0'>{selectedProduct?.price.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}</CardText>
               </div>
             </div>
+            <div>
+              <div className='d-flex flex-wrap align-items-center mt-0'>
+                <div className='user-info-title'>
+                  <Check className='mr-1' size={14} />
+                  <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
+                    Status
+                  </CardText>
+                </div>
+                <CardText className='text-capitalize mb-0'>{selectedProduct?.status}</CardText>
+              </div>
+              <div className='d-flex flex-wrap align-items-center mt-1'>
+                <div className='user-info-title'>
+                  <Calendar className='mr-1' size={14} />
+                  <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
+                    Days Available
+                  </CardText>
+                </div>
+                <CardText className='text-capitalize mb-0'>{selectedProduct?.availability.join(', ')}</CardText>
+              </div>
+              <div className='d-flex flex-wrap align-items-center mt-1'>
+                <div className='user-info-title'>
+                  <User className='mr-1' size={14} />
+                  <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
+                    Created By
+                  </CardText>
+                </div>
+                <CardText className='text-capitalize mb-0'>{selectedProduct?.admin.fullName}</CardText>
+              </div>
+            </div>
+          </div>
+            
           </Col>
         </Row>
       </CardBody>

@@ -1,3 +1,4 @@
+
 // ** Initial State
 const initialState = {
   events: [],
@@ -12,9 +13,23 @@ const calenderReducer = (state = initialState, action) => {
     case 'ADD_EVENT':
       return { ...state }
     case 'REMOVE_EVENT':
-      return { ...state }
+      return { ...state, events: state.events.filter(event => Number(event.id) !== Number(action.id)) }
     case 'UPDATE_EVENT':
       return { ...state }
+    case 'UPDATE_EVENTS':
+      console.log(action.data)
+      return { 
+          ...state, 
+          events: action.data.length ? action.data.map(event => ({
+              id: event?.id,
+              url: '',
+              title: event?.package?.name,
+              start: new Date(event?.orderDate),
+              end: new Date(event?.orderDate),
+              allDay: true,
+              extendedProps: { calendar: 'Personal', amount: event?.amount, products: event?.products, category: event?.category }
+            })) : []
+      }
     case 'UPDATE_FILTERS':
       // ** Updates Filters based on action filter
       const filterIndex = state.selectedCalendars.findIndex(i => i === action.filter)

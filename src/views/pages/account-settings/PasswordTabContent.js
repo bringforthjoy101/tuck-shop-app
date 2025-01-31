@@ -5,15 +5,19 @@ import InputEmailToggle from '@components/input-email-toggle'
 import { AvForm, AvInput } from 'availity-reactstrap-validation-safe'
 import { swal, apiRequest } from '@utils'
 import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router-dom'
 
 const PasswordTabContent = () => {
 	const dispatch = useDispatch()
+	const history = useHistory()
 	const adminPhone = JSON.parse(localStorage.getItem('userData')).phone
+	const user = JSON.parse(localStorage.getItem('userData'))
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const [userData, setUserData] = useState({
 		oldPassword: '',
 		newPassword: '',
-		phone: adminPhone,
+		phone: user.phone,
+		tagNumber: user.tagNumber,
 	})
 
 	const onSubmit = async (event, errors) => {
@@ -25,7 +29,8 @@ const PasswordTabContent = () => {
 			setIsSubmitting(true)
 			const body = JSON.stringify(userData)
 			try {
-				const response = await apiRequest({ url: '/change-password', method: 'POST', body }, dispatch)
+				const url = user.type === 'admin' ? '/change-password' : user.type === 'student' ? '/change-student-password' : '/change-parent-password'
+				const response = await apiRequest({ url, method: 'POST', body }, dispatch)
 				console.log({ response })
 				if (response.data.status) {
 					setIsSubmitting(false)
@@ -33,8 +38,11 @@ const PasswordTabContent = () => {
 					setUserData({
 						oldPassword: '',
 						newPassword: '',
-						phone: adminPhone,
+						phone: user.phone,
+						tagNumber: user.tagNumber,
 					})
+					localStorage.setItem('userData', JSON.stringify({...user, isDefaultPassword: false}))
+					history.push('/dashboard')
 				} else {
 					setIsSubmitting(false)
 					swal('Oops!', response.data.message, 'error')
@@ -76,7 +84,7 @@ const PasswordTabContent = () => {
 						/>
 					</FormGroup>
 				</Col>
-				<Col sm="6">
+				{/* <Col sm="6">
 					<FormGroup>
 						<Label for="phone">Phone</Label>
 						<AvInput
@@ -87,17 +95,8 @@ const PasswordTabContent = () => {
 							placeholder="Phone number"
 							disabled
 						/>
-						{/* <InputEmailToggle
-							tag={AvInput}
-							className="input-group-merge"
-							label="Phone"
-							htmlFor="phone"
-							name="phone"
-							value={userData.phone}
-							onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
-						/> */}
 					</FormGroup>
-				</Col>
+				</Col> */}
 				<Col className="mt-1" sm="12">
 					<Button.Ripple className="mr-1" color="primary" disabled={isSubmitting}>
 						{isSubmitting && <Spinner color="white" size="sm" />}

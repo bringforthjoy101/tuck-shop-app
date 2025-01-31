@@ -24,7 +24,7 @@ const renderClient = row => {
   if (row.avatar) {
     return <Avatar className='mr-1' img={row.avatar} width='32' height='32' />
   } else {
-    return <Avatar color={color || 'primary'} className='mr-1' content={`${row.firstName} ${row.lastName}` || 'Admin'} initials />
+    return <Avatar color={color || 'primary'} className='mr-1' content={row.fullName || 'Admin'} initials />
   }
 }
 
@@ -110,7 +110,7 @@ export const columns = [
             to={`/admin/view/${row.id}`}
             className='user-name text-truncate mb-0'
           >
-            <span className='font-weight-bold'>{row.firstName} {row.lastName}</span>
+            <span className='font-weight-bold'>{row.fullName}</span>
           </Link>
           <small className='text-truncate text-muted mb-0'>{row.phone}</small>
         </div>

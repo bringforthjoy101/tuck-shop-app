@@ -5,6 +5,7 @@ import StatsWithAreaChart from '@components/widgets/stats/StatsWithAreaChart'
 
 const SubscribersGained = ({ kFormatter, dashData}) => {
   const [data, setData] = useState(null)
+  const user = JSON.parse(localStorage.getItem('userData'))
 
   useEffect(() => {
     axios.get('/card/card-statistics/subscribers').then(res => setData(res.data))

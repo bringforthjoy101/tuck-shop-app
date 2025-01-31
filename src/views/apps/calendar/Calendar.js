@@ -1,5 +1,5 @@
 // ** React Import
-import { useEffect, useRef, memo, Fragment } from 'react'
+import { useEffect, useRef, memo, Fragment, useState } from 'react'
 
 // ** Full Calendar & it's Plugins
 import FullCalendar from '@fullcalendar/react'
@@ -13,8 +13,9 @@ import Avatar from '@components/avatar'
 
 // ** Third Party Components
 import { toast } from 'react-toastify'
-import { Card, CardBody, Button } from 'reactstrap'
+import { Card, CardBody, Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap'
 import { Menu, Check, X } from 'react-feather'
+import moment from 'moment'
 
 // ** Toast Component
 const ToastComponent = ({ title, icon, color }) => (
@@ -29,8 +30,12 @@ const ToastComponent = ({ title, icon, color }) => (
 )
 
 const Calendar = props => {
-  // ** Refs
+  // ** Refs & States
   const calendarRef = useRef(null)
+  const [recurrenceModal, setRecurrenceModal] = useState(false)
+  const [selectedEventData, setSelectedEventData] = useState(null)
+  const [orderDetailsModal, setOrderDetailsModal] = useState(false)
+  const [selectedOrder, setSelectedOrder] = useState(null)
 
   // ** Props
   const {
@@ -56,20 +61,18 @@ const Calendar = props => {
     }
   }, [calendarApi])
 
+  const generateUniqueEventId = (index) => {
+    return `${new Date().getTime()}_${Math.random().toString(36).substring(2, 15)}_${index}`
+  }
+
   // Function to handle recurrence selection
   const handleRecurrenceSelect = (recurrenceType, baseEvent) => {
-    const { title, color, startTime, endTime, dropDate, products } = baseEvent
+    const { title, color, startTime, endTime, dropDate, products, packageId, studentId } = baseEvent
     const events = []
     const startDate = new Date(dropDate)
     const [startHours, startMinutes] = startTime.split(':')
     const [endHours, endMinutes] = endTime.split(':')
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-
-    // Format time for title
-    const hour = parseInt(startHours)
-    const formattedHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
-    const ampm = hour >= 12 ? 'pm' : 'am'
-    const formattedTitle = startMinutes === '00' ? `${formattedHour}${ampm} ${title}` : `${formattedHour}:${startMinutes}${ampm} ${title}`
 
     // Map colors to calendar categories
     const calendarMap = {
@@ -117,7 +120,7 @@ const Calendar = props => {
         }
       }
 
-      return { allowed: true, products }
+      return { allowed: true, products, packageId, studentId }
     }
 
     // Create events based on recurrence type
@@ -146,8 +149,8 @@ const Calendar = props => {
           eventEnd.setHours(parseInt(endHours), parseInt(endMinutes), 0)
 
           events.push({
-            id: new Date().getTime() + i,
-            title: formattedTitle,
+            id: generateUniqueEventId(i),
+            title,
             start: eventStart,
             end: eventEnd,
             allDay: false,
@@ -155,7 +158,9 @@ const Calendar = props => {
             extendedProps: {
               calendar: calendarMap[color] || 'ETC',
               recurring: 'daily',
-              products: check.products
+              products: check.products,
+              packageId,
+              studentId
             }
           })
         }
@@ -169,7 +174,7 @@ const Calendar = props => {
           
           const check = canAddEventToDate(currentDate)
           if (!check.allowed) {
-            skippedDates.push({ date: currentDate, reason: check.reason })
+            skippedDates.push({ date: currentDate, reason: check.reason === 'no-products' ? 'no products available' : check.reason === 'limit' ? 'day full' : 'duplicate event' })
             continue
           }
 
@@ -180,7 +185,7 @@ const Calendar = props => {
           eventEnd.setHours(parseInt(endHours), parseInt(endMinutes), 0)
 
           events.push({
-            id: new Date().getTime() + i,
+            id: generateUniqueEventId(i),
             title,
             start: eventStart,
             end: eventEnd,
@@ -188,7 +193,10 @@ const Calendar = props => {
             display: 'block',
             extendedProps: {
               calendar: calendarMap[color] || 'ETC',
-              recurring: 'weekly'
+              recurring: 'weekly',
+              products: check.products,
+              packageId,
+              studentId
             }
           })
         }
@@ -198,11 +206,22 @@ const Calendar = props => {
         // Create events for next 3 months
         for (let i = 0; i < 3; i++) {
           const currentDate = new Date(startDate)
-          currentDate.setMonth(currentDate.getMonth() + i)
+
+          const targetMonth = currentDate.getMonth() + i
+          const targetYear = currentDate.getFullYear() + Math.floor(targetMonth / 12)
+          const normalizedMonth = targetMonth % 12
+
+          const lastDayOfMonth = new Date(targetYear, normalizedMonth + 1, 0).getDate()
+
+          const targetDay = Math.min(currentDate.getDate(), lastDayOfMonth)
+
+          currentDate.setFullYear(targetYear)
+          currentDate.setMonth(normalizedMonth)
+          currentDate.setDate(targetDay)
           
           const check = canAddEventToDate(currentDate)
           if (!check.allowed) {
-            skippedDates.push({ date: currentDate, reason: check.reason })
+            skippedDates.push({ date: currentDate, reason: check.reason, unavailableProducts: check.unavailableProducts })
             continue
           }
 
@@ -213,7 +232,7 @@ const Calendar = props => {
           eventEnd.setHours(parseInt(endHours), parseInt(endMinutes), 0)
 
           events.push({
-            id: new Date().getTime() + i,
+            id: generateUniqueEventId(i),
             title,
             start: eventStart,
             end: eventEnd,
@@ -221,7 +240,10 @@ const Calendar = props => {
             display: 'block',
             extendedProps: {
               calendar: calendarMap[color] || 'ETC',
-              recurring: 'monthly'
+              recurring: 'monthly',
+              products: check.products,
+              packageId,
+              studentId
             }
           })
         }
@@ -231,7 +253,7 @@ const Calendar = props => {
         // Single event (no recurrence)
         const check = canAddEventToDate(startDate)
         if (!check.allowed) {
-          skippedDates.push({ date: startDate, reason: check.reason })
+          skippedDates.push({ date: startDate, reason: check.reason === 'no-products' ? 'no products available' : check.reason === 'limit' ? 'day full' : 'duplicate event', unavailableProducts: check.unavailableProducts })
         } else {
           const eventStart = new Date(startDate)
           const eventEnd = new Date(startDate)
@@ -240,23 +262,27 @@ const Calendar = props => {
           eventEnd.setHours(parseInt(endHours), parseInt(endMinutes), 0)
 
           events.push({
-            id: new Date().getTime(),
+            id: generateUniqueEventId(0),
             title,
             start: eventStart,
             end: eventEnd,
             allDay: false,
             display: 'block',
             extendedProps: {
-              calendar: calendarMap[color] || 'ETC'
+              calendar: calendarMap[color] || 'ETC',
+              products: check.products,
+              packageId,
+              studentId
             }
           })
         }
     }
 
     // Add successful events to store
-    events.forEach(event => {
-      dispatch(addEvent(event))
-    })
+    dispatch(addEvent(events))
+    // events.forEach(event => {
+    //   dispatch(addEvent(event))
+    // })
 
     // Close all toasts
     toast.dismiss()
@@ -300,20 +326,70 @@ const Calendar = props => {
     }
   }
 
+  // ** Function to handle recurrence modal
+  const toggleRecurrenceModal = () => {
+    setRecurrenceModal(!recurrenceModal)
+    if (!recurrenceModal) {
+      setSelectedEventData(null)
+    }
+  }
+  console.log(store.events)
   // ** calendarOptions(Props)
+
+  const snackPackageObj = {
+    evening: { color: 'primary', className: 'bg-light-primary', startTime: '15:00', endTime: '15:30' },
+    morning: { color: 'success', className: 'bg-light-success', startTime: '10:00', endTime: '10:30' },
+    afternoon: { color: 'info', className: 'bg-light-info', startTime: '12:00', endTime: '13:00' }
+  }
+
+  // Get the academic year end date (assuming it ends in December)
+  const today = new Date()
+  const currentYear = today.getFullYear()
+  const academicYearEnd = new Date(currentYear, 11, 31) // December 31st of current year
+  
+  // If we're past September, use next year's December as end date
+  if (today.getMonth() >= 8) { // September is month 8 (0-based index)
+    academicYearEnd.setFullYear(currentYear + 1)
+  }
+
   const calendarOptions = {
     events: store.events.length ? store.events : [],
     plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin],
     initialView: 'dayGridMonth',
+    initialDate: new Date().toISOString().split('T')[0],
     headerToolbar: {
       start: 'sidebarToggle, prev,next, title',
       end: 'dayGridMonth,listMonth'
+    },
+    validRange: {
+      start: new Date().toISOString().split('T')[0],
+      end: academicYearEnd.toISOString().split('T')[0]
+    },
+    views: {
+      dayGridMonth: {
+        titleFormat: { month: 'long', year: 'numeric' },
+        fixedWeekCount: false,
+        showNonCurrentDates: false
+      },
+      listMonth: {
+        titleFormat: { month: 'long', year: 'numeric' }
+      }
     },
     /*
       Enable dragging and resizing event
       ? Docs: https://fullcalendar.io/docs/editable
     */
     editable: true,
+
+    // Prevent selecting past dates
+    selectConstraint: {
+      start: new Date().toISOString().split('T')[0]
+    },
+
+    // Prevent dragging to past dates
+    eventConstraint: {
+      start: new Date().toISOString().split('T')[0]
+    },
 
     /*
       Enable external event dropping
@@ -346,6 +422,9 @@ const Calendar = props => {
       const startTime = info.draggedEl.getAttribute('data-start-time')
       const endTime = info.draggedEl.getAttribute('data-end-time')
       const products = JSON.parse(info.draggedEl.getAttribute('data-products'))
+      const packageId = info.draggedEl.getAttribute('data-package-id')
+      const studentId = info.draggedEl.getAttribute('data-student-id')
+      
 
       // Get the day of the week for the dropped date
       const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -420,53 +499,17 @@ const Calendar = props => {
       }
 
       // If validation passes, show recurrence options dialog
-      const recurrenceOptions = [
-        { value: 'none', label: 'No Repeat' },
-        { value: 'daily', label: 'Daily (Only available days)' },
-        { value: 'weekly', label: 'Weekly' },
-        { value: 'monthly', label: 'Monthly' }
-      ]
-
-      // Create base event
-      const baseEvent = {
+      setSelectedEventData({
         title: eventTitle,
         color: eventColor,
         startTime,
         endTime,
         dropDate: info.date,
-        products // Pass all products since we've verified they're all available
-      }
-
-      // Create modal for recurrence selection
-      const modalContent = (
-        <div className='p-2'>
-          <h5>Set Event Recurrence</h5>
-          <div className='d-flex flex-column gap-1 mt-2'>
-            {recurrenceOptions.map(option => (
-              <Button
-                key={option.value}
-                color='primary'
-                outline
-                block
-                onClick={() => handleRecurrenceSelect(option.value, baseEvent)}
-              >
-                {option.label}
-              </Button>
-            ))}
-          </div>
-        </div>
-      )
-
-      // Show modal
-      toast.info(
-        modalContent,
-        {
-          autoClose: false,
-          closeButton: true,
-          draggable: false,
-          closeOnClick: false
-        }
-      )
+        products,
+        packageId,
+        studentId
+      })
+      setRecurrenceModal(true)
     },
 
     // Function to handle recurrence selection
@@ -510,9 +553,10 @@ const Calendar = props => {
 
     eventClassNames({ event: calendarEvent }) {
       // eslint-disable-next-line no-underscore-dangle
-      const colorName = calendarsColor[calendarEvent._def.extendedProps.calendar]
+      // const colorName = calendarsColor[calendarEvent._def.extendedProps.calendar]
+      const colorName = snackPackageObj[calendarEvent._def.extendedProps.category]
 
-      return [`bg-light-${colorName}`]
+      return [`bg-light-${colorName?.color || 'primary'}`]
     },
 
     // eventContent: (arg) => {
@@ -526,15 +570,15 @@ const Calendar = props => {
     // },
 
     eventClick({ event: clickedEvent }) {
-      dispatch(selectEvent(clickedEvent))
-      handleAddEventSidebar()
-
-      // * Only grab required field otherwise it goes in infinity loop
-      // ! Always grab all fields rendered by form (even if it get `undefined`) otherwise due to Vue3/Composition API you might get: "object is not extensible"
-      // event.value = grabEventDataFromEventApi(clickedEvent)
-
-      // eslint-disable-next-line no-use-before-define
-      // isAddNewEventSidebarActive.value = true
+      console.log({clickedEvent})
+      setSelectedOrder({
+        id: clickedEvent.id,
+        title: clickedEvent.title,
+        date: clickedEvent.start,
+        amount: clickedEvent.extendedProps.amount,
+        products: clickedEvent.extendedProps.products
+      })
+      setOrderDetailsModal(true)
     },
 
     customButtons: {
@@ -559,13 +603,44 @@ const Calendar = props => {
       ? Docs: https://fullcalendar.io/docs/eventDrop
       ? We can use `eventDragStop` but it doesn't return updated event so we have to use `eventDrop` which returns updated event
     */
-    eventDrop({ event: droppedEvent }) {
+    eventDrop({ event: droppedEvent, oldEvent, revert }) {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      
+      const dropDate = new Date(droppedEvent.start)
+      dropDate.setHours(0, 0, 0, 0)
+
+      // If dropped on a past date, revert the drag
+      if (dropDate < today) {
+        revert()
+        toast.error(
+          <ToastComponent 
+            title='Cannot schedule events in the past' 
+            color='danger' 
+            icon={<X />} 
+          />, 
+          {
+            autoClose: 2000,
+            hideProgressBar: true,
+            closeButton: false
+          }
+        )
+        return
+      }
+
       dispatch(updateEvent(droppedEvent))
-      toast.success(<ToastComponent title='Event Updated' color='success' icon={<Check />} />, {
-        autoClose: 2000,
-        hideProgressBar: true,
-        closeButton: false
-      })
+      toast.success(
+        <ToastComponent 
+          title='Event Updated' 
+          color='success' 
+          icon={<Check />} 
+        />, 
+        {
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeButton: false
+        }
+      )
     },
 
     /*
@@ -588,11 +663,111 @@ const Calendar = props => {
   }
 
   return (
-    <Card className='shadow-none border-0 mb-0 rounded-0'>
-      <CardBody className='pb-0'>
-        <FullCalendar {...calendarOptions} />{' '}
-      </CardBody>
-    </Card>
+    <Fragment>
+      <Card className='shadow-none border-0 mb-0 rounded-0'>
+        <CardBody className='pb-0'>
+          <FullCalendar {...calendarOptions} />{' '}
+        </CardBody>
+      </Card>
+
+      {/* Order Details Modal */}
+      <Modal isOpen={orderDetailsModal} toggle={() => setOrderDetailsModal(!orderDetailsModal)} className='modal-dialog-centered'>
+        <ModalHeader toggle={() => setOrderDetailsModal(!orderDetailsModal)}>
+          Order Details
+        </ModalHeader>
+        <ModalBody>
+          {selectedOrder && (
+            <div>
+              <div className='mb-2'>
+                <strong>Order Name:</strong> {selectedOrder.title}
+              </div>
+              <div className='mb-2'>
+                <strong>Date:</strong> {moment(selectedOrder.date).format('LL')}
+              </div>
+              <div className='mb-2'>
+                <strong>Amount:</strong> {selectedOrder.amount.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
+              </div>
+              <div>
+                <strong>Products:</strong>
+                <Table responsive bordered className='mt-1'>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Quantity</th>
+                      <th>Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedOrder?.products?.map((product, index) => (
+                      <tr key={index}>
+                        <td>{product?.name}</td>
+                        <td>{product?.quantity}</td>
+                        <td>{product?.price?.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+            </div>
+          )}
+        </ModalBody>
+      </Modal>
+
+      {/* Existing Recurrence Modal */}
+      <Modal isOpen={recurrenceModal} toggle={toggleRecurrenceModal} className='modal-dialog-centered'>
+        <ModalHeader toggle={toggleRecurrenceModal}>
+          Set Event Recurrence
+        </ModalHeader>
+        <ModalBody>
+          <div className='d-flex flex-column gap-1'>
+            <Button
+              color='primary'
+              outline
+              block
+              onClick={() => {
+                handleRecurrenceSelect('none', selectedEventData)
+                toggleRecurrenceModal()
+              }}
+            >
+              No Repeat
+            </Button>
+            <Button
+              color='primary'
+              outline
+              block
+              onClick={() => {
+                handleRecurrenceSelect('daily', selectedEventData)
+                toggleRecurrenceModal()
+              }}
+            >
+              Daily (Only available days)
+            </Button>
+            <Button
+              color='primary'
+              outline
+              block
+              onClick={() => {
+                handleRecurrenceSelect('weekly', selectedEventData)
+                toggleRecurrenceModal()
+              }}
+            >
+              Weekly
+            </Button>
+            <Button
+              color='primary'
+              outline
+              block
+              onClick={() => {
+                handleRecurrenceSelect('monthly', selectedEventData)
+                toggleRecurrenceModal()
+              }}
+            >
+              Monthly
+            </Button>
+          </div>
+        </ModalBody>
+      </Modal>
+    </Fragment>
   )
 }
 

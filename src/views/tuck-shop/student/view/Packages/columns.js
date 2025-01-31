@@ -26,35 +26,49 @@ export const columns = [
 	//   cell: row => <span>{ `#${row.id}` }</span>
 	// },
 	{
-		name: 'Book',
+		name: 'Package',
 		selector: 'name',
 		sortable: true,
 		minWidth: '150px',
 		cell: (row) => <span className="text-capitalize">{row.name}</span>,
 	},
 	{
-		name: 'Qty',
-		selector: 'qty',
+		name: 'Category',
+		selector: 'category',
 		sortable: true,
 		minWidth: '150px',
-		cell: (row) => <span className="text-capitalize">{row.qty}</span>,
+		cell: (row) => <span className="text-capitalize">{row.category}</span>,
+	},
+	{
+		name: 'Description',
+		selector: 'description',
+		sortable: true,
+		minWidth: '150px',
+		cell: (row) => <span className="text-capitalize">{row.description}</span>,
+	},
+	{
+		name: 'Status',
+		selector: 'status',
+		sortable: true,
+		minWidth: '150px',
+		cell: (row) => <span className="text-capitalize">{row.status}</span>,
 	},
 	{
 		name: 'Date',
-		selector: 'shippingDate',
+		selector: 'createdAt',
 		sortable: true,
 		minWidth: '200px',
-		cell: (row) => moment(row.shippingDate).format('lll'),
+		cell: (row) => moment(row.createdAt).format('lll'),
 	},
-	{
-		name: 'Initiated By',
-		minWidth: '200px',
-		selector: 'admin',
-		sortable: true,
-		cell: (row) => (
-			<span className="font-weight-bold">
-				{row.admin.firstName} {row.admin.lastName}
-			</span>
-		),
-	},
+	// {
+	// 	name: 'Initiated By',
+	// 	minWidth: '200px',
+	// 	selector: 'admin',
+	// 	sortable: true,
+	// 	cell: (row) => (
+	// 		<span className="font-weight-bold">
+	// 			{row.admin?.fullName || 'N/A'}
+	// 		</span>
+	// 	),
+	// },
 ]

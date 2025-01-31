@@ -14,7 +14,7 @@ import PlanCard from './PlanCard'
 import UserInfoCard from './UserInfoCard'
 import AllTransactionList from './AllTransactions'
 import AllOrders from './AllOrders'
-import Books from './Books'
+import Packages from './Packages'
 import { isUserLoggedIn } from '@utils'
 
 // ** Styles
@@ -66,6 +66,11 @@ const UserView = (props) => {
 						<Row className="d-sm-block d-lg-flex justify-content-center">
 							<Nav pills className="nav-pill-primary my-2">
 								<NavItem>
+									<NavLink onClick={() => setActiveTransaction('packages')} active={activeTransaction === 'packages'}>
+										Packages
+									</NavLink>
+								</NavItem>
+								<NavItem>
 									<NavLink onClick={() => setActiveTransaction('transactions')} active={activeTransaction === 'transactions'}>
 										Transactions
 									</NavLink>
@@ -75,16 +80,16 @@ const UserView = (props) => {
 										Orders
 									</NavLink>
 								</NavItem>
-								{/* <NavItem>
-									<NavLink onClick={() => setActiveTransaction('books')} active={activeTransaction === 'books'}>
-										Books
-									</NavLink>
-								</NavItem> */}
+								
 							</Nav>
 						</Row>
 					</Card>
 					<Row>
-						{activeTransaction === 'transactions' ? (
+						{activeTransaction === 'packages' ? (
+							<Col sm="12">
+								<Packages />
+							</Col>
+						) : activeTransaction === 'transactions' ? (
 							<Col sm="12">
 								<AllTransactionList />
 							</Col>
@@ -92,11 +97,7 @@ const UserView = (props) => {
 							<Col sm="12">
 								<AllOrders />
 							</Col>
-						) : activeTransaction === 'books' ? (
-							<Col sm="12">
-								<Books />
-							</Col>
-						) : (
+						) :  (
 							''
 						)}
 					</Row>

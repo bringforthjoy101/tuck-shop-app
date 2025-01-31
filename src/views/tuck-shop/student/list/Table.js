@@ -4,6 +4,7 @@ import { Fragment, useState, useEffect } from 'react'
 // ** Columns
 import { columns } from './columns'
 import Sidebar from './Sidebar'
+import BatchUploadModal from './BatchUploadModal'
 
 // ** Store & Actions
 import { getAllData, getFilteredData } from '../store/action'
@@ -14,7 +15,7 @@ import Select from 'react-select'
 import ReactPaginate from 'react-paginate'
 import { ChevronDown, Share, Printer, FileText } from 'react-feather'
 import DataTable from 'react-data-table-component'
-import { selectThemeColors, isUserLoggedIn } from '@utils'
+import { selectThemeColors, isUserLoggedIn, apiRequest } from '@utils'
 import {
 	Card,
 	CardHeader,
@@ -50,9 +51,26 @@ const UsersList = () => {
 	const [rowsPerPage, setRowsPerPage] = useState(10)
 	const [currentStatus, setCurrentStatus] = useState({ value: '', label: 'Select Status', number: 0 })
 	const [sidebarOpen, setSidebarOpen] = useState(false)
+	const [years, setYears] = useState([])
+	const [groups, setGroups] = useState([])
+	const [selectedYear, setSelectedYear] = useState({ value: '', label: 'Select Year' })
+	const [selectedGroup, setSelectedGroup] = useState({ value: '', label: 'Select Group' })
+	const [isBatchModalOpen, setIsBatchModalOpen] = useState(false)
+	const classObj = {
+		7: 'JSS 1',
+		8: 'JSS 2',
+		9: 'JSS 3',
+		10: 'SSS 1',
+		11: 'SSS 2',
+		12: 'SSS 3',
+		0: 'Graduated'
+	  }
 
 	// ** Function to toggle sidebar
 	const toggleSidebar = () => setSidebarOpen(!sidebarOpen)
+
+	// Toggle batch upload modal
+	const toggleBatchModal = () => setIsBatchModalOpen(!isBatchModalOpen)
 
 	// ** Get data on mount
 	useEffect(() => {
@@ -65,6 +83,17 @@ const UsersList = () => {
 				q: searchTerm,
 			})
 		)
+
+		// Fetch years and groups
+		const fetchYearsAndGroups = async () => {
+			const response = await apiRequest({ url: '/students/years-and-groups', method: 'GET' })
+			if (response && response.data && response.data.status) {
+				const { years: yearsData, groups: groupsData } = response.data.data
+				setYears(yearsData.map(year => ({ value: year, label: `Year ${year} - ${classObj[year]}` })))
+				setGroups(groupsData.map(group => ({ value: group, label: group })))
+			}
+		}
+		fetchYearsAndGroups()
 	}, [dispatch])
 
 	const statusOptions = [
@@ -82,6 +111,8 @@ const UsersList = () => {
 				page: page.selected + 1,
 				perPage: rowsPerPage,
 				status: currentStatus.value,
+				year: selectedYear.value,
+				group: selectedGroup.value,
 				q: searchTerm,
 			})
 		)
@@ -96,6 +127,8 @@ const UsersList = () => {
 				page: currentPage,
 				perPage: value,
 				status: currentStatus.value,
+				year: selectedYear.value,
+				group: selectedGroup.value,
 				q: searchTerm,
 			})
 		)
@@ -110,6 +143,8 @@ const UsersList = () => {
 				page: currentPage,
 				perPage: rowsPerPage,
 				status: currentStatus.value,
+				year: selectedYear.value,
+				group: selectedGroup.value,
 				q: val,
 			})
 		)
@@ -247,7 +282,7 @@ const UsersList = () => {
 				</CardHeader>
 				<CardBody>
 					<Row form className="mt-1 mb-50">
-						<Col lg="4" md="6">
+						<Col lg="3" md="6">
 							<FormGroup>
 								<Label for="select">Select Status:</Label>
 								<Select
@@ -265,6 +300,8 @@ const UsersList = () => {
 												page: currentPage,
 												perPage: rowsPerPage,
 												status: data.value,
+												year: selectedYear.value,
+												group: selectedGroup.value,
 												q: searchTerm,
 											})
 										)
@@ -272,12 +309,74 @@ const UsersList = () => {
 								/>
 							</FormGroup>
 						</Col>
-						<Col lg="4" md="6">
+						<Col lg="3" md="6">
 							<FormGroup>
-								<Label for="select">Select Table:</Label>
+								<Label for="year">Select Year:</Label>
+								<Select
+									theme={selectThemeColors}
+									isClearable={false}
+									className="react-select"
+									classNamePrefix="select"
+									id="year"
+									options={years}
+									value={selectedYear}
+									onChange={(data) => {
+										setSelectedYear(data)
+										dispatch(getAllData(null, {
+											year: data.value,
+											group: selectedGroup.value
+										}))
+										dispatch(
+											getFilteredData(store.allData, {
+												page: currentPage,
+												perPage: rowsPerPage,
+												status: currentStatus.value,
+												year: data.value,
+												group: selectedGroup.value,
+												q: searchTerm,
+											})
+										)
+									}}
+								/>
+							</FormGroup>
+						</Col>
+						<Col lg="3" md="6">
+							<FormGroup>
+								<Label for="group">Select Group:</Label>
+								<Select
+									theme={selectThemeColors}
+									isClearable={false}
+									className="react-select"
+									classNamePrefix="select"
+									id="group"
+									options={groups}
+									value={selectedGroup}
+									onChange={(data) => {
+										setSelectedGroup(data)
+										dispatch(getAllData(null, {
+											year: selectedYear.value,
+											group: data.value
+										}))
+										dispatch(
+											getFilteredData(store.allData, {
+												page: currentPage,
+												perPage: rowsPerPage,
+												status: currentStatus.value,
+												year: selectedYear.value,
+												group: data.value,
+												q: searchTerm,
+											})
+										)
+									}}
+								/>
+							</FormGroup>
+						</Col>
+						<Col lg="3" md="6">
+							<FormGroup>
+								<Label for="search">Search:</Label>
 								<Input
-									id="search-invoice"
-									className="ml-50 w-100"
+									id="search"
+									className="w-100"
 									type="text"
 									value={searchTerm}
 									placeholder="Name Email Search & Phone Search"
@@ -300,7 +399,7 @@ const UsersList = () => {
 								value={rowsPerPage}
 								onChange={handlePerPage}
 								style={{
-									width: '10rem',
+									width: '5rem',
 									padding: '0 0.8rem',
 									backgroundPosition: 'calc(100% - 3px) 11px, calc(100% - 20px) 13px, 100% 0',
 								}}
@@ -313,37 +412,36 @@ const UsersList = () => {
 						</div>
 					</Col>
 
-					<Col xl="4" sm="12" className="d-flex align-items-sm-center justify-content-lg-end justify-content-center pr-lg-3 p-0 mt-lg-0 mt-1">
-						<UncontrolledButtonDropdown>
-							<DropdownToggle className="mr-lg-0 mr-5" color="secondary" caret outline>
-								<Share size={15} />
-								<span className="align-middle ml-lg-50">Download Table</span>
-							</DropdownToggle>
-							<DropdownMenu right>
-								<DropdownItem className="w-100" onClick={() => downloadCSV(store.allData)}>
-									<FileText size={15} />
-									<span className="align-middle ml-50">CSV</span>
-								</DropdownItem>
-								<DropdownItem className="w-100" onClick={() => downloadPDF()}>
-									<FileText size={15} />
-									<span className="align-middle ml-50">PDF</span>
-								</DropdownItem>
-							</DropdownMenu>
-						</UncontrolledButtonDropdown>
-					</Col>
-					<Col
-						xl="4"
-						sm="12"
-						className="d-flex align-items-sm-center justify-content-lg-end justify-content-start flex-lg-nowrap flex-wrap flex-sm-row flex-column pr-lg-1 p-0 mt-lg-0 mt-1"
-					>
-						{userData?.role === 'manager' || userData?.role === 'bursary' ? (
-							<Button.Ripple color="primary" onClick={toggleSidebar}>
-								{' '}
-								Add New Student{' '}
-							</Button.Ripple>
-						) : (
-							''
-						)}
+					<Col xl="8" sm="12" className="d-flex align-items-sm-center justify-content-lg-end justify-content-start pr-lg-1 p-0 mt-lg-0 mt-1">
+						<div className="d-flex align-items-center">
+							<UncontrolledButtonDropdown className="mr-1">
+								<DropdownToggle color="secondary" caret outline>
+									<Share size={15} />
+									<span className="align-middle ml-lg-50">Export</span>
+								</DropdownToggle>
+								<DropdownMenu right>
+									<DropdownItem className="w-100" onClick={() => downloadCSV(store.allData)}>
+										<FileText size={15} />
+										<span className="align-middle ml-50">CSV</span>
+									</DropdownItem>
+									<DropdownItem className="w-100" onClick={() => downloadPDF()}>
+										<FileText size={15} />
+										<span className="align-middle ml-50">PDF</span>
+									</DropdownItem>
+								</DropdownMenu>
+							</UncontrolledButtonDropdown>
+
+							{userData?.role === 'manager' || userData?.role === 'bursary' ? (
+								<>
+									<Button.Ripple className="mr-1" color="primary" onClick={toggleBatchModal}>
+										Batch Upload
+									</Button.Ripple>
+									<Button.Ripple color="primary" onClick={toggleSidebar}>
+										Add New Student
+									</Button.Ripple>
+								</>
+							) : null}
+						</div>
 					</Col>
 				</Row>
 				<DataTable
@@ -360,6 +458,7 @@ const UsersList = () => {
 				/>
 			</Card>
 			<Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} />
+			<BatchUploadModal isOpen={isBatchModalOpen} toggle={toggleBatchModal} />
 		</Fragment>
 	)
 }

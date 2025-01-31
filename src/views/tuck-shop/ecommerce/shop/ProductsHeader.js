@@ -23,6 +23,24 @@ const ProductsHeader = props => {
     featured: 'Featured'
   }
 
+  // ** Category options
+  const categoryOptions = [
+    { value: 'all', label: 'All Categories' },
+    { value: 'consumable', label: 'Consumable' },
+    { value: 'non-consumable', label: 'Non-Consumable' },
+    { value: 'other', label: 'Other' }
+  ]
+
+  // ** Type options
+  const typeOptions = [
+    { value: 'all', label: 'All Types' },
+    { value: 'drink', label: 'Drink' },
+    { value: 'food', label: 'Food' },
+    { value: 'snack', label: 'Snack' },
+    { value: 'medicine', label: 'Medicine' },
+    { value: 'other', label: 'Other' }
+  ]
+
   return (
     <div className='ecommerce-header'>
       <Row>
@@ -36,9 +54,46 @@ const ProductsHeader = props => {
               </button>
               <span className='search-results'>{store.totalProducts} Results Found</span>
             </div>
-            <div className='view-options d-flex'>
-              <UncontrolledButtonDropdown className='dropdown-sort'>
-                <DropdownToggle className='text-capitalize mr-1' color='primary' outline caret>
+            <div className='view-options d-flex align-items-center'>
+              {/* Category Filter */}
+              <UncontrolledButtonDropdown className='dropdown-sort mr-1'>
+                <DropdownToggle className='text-capitalize' color='primary' outline caret>
+                  {store.params.category ? categoryOptions.find(cat => cat.value === store.params.category)?.label : 'All Categories'}
+                </DropdownToggle>
+                <DropdownMenu>
+                  {categoryOptions.map(category => (
+                    <DropdownItem
+                      key={category.value}
+                      className='w-100'
+                      onClick={() => dispatch(getProducts({ ...store.params, category: category.value }))}
+                    >
+                      {category.label}
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
+              </UncontrolledButtonDropdown>
+
+              {/* Type Filter */}
+              <UncontrolledButtonDropdown className='dropdown-sort mr-1'>
+                <DropdownToggle className='text-capitalize' color='primary' outline caret>
+                  {store.params.type ? typeOptions.find(type => type.value === store.params.type)?.label : 'All Types'}
+                </DropdownToggle>
+                <DropdownMenu>
+                  {typeOptions.map(type => (
+                    <DropdownItem
+                      key={type.value}
+                      className='w-100'
+                      onClick={() => dispatch(getProducts({ ...store.params, type: type.value }))}
+                    >
+                      {type.label}
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
+              </UncontrolledButtonDropdown>
+
+              {/* Sort Dropdown */}
+              <UncontrolledButtonDropdown className='dropdown-sort mr-1'>
+                <DropdownToggle className='text-capitalize' color='primary' outline caret>
                   {sortToggleText[store.params.sortBy]}
                 </DropdownToggle>
                 <DropdownMenu>
@@ -62,6 +117,8 @@ const ProductsHeader = props => {
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledButtonDropdown>
+
+              {/* View Options */}
               <ButtonGroup className='btn-group-toggle'>
                 <Button
                   tag='label'

@@ -15,18 +15,20 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
 
   const [productData, setProductData] = useState({
     name: '',
-    qty: '',
-    unit: '',
+    type: '',
     category: '',
     price: '',
     description: '',
-    image: 'https://res.cloudinary.com/bringforthjoy/image/upload/v1621720743/INVESTA/appia_reward_image_placeholder_um7q6g.jpg'
+    image: '',
+    availability: ['Monday']
   })
+  console.log({productData})
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   
   // ** Function to handle form submit
   const onSubmit = async (event, errors) => {
+    console.log({productData})
     setIsSubmitting(true)
     event.preventDefault()
     console.log({errors})
@@ -43,11 +45,13 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
             swal('Great job!', response.data.message, 'success')
             dispatch(getAllData())
             setProductData({
-              name: '',
-              qty: '',
-              price: '',
-              description: '',
-              image: 'https://res.cloudinary.com/bringforthjoy/image/upload/v1621720743/INVESTA/appia_reward_image_placeholder_um7q6g.jpg'
+                name: '',
+                type: '',
+                category: '',
+                price: '',
+                description: '',
+                image: '',
+                availability: ['Monday']
             })
             toggleSidebar()
         } else {
@@ -55,10 +59,12 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
           swal('Oops!', response.data.message, 'error')
           setProductData({
             name: '',
-            qty: '',
+            type: '',
+            category: '',
             price: '',
             description: '',
-            image: 'https://res.cloudinary.com/bringforthjoy/image/upload/v1621720743/INVESTA/appia_reward_image_placeholder_um7q6g.jpg'
+            image: '',
+            availability: ['Monday']
           })
           toggleSidebar()
         }
@@ -91,16 +97,6 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
             />
           </FormGroup>
           <FormGroup>
-            <Label for='qty'>Quantity</Label>
-            <AvInput 
-              name='qty' 
-              id='qty' 
-              placeholder='Quantity' 
-              value={productData.qty}
-              onChange={e => setProductData({...productData, qty: e.target.value})}
-            />
-          </FormGroup>
-          <FormGroup>
             <Label for='price'>Product Price</Label>
             <AvInput 
               type='number' 
@@ -112,26 +108,21 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
             />
           </FormGroup>
           <FormGroup>
-            <Label for='unit'>Product Unit</Label>
+            <Label for='type'>Product Type</Label>
             <AvInput 
               type='select' 
-              id='unit' 
-              name='unit' 
-              value={productData.unit}
-              onChange={e => setProductData({...productData, unit: e.target.value})}
+              id='type' 
+              name='type' 
+              value={productData.type}
+              onChange={e => setProductData({...productData, type: e.target.value})}
               required
             >
-              <option value=''>Select Product Unit</option>
-              <option value='kg'>Kilogram</option>
-              <option value='pck'>Pack</option>
-              <option value='pcs'>Pieces</option>
-              <option value='l'>Litre</option>
-              <option value='tuber'>Tuber</option>
-              <option value='g'>Gram</option>
-              <option value='rubber'>Rubber</option>
-              <option value='bunch'>Bunch</option>
-              <option value='crate'>Crate</option>
-              <option value='carton'>Carton</option>
+              <option value=''>Select Product Type</option>
+              <option value='drink'>Drink</option>
+              <option value='food'>Food</option>
+              <option value='snack'>Snack</option>
+              <option value='medicine'>Medicine</option>
+              <option value='other'>Other</option>
             </AvInput>
           </FormGroup>
           <FormGroup>
@@ -145,9 +136,8 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
               required
             >
               <option value=''>Select Product Category</option>
-              <option value='shop'>Shop</option>
-              <option value='book'>Book</option>
-              <option value='store'>Store</option>
+              <option value='consumable'>Consumable</option>
+              <option value='non-consumable'>Non-Consumable</option>
             </AvInput>
           </FormGroup>
           <FormGroup>
@@ -160,6 +150,108 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
               value={productData.description}
               onChange={e => setProductData({...productData, description: e.target.value})}
               required 
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for='availability'>Days Available</Label><br />
+            <CustomInput 
+              inline 
+              type='checkbox' 
+              id='monday' 
+              label='Monday' 
+              defaultChecked
+              onChange={e => {
+                const day = 'Monday'
+                if (e.target.checked) {
+                  setProductData({...productData, availability: [...productData.availability, day]})
+                } else {
+                  setProductData({...productData, availability: productData.availability.filter(d => d !== day)})
+                }
+              }} 
+            />
+            <CustomInput 
+              inline 
+              type='checkbox' 
+              id='tuesday' 
+              label='Tuesday'
+              onChange={e => {
+                const day = 'Tuesday'
+                if (e.target.checked) {
+                  setProductData({...productData, availability: [...productData.availability, day]})
+                } else {
+                  setProductData({...productData, availability: productData.availability.filter(d => d !== day)})
+                }
+              }}  
+            />
+            <CustomInput 
+              inline 
+              type='checkbox' 
+              id='wednesday' 
+              label='Wednesday'
+              onChange={e => {
+                const day = 'Wednesday'
+                if (e.target.checked) {
+                  setProductData({...productData, availability: [...productData.availability, day]})
+                } else {
+                  setProductData({...productData, availability: productData.availability.filter(d => d !== day)})
+                }
+              }}  
+            />
+            <CustomInput 
+              inline 
+              type='checkbox' 
+              id='thursday' 
+              label='Thursday'
+              onChange={e => {
+                const day = 'Thursday'
+                if (e.target.checked) {
+                  setProductData({...productData, availability: [...productData.availability, day]})
+                } else {
+                  setProductData({...productData, availability: productData.availability.filter(d => d !== day)})
+                }
+              }}  
+            />
+            <CustomInput 
+              inline 
+              type='checkbox' 
+              id='friday' 
+              label='Friday'
+              onChange={e => {
+                const day = 'Friday'
+                if (e.target.checked) {
+                  setProductData({...productData, availability: [...productData.availability, day]})
+                } else {
+                  setProductData({...productData, availability: productData.availability.filter(d => d !== day)})
+                }
+              }}  
+            />
+            <CustomInput 
+              inline 
+              type='checkbox' 
+              id='saturday' 
+              label='Saturday'
+              onChange={e => {
+                const day = 'Saturday'
+                if (e.target.checked) {
+                  setProductData({...productData, availability: [...productData.availability, day]})
+                } else {
+                  setProductData({...productData, availability: productData.availability.filter(d => d !== day)})
+                }
+              }}  
+            />
+            <CustomInput 
+              inline 
+              type='checkbox' 
+              id='sunday' 
+              label='Sunday'
+              onChange={e => {
+                const day = 'Sunday'
+                if (e.target.checked) {
+                  setProductData({...productData, availability: [...productData.availability, day]})
+                } else {
+                  setProductData({...productData, availability: productData.availability.filter(d => d !== day)})
+                }
+              }}  
             />
           </FormGroup>
           {/* <FormGroup>

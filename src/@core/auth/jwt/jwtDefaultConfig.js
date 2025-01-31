@@ -7,7 +7,7 @@ export default {
 	registerEndpoint: '/jwt/register',
 	refreshEndpoint: '/jwt/refresh-token',
 	logoutEndpoint: '/jwt/logout',
-	tuckShopLoginEndpoint: `${apiUrl}/login`,
+	tuckShopLoginEndpoint: `${apiUrl}`,
 
 	// ** This will be prefixed in authorization header with token
 	// ? e.g. Authorization: Bearer <token>

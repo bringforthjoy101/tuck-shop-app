@@ -80,6 +80,8 @@ const Login = props => {
   const { code } = useParams()
   const [phone, setPhone] = useState('')
 	const [password, setPassword] = useState('')
+  const [tagNumber, setTagNumber] = useState('')
+  const [type, setType] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const illustration = skin === 'dark' ? 'tuckshop-banner.png' : 'tuckshop-banner.png',
@@ -93,26 +95,41 @@ const Login = props => {
     if (errors && !errors.length) {
       setIsSubmitting(true)
       await useJwt
-        .login({ phone, password, code })
+        .login({ phone, password, code, tagNumber, type })
         .then(res => {
           console.log({res})
           if (res.data.status) {
-            const data = {
-              ...res.data.admin,
+
+            let data = {
               accessToken: res.data.token,
               refreshToken: res.data.token,
               ability: [{ action: "manage", subject: "all" }],
               avatar: "/demo/Appia-react-admin-dashboard-template/demo-1/static/media/avatar-s-11.1d46cc62.jpg",
               extras: { eCommerceCartItemsCount: 5 }
             }
+            if (res.data.admin) {
+              data = {...res.data.admin, ...data}
+            }
+            if (res.data.student) {
+              data = {...res.data.student, ...data}
+            }
+            if (res.data.parent) {
+              data = {...res.data.parent, ...data}
+            }
             console.log('data', data)
             dispatch(handleLogin(data))
             ability.update(data.ability)
             toast.success(
-              <ToastContentValid name={`${data.firstName} ${data.lastName}` || data.fullName || data.username || 'John Doe'} role={data.role || 'admin'} />,
+              <ToastContentValid name={data.fullName || `${data.firstName} ${data.lastName}` || 'John Doe'} role={data.role || 'admin'} />,
               { transition: Slide, hideProgressBar: true, autoClose: 2000 }
             )
-            window.location.href = getHomeRouteForLoggedInUser('admin')
+            if (data.isDefaultPassword) {
+              history.push('/pages/account-settings')
+            } else {
+              window.location.href = getHomeRouteForLoggedInUser('admin')
+            }
+           
+            
             // history.push(getHomeRouteForLoggedInUser('admin'))
         
           } else {
@@ -153,8 +170,18 @@ const Login = props => {
               Welcome to TuckShop 👋
             </CardTitle>
             <CardText className='mb-2'>Please sign-in to your account and start the adventure</CardText>
+
             <AvForm className='auth-login-form mt-2' onSubmit={handleSubmit}>
               <FormGroup>
+                <Label className="form-label" for="login-type">Type</Label>
+                <AvInput type="select" name="login-type" id="login-type" value={type} onChange={(e) => setType(e.target.value)}>
+                  <option value="">Select Type</option>
+                  <option value="parent">Parent</option>
+                  <option value="admin">Admin</option>
+                  <option value="student">Student</option>
+                </AvInput>
+              </FormGroup>
+              {['parent', 'admin'].includes(type) && (<FormGroup>
 								<Label className="form-label" for="login-phone">
 									Phone Number
 								</Label>
@@ -168,8 +195,23 @@ const Login = props => {
 									placeholder="07012345678"
 									onChange={(e) => setPhone(e.target.value)}
 								/>
-							</FormGroup>
-              <FormGroup>
+							</FormGroup>)}
+              {type === 'student' && (<FormGroup>
+								<Label className="form-label" for="login-tag-number">
+									Student ID
+								</Label>
+								<AvInput
+									required
+									autoFocus
+									type="text"
+									value={tagNumber}
+									id="login-tag-number"
+									name="login-tag-number"
+									placeholder="STUDENT ID"
+									onChange={(e) => setTagNumber(e.target.value)}
+								/>
+							</FormGroup>)}
+              {type && (<FormGroup>
                 <div className='d-flex justify-content-between'>
                   <Label className='form-label' for='login-password'>
                     Password
@@ -188,7 +230,7 @@ const Login = props => {
                   className='input-group-merge'
                   onChange={e => setPassword(e.target.value)}
                 />
-              </FormGroup>
+              </FormGroup>)}
               <FormGroup>
                 <CustomInput type='checkbox' className='custom-control-Primary' id='remember-me' label='Remember Me' />
               </FormGroup>

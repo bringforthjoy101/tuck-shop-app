@@ -15,7 +15,7 @@ import ReactPaginate from 'react-paginate'
 import { ChevronDown, Share, Printer, FileText } from 'react-feather'
 import Flatpickr from 'react-flatpickr'
 import DataTable from 'react-data-table-component'
-import { selectThemeColors } from '@utils'
+import { selectThemeColors, apiRequest } from '@utils'
 import PickerRange from '../../../forms/form-elements/datepicker/PickerRange'
 import '@styles/react/libs/flatpickr/flatpickr.scss'
 import {
@@ -52,9 +52,22 @@ const TransactionTable = () => {
 	const [currentPage, setCurrentPage] = useState(1)
 	const [rowsPerPage, setRowsPerPage] = useState(10)
 	const [picker, setPicker] = useState([new Date(), new Date()])
+	const [years, setYears] = useState([])
+	const [groups, setGroups] = useState([])
+	const [selectedYear, setSelectedYear] = useState({ value: '', label: 'Select Year' })
+	const [selectedGroup, setSelectedGroup] = useState({ value: '', label: 'Select Group' })
+	const classObj = {
+		7: 'JSS 1',
+		8: 'JSS 2',
+		9: 'JSS 3',
+		10: 'SSS 1',
+		11: 'SSS 2',
+		12: 'SSS 3',
+		0: 'Graduated'
+	  }
 
 	useEffect(() => {
-		dispatch(getAllData())
+		dispatch(getAllData({startDate: null, endDate: null, year: null, group: null}))
 		dispatch(
 			getFilteredData(store.allData, {
 				page: currentPage,
@@ -62,6 +75,17 @@ const TransactionTable = () => {
 				q: searchTerm,
 			})
 		)
+
+		// Fetch years and groups
+		const fetchYearsAndGroups = async () => {
+			const response = await apiRequest({ url: '/students/years-and-groups', method: 'GET' })
+			if (response && response.data && response.data.status) {
+				const { years: yearsData, groups: groupsData } = response.data.data
+				setYears(yearsData.map(year => ({ value: year, label: `Year ${year} - ${classObj[year]}` })))
+				setGroups(groupsData.map(group => ({ value: group, label: group })))
+			}
+		}
+		fetchYearsAndGroups()
 	}, [dispatch])
 
 	// ** Function in get data on page change
@@ -107,7 +131,14 @@ const TransactionTable = () => {
 	const handleRangeSearch = (date) => {
 		const range = date.map((d) => new Date(d).getTime())
 		setPicker(range)
-		dispatch(getFilteredRageData(store.allData, range, { page: currentPage, perPage: rowsPerPage }))
+
+		dispatch(getAllData({
+			startDate: range[0],
+			endDate: range[1],
+			year: selectedYear.value,
+			group: selectedGroup.value
+		}))
+		dispatch(getFilteredData(store.allData, { page: currentPage, perPage: rowsPerPage, q: searchTerm }))
 	}
 
 	const filteredData = store.allData.filter((item) => item.orderNumber.toLowerCase() || moment(item.createdAt).format('lll'))
@@ -265,7 +296,7 @@ const TransactionTable = () => {
 				</CardHeader>
 				<CardBody>
 					<Row form className="mt-1 mb-50">
-						<Col lg="4" md="6">
+						<Col lg="3" md="6">
 							<FormGroup>
 								<Label for="select">Search Table:</Label>
 								<Input
@@ -278,13 +309,77 @@ const TransactionTable = () => {
 								/>
 							</FormGroup>
 						</Col>
-						<Col lg="4" md="6">
+						<Col lg="3" md="6">
+							<FormGroup>
+								<Label for="year">Select Year:</Label>
+								<Select
+									theme={selectThemeColors}
+									isClearable={false}
+									className="react-select"
+									classNamePrefix="select"
+									id="year"
+									options={years}
+									value={selectedYear}
+									onChange={(data) => {
+										setSelectedYear(data)
+										dispatch(getAllData({
+											year: data.value,
+											group: selectedGroup.value
+										}))
+										dispatch(
+											getFilteredData(store.allData, {
+												page: currentPage,
+												perPage: rowsPerPage,
+												status: currentStatus.value,
+												year: data.value,
+												group: selectedGroup.value,
+												q: searchTerm,
+											})
+										)
+									}}
+								/>
+							</FormGroup>
+						</Col>
+						<Col lg="3" md="6">
+							<FormGroup>
+								<Label for="group">Select Group:</Label>
+								<Select
+									theme={selectThemeColors}
+									isClearable={false}
+									className="react-select"
+									classNamePrefix="select"
+									id="group"
+									options={groups}
+									value={selectedGroup}
+									onChange={(data) => {
+										setSelectedGroup(data)
+										dispatch(getAllData({
+											year: selectedYear.value,
+											group: data.value
+										}))
+										dispatch(
+											getFilteredData(store.allData, {
+												page: currentPage,
+												perPage: rowsPerPage,
+												status: currentStatus.value,
+												year: selectedYear.value,
+												group: data.value,
+												q: searchTerm,
+											})
+										)
+									}}
+								/>
+							</FormGroup>
+						</Col>
+						<Col lg="3" md="6">
 							<Label for="range-picker">Select Range</Label>
 							<Flatpickr
 								value={picker}
 								id="range-picker"
 								className="form-control"
-								onChange={(date) => handleRangeSearch(date)}
+								onChange={(date) => {
+									handleRangeSearch(date)
+								}}
 								options={{
 									mode: 'range',
 									defaultDate: ['2020-02-01', '2020-02-15'],

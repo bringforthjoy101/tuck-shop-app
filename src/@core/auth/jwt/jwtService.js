@@ -98,7 +98,17 @@ export default class JwtService {
   // }
 
   login(...args) {
-    return axios.post(this.jwtConfig.tuckShopLoginEndpoint, ...args)
+    console.log({ ...args })
+    let url = ''
+    if (args[0].type === 'student') {
+      url = `${this.jwtConfig.tuckShopLoginEndpoint}/student-login`
+    } else if (args[0].type === 'parent') {
+      url = `${this.jwtConfig.tuckShopLoginEndpoint}/parent-login`
+    } else if (args[0].type === 'admin') {
+      url = `${this.jwtConfig.tuckShopLoginEndpoint}/login`
+    }
+    console.log({ url }, ...args)
+    return axios.post(url, ...args)
   }
 
   register(...args) {

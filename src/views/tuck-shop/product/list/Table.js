@@ -34,7 +34,9 @@ const ProductTable = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
-  const [currentCategory, setCurrentCategory] = useState({ value: '', label: 'Select Status', number: 0 })
+  const [currentCategory, setCurrentCategory] = useState({ value: '', label: 'Select Category', number: 0 })
+  const [currentType, setCurrentType] = useState({ value: '', label: 'Select Type', number: 0 })
+  const [currentStatus, setCurrentStatus] = useState({ value: '', label: 'Select Status', number: 0 })
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   // ** Function to toggle sidebar
@@ -47,6 +49,8 @@ const ProductTable = () => {
         page: currentPage,
         perPage: rowsPerPage,
         category: currentCategory.value,
+        type: currentType.value,
+        status: currentStatus.value,
         q: searchTerm
       })
     )
@@ -54,9 +58,23 @@ const ProductTable = () => {
 
   const categoryOptions = [
     { value: '', label: 'Select Category', number: 0 },
-    { value: 'shop', label: 'Shop', number: 1 },
-    { value: 'store', label: 'Store', number: 2 },
-    { value: 'book', label: 'Book', number: 3 }
+    { value: 'consumable', label: 'Consumable', number: 1 },
+    { value: 'non-consumable', label: 'Non-Consumable', number: 2 },
+  ]
+
+  const typeOptions = [
+    { value: '', label: 'Select Type', number: 0 },
+    { value: 'drink', label: 'Drink', number: 1 },
+    { value: 'food', label: 'Food', number: 2 },
+    { value: 'snack', label: 'Snack', number: 3 },
+    { value: 'medicine', label: 'Medicine', number: 4 },
+    { value: 'other', label: 'Other', number: 5 },
+  ]
+
+  const statusOptions = [
+    { value: '', label: 'Select Status', number: 0 },
+    { value: 'available', label: 'Available', number: 1 },
+    { value: 'unavailable', label: 'Unavailable', number: 2 },
   ]
 
   // ** Function in get data on page change
@@ -66,6 +84,8 @@ const ProductTable = () => {
         page: page.selected + 1,
         perPage: rowsPerPage,
         category: currentCategory.value,
+        type: currentType.value,
+        status: currentStatus.value,
         q: searchTerm
       })
     )
@@ -80,6 +100,8 @@ const ProductTable = () => {
         page: currentPage,
         perPage: value,
         category: currentCategory.value,
+        type: currentType.value,
+        status: currentStatus.value,
         q: searchTerm
       })
     )
@@ -94,13 +116,15 @@ const ProductTable = () => {
         page: currentPage,
         perPage: rowsPerPage,
         category: currentCategory.value,
+        type: currentType.value,
+        status: currentStatus.value,
         q: val
       })
     )
   }
 
   const filteredData = store.allData.filter( 
-    item => (item.name?.toLowerCase())
+    item => (item.name?.toLowerCase().includes(searchTerm.toLowerCase()))
   )
 
   // ** Custom Pagination
@@ -239,6 +263,8 @@ const ProductTable = () => {
   const dataToRender = () => {
     const filters = {
       category: currentCategory.value,
+      type: currentType.value,
+      status: currentStatus.value,
       q: searchTerm
     }
 
@@ -262,7 +288,20 @@ const ProductTable = () => {
           <CardTitle tag='h4'>Search Filter</CardTitle>
         </CardHeader>
         <CardBody>
-        <Row  form className='mt-1 mb-50'>
+          <Row  form className='mt-1 mb-50'>
+            <Col lg='4' md='6'>
+              <FormGroup>
+                <Label for='search-table'>Search Table:</Label>
+                <Input
+                id='search-table'
+                className='ml-50 w-100'
+                type='text'
+                value={searchTerm}
+                placeholder='Search'
+                onChange={e => handleFilter(e.target.value)}
+              />
+              </FormGroup>
+            </Col>
             <Col lg='4' md='6'>
               <FormGroup>
                 <Label for='select'>Select Category:</Label>
@@ -291,15 +330,54 @@ const ProductTable = () => {
             </Col>
             <Col lg='4' md='6'>
               <FormGroup>
-                <Label for='search-table'>Search Table:</Label>
-                <Input
-                id='search-table'
-                className='ml-50 w-100'
-                type='text'
-                value={searchTerm}
-                placeholder='Search'
-                onChange={e => handleFilter(e.target.value)}
-              />
+                <Label for='select'>Select Type:</Label>
+                <Select
+                  theme={selectThemeColors}
+                  isClearable={false}
+                  className='react-select'
+                  classNamePrefix='select'
+                  id='select'
+                  options={typeOptions}
+                  value={currentType}
+                  onChange={data => {
+                    setCurrentType(data)
+                    console.log('ddada', data)
+                    dispatch(
+                      getFilteredData(store.allData, {
+                        page: currentPage,
+                        perPage: rowsPerPage,
+                        type: data.value,
+                        q: searchTerm
+                      })
+                    )
+                  }}
+                />
+              </FormGroup>
+            </Col>
+            <Col lg='4' md='6'>
+              <FormGroup>
+                <Label for='select'>Select Status:</Label>
+                <Select
+                  theme={selectThemeColors}
+                  isClearable={false}
+                  className='react-select'
+                  classNamePrefix='select'
+                  id='select'
+                  options={statusOptions}
+                  value={currentStatus}
+                  onChange={data => {
+                    setCurrentStatus(data)
+                    console.log('ddada', data)
+                    dispatch(
+                      getFilteredData(store.allData, {
+                        page: currentPage,
+                        perPage: rowsPerPage,
+                        status: data.value,
+                        q: searchTerm
+                      })
+                    )
+                  }}
+                />
               </FormGroup>
             </Col>
           </Row>
@@ -307,8 +385,8 @@ const ProductTable = () => {
       </Card>
       <Card>
       <Row className='mx-0 mt-3'>
-      <Col xl='4' sm="12" className='d-flex align-items-center pl-3'>
-          <div className='d-flex align-items-center w-100'>
+        <Col sm='12' lg='4' className='d-flex align-items-center'>
+          <div className='d-flex align-items-center'>
             <Label for='rows-per-page'>Show</Label>
             <CustomInput
               className='form-control mx-50'
@@ -317,7 +395,7 @@ const ProductTable = () => {
               value={rowsPerPage}
               onChange={handlePerPage}
               style={{
-                width: '10rem',
+                width: '5rem',
                 padding: '0 0.8rem',
                 backgroundPosition: 'calc(100% - 3px) 11px, calc(100% - 20px) 13px, 100% 0'
               }}
@@ -329,38 +407,30 @@ const ProductTable = () => {
             <Label for='rows-per-page'>Entries</Label>
           </div>
         </Col>
-        <Col
-          xl='4' sm='12'
-          className='d-flex align-items-sm-center justify-content-lg-end justify-content-center pr-lg-3 p-0 mt-lg-0 mt-1'
-        >
-         <UncontrolledButtonDropdown>
-              <DropdownToggle className="mr-lg-0 mr-5" color='secondary' caret outline>
-                <Share size={15} />
-                <span className='align-middle ml-lg-50'>Download Table</span>
-              </DropdownToggle>
-              <DropdownMenu right>
-                <DropdownItem className='w-100' onClick={() => downloadCSV(store.allData)}>
-                  <FileText size={15} />
-                  <span className='align-middle ml-50'>CSV</span>
-                </DropdownItem>
-                <DropdownItem className='w-100' onClick={() => downloadPDF()}>
-                  <FileText size={15} />
-                  <span className='align-middle ml-50'>PDF</span>
-                </DropdownItem>
-                {/* <DropdownItem className='w-100' onClick={() => printOrder(filteredData)}>
-                  <Printer size={15} />
-                  <span className='align-middle ml-50'>Print</span>
-                </DropdownItem> */}
-              </DropdownMenu>
-            </UncontrolledButtonDropdown>
+        <Col sm='12' lg='4' className='d-flex align-items-center justify-content-center'>
+          <UncontrolledButtonDropdown>
+            <DropdownToggle color='secondary' caret outline>
+              <Share size={15} />
+              <span className='align-middle ml-50'>Download Table</span>
+            </DropdownToggle>
+            <DropdownMenu right>
+              <DropdownItem className='w-100' onClick={() => downloadCSV(store.allData)}>
+                <FileText size={15} />
+                <span className='align-middle ml-50'>CSV</span>
+              </DropdownItem>
+              <DropdownItem className='w-100' onClick={() => downloadPDF()}>
+                <FileText size={15} />
+                <span className='align-middle ml-50'>PDF</span>
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledButtonDropdown>
         </Col>
-        <Col
-          xl='4' sm='12'
-          className='d-flex align-items-sm-center justify-content-lg-end justify-content-start flex-lg-nowrap flex-wrap flex-sm-row flex-column pr-lg-1 p-0 mt-lg-0 mt-1'
-        >
-          {
-            userData?.role === 'manager' ? <Button.Ripple color='primary' onClick={toggleSidebar}> Add New Product </Button.Ripple> : ''
-          }
+        <Col sm='12' lg='4' className='d-flex align-items-center justify-content-lg-end justify-content-start mt-sm-0 mt-1'>
+          {userData?.role === 'manager' && (
+            <Button.Ripple color='primary' onClick={toggleSidebar}>
+              Add New Product
+            </Button.Ripple>
+          )}
         </Col>
       </Row>
         <DataTable

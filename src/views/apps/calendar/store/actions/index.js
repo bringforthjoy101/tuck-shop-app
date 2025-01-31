@@ -1,26 +1,68 @@
 import axios from 'axios'
+import { apiRequest, swal } from '@utils'
+import { toast } from 'react-toastify'
 
 // ** Fetch Events
-export const fetchEvents = calendars => {
+export const fetchEvents = ({studentId}) => {
   return dispatch => {
-    axios.get('/apps/calendar/events', { calendars }).then(response => {
-      dispatch({
-        type: 'FETCH_EVENTS',
-        events: response.data
-      })
+    // console.log(calendars)
+    apiRequest({ url: `/orders/student/${studentId}`, method: 'GET' }, dispatch).then(response => {
+      console.log(response.data.data)
+      if (response.data.data) {
+        const events = response.data.data.orders?.map(event => ({
+          id: event?.id,
+          url: '',
+          title: event?.package?.name,
+          start: new Date(event?.orderDate),
+          end: new Date(event?.orderDate),
+          allDay: true,
+          extendedProps: { calendar: 'Personal', amount: event?.amount, products: event?.products, category: event?.category }
+        })) || []
+        dispatch({
+          type: 'FETCH_EVENTS',
+          events
+        })
+      }
     })
+    // axios.get('/apps/calendar/events', { calendars }).then(response => {
+    //   console.log({ response })
+    //   dispatch({
+    //     type: 'FETCH_EVENTS',
+    //     events: response.data
+    //   })
+    // })
   }
 }
 
 // ** Add Event
-export const addEvent = event => {
+export const addEvent = events => {
   return (dispatch, getState) => {
-    axios.post('/apps/calendar/add-event', { event }).then(() => {
-      dispatch({
-        type: 'ADD_EVENT'
-      })
-      dispatch(fetchEvents(getState().calendar.selectedCalendars))
+    console.log({events})
+    const orderedPackages = events.map(event => ({
+      packageId: event.extendedProps.packageId,
+      studentId: event.extendedProps.studentId,
+      orderDate: new Date(event.start).toISOString().split('T')[0]
+    }))
+    const body = JSON.stringify({orderedPackages})
+
+    apiRequest({ url: '/orders/package-create', method: 'POST', body }, dispatch).then((response) => {
+      
+      if (response.data.status) {
+        swal('Great job!', response.data.message, 'success')
+        dispatch({
+          type: 'ADD_EVENT'
+        })
+        dispatch(fetchEvents({studentId: events[0].extendedProps.studentId}))
+      } else {
+        swal('Oops!', 'Something went wrong! Please try again.', 'error')
+      }
     })
+    // axios.post('/apps/calendar/add-event', { event }).then(() => {
+    //   dispatch({
+    //     type: 'ADD_EVENT'
+    //   })
+    //   dispatch(fetchEvents(getState().calendar.selectedCalendars))
+    // })
   }
 }
 
@@ -62,7 +104,8 @@ export const removeEvent = id => {
   return dispatch => {
     axios.delete('/apps/calendar/remove-event', { id }).then(() => {
       dispatch({
-        type: 'REMOVE_EVENT'
+        type: 'REMOVE_EVENT',
+        id
       })
     })
   }

@@ -22,6 +22,8 @@ const Cart = (props) => {
 
 	const history = useHistory()
 
+	const userData = JSON.parse(localStorage.getItem('userData'))
+
 	// ** Function to convert Date
 	const formatDate = (value, formatting = { month: 'short', day: 'numeric', year: 'numeric' }) => {
 		if (!value) return value
@@ -44,22 +46,28 @@ const Cart = (props) => {
 			return (
 				<Card key={item.name} className="ecommerce-card">
 					<div className="item-img">
-						<Link to={`/apps/ecommerce/product/${item.id}`}>
-							<img className="img-fluid" src={item.image} alt={item.name} />
+						<Link to={`#`}>
+							<img className="img-fluid" src={`https://picsum.photos/62/62?random=${item.id}`} alt={item.name} />
 						</Link>
 					</div>
 					<CardBody>
 						<div className="item-name">
 							<h6 className="mb-0">
-								<Link to={`/apps/ecommerce/product/${item.id}`}>{item.name}</Link>
+								<Link to={`#`}>{item.name}</Link>
 							</h6>
-							{/* <span className='item-company'>
-                By
-                <a className='ml-25' href='/' onClick={e => e.preventDefault()}>
-                  {item.brand}
-                </a>
-              </span> */}
-							<div className="item-rating">
+							<span className='item-company'>
+								{/* By */}
+								{/* <a className='ml-25' href='/' onClick={e => e.preventDefault()}> */}
+								{item.description}
+								{/* </a> */}
+							</span>
+							<span className='item-company'>
+								{/* By */}
+								{/* <a className='ml-25' href='/' onClick={e => e.preventDefault()}> */}
+								{item.availability.join(', ')}
+								{/* </a> */}
+							</span>
+							{/* <div className="item-rating">
 								<ul className="unstyled-list list-inline">
 									{new Array(5).fill().map((listItem, index) => {
 										return (
@@ -74,7 +82,7 @@ const Cart = (props) => {
 										)
 									})}
 								</ul>
-							</div>
+							</div> */}
 						</div>
 						{/* <span className='text-success mb-1'>In Stock</span> */}
 						<div className="item-quantity">
@@ -126,20 +134,50 @@ const Cart = (props) => {
 	const [selectedOption, setSelectedOption] = useState('')
 	const [orderData, setOrderData] = useState({
 		amount,
-		products,
-		studentId: selectedOption,
+		orderedProducts: products.map(product => ({
+			id: product.id,
+			quantity: product.qty
+		})),
+		studentId: null
 	})
 
-	// ** Get data on mount
-	useEffect(() => {
-		dispatch(getAllData(JSON.parse(localStorage.getItem('userData')).role))
-		setOrderData({ ...orderData, amount, studentId: selectedOption.value, products })
-	}, [dispatch, amount, products, selectedOption])
+	const [packagedOrderData, setPackagedOrderData] = useState({
+		name: '',
+		description: '',
+		category: '',
+		studentId: null,
+		productIds: products.map(product => product.id)
+	})
+
+	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [isGeneralOrder, setIsGeneralOrder] = useState(false)
 
 	const store = useSelector((state) => state.students)
 
+	// ** Get data on mount
+	useEffect(() => {
+		if (store.allData.length === 0) {
+			dispatch(getAllData())
+		}
+		if (userData?.type !== 'admin') {
+			setIsGeneralOrder(true)
+		}
+		if (selectedOption) {
+			setOrderData(prev => ({ ...prev, studentId: selectedOption.value }))
+			setPackagedOrderData(prev => ({ ...prev, studentId: selectedOption.value }))
+		}
+
+		if (userData?.type === 'student') {
+			const student = store.allData?.find(student => student.id === userData?.id)
+			setSelectedOption({ value: student?.id, label: `${student?.firstName} ${student?.lastName} (₦${student?.wallet.toLocaleString()})` })
+			setPackagedOrderData(prev => ({ ...prev, studentId: student?.id }))
+			
+		}
+	}, [dispatch, selectedOption])
+
 	const renderStudents = (students) => {
-		console.log(students)
+		// console.log(students)
+		
 		return students
 			.filter((student) => student.status === 'active')
 			.map((student) => {
@@ -147,24 +185,41 @@ const Cart = (props) => {
 			})
 	}
 
-	const [isSubmitting, setIsSubmitting] = useState(false)
+	// Handle category selection
+	const handleCategoryChange = (option) => {
+		setPackagedOrderData(prev => ({ ...prev, category: option.value }))
+	}
 
 	// ** Function to handle form submit
 	const onSubmit = async (event, errors) => {
 		event.preventDefault()
 		console.log({ errors })
 		setIsSubmitting(true)
+		const submitData = isGeneralOrder ? packagedOrderData : orderData
+			console.log({ submitData })
+			// Check if all required fields have values
+			const requiredFields = isGeneralOrder ? ['name', 'description', 'category', 'studentId', 'productIds'] : ['amount', 'products', 'studentId']
+			const hasEmptyFields = requiredFields.some(field => {
+				const value = submitData[field]
+				return value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0)
+			})
+			console.log({ hasEmptyFields })
+		if ((errors && errors.length) || hasEmptyFields) {
+			setIsSubmitting(false)
+			swal('Error', 'Please fill in all required fields', 'error')
+			return
+		}
 		if (errors && !errors.length) {
 			setIsSubmitting(true)
-			console.log({ orderData })
-			const body = JSON.stringify(orderData)
+			const prepData = isGeneralOrder ? {...submitData, productIds: products.map(product => product.id)} : { ...submitData, products: products.map(product => ({ id: product.id, quantity: product.qty })) }
+			
+			const body = JSON.stringify(prepData)
 			try {
-				const response = await apiRequest({ url: '/orders/create', method: 'POST', body }, dispatch)
+				const response = await apiRequest({ url: isGeneralOrder ? '/packages/create' : '/orders/create', method: 'POST', body }, dispatch)
 				console.log({ response })
 				if (response.data.status) {
 					setIsSubmitting(false)
 					swal('Great job!', response.data.message, 'success')
-					dispatch(getAllData())
 					dispatch(deleteAllCartItem())
 					setOrderData({
 						amount,
@@ -175,13 +230,13 @@ const Cart = (props) => {
 				} else {
 					setIsSubmitting(false)
 					swal('Oops!', response.data.message, 'error')
-					dispatch(deleteAllCartItem())
-					setOrderData({
-						amount,
-						products,
-						studentId: selectedOption?.value,
-					})
-					history.push(`/apps/ecommerce/shop`)
+					// dispatch(deleteAllCartItem())
+					// setOrderData({
+					// 	amount,
+					// 	products,
+					// 	studentId: selectedOption?.value,
+					// })
+					// history.push(`/apps/ecommerce/shop`)
 				}
 			} catch (error) {
 				setIsSubmitting(false)
@@ -197,29 +252,82 @@ const Cart = (props) => {
 				<Card>
 					<CardBody>
 						<AvForm onSubmit={onSubmit}>
+							{userData?.type === 'admin' && <FormGroup className='mb-2'>
+								<div className='d-flex align-items-center'>
+									<div className='custom-control custom-checkbox'>
+										<Input
+											type='checkbox'
+											className='custom-control-input'
+											id='packagedOrder'
+											checked={isGeneralOrder}
+											onChange={e => setIsGeneralOrder(e.target.checked)}
+										/>
+										<Label className='custom-control-label' for='packagedOrder'>
+											This is a packaged order
+										</Label>
+									</div>
+								</div>
+							</FormGroup>}
+
+							{isGeneralOrder && (
+								<div className='packaged-order-section mb-1'>
+									<FormGroup>
+										<Label for="name">Package Name</Label>
+										<AvInput
+											type="text"
+											id="name"
+											name="name"
+											value={packagedOrderData.name}
+											onChange={e => setPackagedOrderData({...packagedOrderData, name: e.target.value})}
+											required
+										/>
+									</FormGroup>
+									<FormGroup>
+										<Label for="description">Description</Label>
+										<AvInput
+											type="textarea"
+											id="description"
+											name="description"
+											value={packagedOrderData.description}
+											onChange={e => setPackagedOrderData({...packagedOrderData, description: e.target.value})}
+											required
+										/>
+									</FormGroup>
+									<FormGroup>
+										<Label for="category">Category</Label>
+										<Select
+											theme={selectThemeColors}
+											className="react-select"
+											classNamePrefix="select"
+											options={[
+												{ value: 'morning', label: 'Morning' }, 
+												{ value: 'evening', label: 'Evening' }
+											]}
+											isClearable={false}
+											value={packagedOrderData.category ? { 
+												value: packagedOrderData.category, 
+												label: packagedOrderData.category.charAt(0).toUpperCase() + packagedOrderData.category.slice(1) 
+											} : null}
+											onChange={handleCategoryChange}
+											required
+										/>
+									</FormGroup>
+								</div>
+							)}
+
 							<FormGroup>
 								<Label for="studentId">Student</Label>
 								<Select
 									theme={selectThemeColors}
 									className="react-select"
 									classNamePrefix="select"
-									defaultValue={selectedOption}
+									value={selectedOption}
 									options={renderStudents(store.allData)}
 									isClearable={false}
-									// value={orderData.studentId}
 									onChange={setSelectedOption}
+									required
+									disabled={userData?.type === 'student'}
 								/>
-								{/* <AvInput 
-                  type='select' 
-                  id='studentId' 
-                  name='studentId' 
-                  value={orderData.studentId}
-                  onChange={e => setOrderData({...orderData, studentId: e.target.value})}
-                  required
-                >
-                  <option value=''>Select Student</option>
-                  {renderStudents(store.allData)}
-                </AvInput> */}
 							</FormGroup>
 
 							<hr />
@@ -236,7 +344,6 @@ const Cart = (props) => {
 									block
 									type="submit"
 									disabled={isSubmitting}
-									// onClick={onSubmit}
 								>
 									{isSubmitting && <Spinner color="white" size="sm" />}
 									Place Order

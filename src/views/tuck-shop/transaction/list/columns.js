@@ -39,7 +39,7 @@ export const columns = [
 		minWidth: '150px',
 		selector: 'transactionId',
 		sortable: true,
-		cell: (row) => row.transactionId,
+		cell: (row) => `#${row.transactionId}`,
 	},
 	{
 		name: 'Student',
@@ -70,6 +70,7 @@ export const columns = [
 			</Badge>
 		),
 	},
+
 	{
 		name: 'Amount',
 		minWidth: '150px',
@@ -82,7 +83,7 @@ export const columns = [
 		minWidth: '150px',
 		selector: 'balance',
 		sortable: true,
-		cell: (row) => <span className="text-capitalize">{row?.balance?.toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}</span>,
+		cell: (row) => <span className="text-capitalize">{row?.postBalance?.toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}</span>,
 	},
 	// {
 	//   name: 'Status',
@@ -109,7 +110,7 @@ export const columns = [
 		sortable: true,
 		cell: (row) => (
 			<span className="font-weight-bold">
-				{row.admin.firstName} {row.admin.lastName}
+				{row.admin?.fullName || 'Self'}
 			</span>
 		),
 	},

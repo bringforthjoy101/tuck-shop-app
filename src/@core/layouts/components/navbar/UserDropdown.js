@@ -37,8 +37,8 @@ const UserDropdown = () => {
     <UncontrolledDropdown tag='li' className='dropdown-user nav-item'>
       <DropdownToggle href='/' tag='a' className='nav-link dropdown-user-link' onClick={e => e.preventDefault()}>
         <div className='user-nav d-sm-flex d-none'>
-          <span className='user-name font-weight-bold text-capitalize'>{`${userData?.firstName} ${userData?.lastName}` || 'Admin'}</span>
-          <span className='user-status text-capitalize'>{(userData && userData.role) || 'Admin'}</span>
+          <span className='user-name font-weight-bold text-capitalize'>{userData?.fullName || `${userData?.firstName} ${userData?.lastName}` || 'Admin'}</span>
+          <span className='user-status text-capitalize'>{(userData && userData.role) || userData?.type.toUpperCase() || 'Admin'}</span>
         </div>
         <Avatar img={Logo} imgHeight='40' imgWidth='40' status='online' />
       </DropdownToggle>

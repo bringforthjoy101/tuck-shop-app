@@ -14,7 +14,7 @@ const MySwal = withReactContent(Swal)
 
 // ** Third Party Components
 import { Card, CardBody, CardText, Button, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Label, FormGroup, CustomInput } from 'reactstrap'
-import { Pocket, Award, Hexagon, UserPlus, Check, Star, Flag, Phone } from 'react-feather'
+import { Pocket, Award, Hexagon, UserPlus, Check, Star, Flag, Phone, Smile } from 'react-feather'
 import CardTitle from 'reactstrap/lib/CardTitle'
 import { AvForm, AvInput } from 'availity-reactstrap-validation-safe'
 
@@ -145,11 +145,21 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
       }
   }
 
+  const classObj = {
+    7: 'JSS 1',
+    8: 'JSS 2',
+    9: 'JSS 3',
+    10: 'SSS 1',
+    11: 'SSS 2',
+    12: 'SSS 3',
+    0: 'Graduated'
+  }
+
   return (
     <Card>
       <CardBody>
-        <Row>
-          <Col xl='6' lg='12' className='d-flex flex-column justify-content-between border-container-lg'>
+        <Row className='flex-column flex-lg-row'>
+          <Col xs='12' lg='6' className='d-flex flex-column justify-content-between border-container-lg mb-2 mb-lg-0'>
             <div className='user-avatar-section'>
               <div className='d-flex justify-content-start'>
               {renderStudentImg()}
@@ -157,13 +167,10 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                   <div className='user-info mb-1'>
                     <h4 className='mb-0'>{studentDetails !== null ? `${studentDetails.firstName} ${studentDetails.lastName}` : 'Student Name'}</h4>
                     <CardText tag='span' className='text-captalize'>
-                      {studentDetails?.class} class
+                      {Number(studentDetails.year) !== 0 ? `${classObj[studentDetails.year]} ${studentDetails.group}` : 'Graduated'} class
                     </CardText>
                   </div>
                   <div className='d-flex flex-wrap align-items-center'>
-                    {/* <Button.Ripple tag={Link} to={`/student/edit/${studentDetails.id}`} disabled color='primary'>
-                      Edit
-                    </Button.Ripple> */}
                     {userRole === 'manager' || userRole === 'bursary' ? <Button.Ripple className='text-center' color='primary' onClick={() => setFormModal(!formModal)}>
                       Edit Student
                     </Button.Ripple> : ''}
@@ -279,45 +286,6 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                                 />
                               </FormGroup>
                             </Col>
-                            {/* <Col xl='6' lg='12'>
-                              <FormGroup>
-                                <Label for='year'>Year</Label>
-                                <AvInput
-                                  type='select'
-                                  id='year'
-                                  name='year'
-                                  value={studentDetails.year}
-                                  onChange={e => setUserData({ ...userData, year: e.target.value })}
-                                  required
-                                >
-                                  <option value={studentDetails.year}>{studentDetails.year}</option>
-                                  <option value='7'>7</option>
-                                  <option value='8'>8</option>
-                                  <option value='9'>9</option>
-                                  <option value='10'>10</option>
-                                  <option value='11'>11</option>
-                                  <option value='12'>12</option>
-                                </AvInput>
-                              </FormGroup>
-                            </Col> */}
-                            {/* <Col xl='6' lg='12'>
-                              <FormGroup>
-                                <Label for='group'>Group</Label>
-                                <AvInput
-                                  type='select'
-                                  id='group'
-                                  name='group'
-                                  value={studentDetails.group}
-                                  onChange={e => setUserData({ ...userData, group: e.target.value })}
-                                  required
-                                >
-                                  <option value={studentDetails.group}>{studentDetails.group}</option>
-                                  <option value='A'>A</option>
-                                  <option value='W'>W</option>
-                                  <option value='R'>R</option>
-                                </AvInput>
-                              </FormGroup>
-                            </Col> */}
                             <Col xl='6' lg='12'>
                               <FormGroup>
                                 <Label for='status'>User Status</Label>
@@ -348,15 +316,12 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                     {userRole === 'manager' || userRole === 'bursary' ? <Button.Ripple className='ml-1' color='danger' outline onClick={() => handleDelete(studentDetails.id)}>
                       Delete
                     </Button.Ripple> : ''}
-                    {/* <Button.Ripple className='ml-1' color='danger' outline onClick={() => handleDelete(studentDetails.id)}>
-                      Delete
-                    </Button.Ripple> */}
                   </div>
                 </div>
               </div>
             </div>
-            <div className='d-flex align-items-center user-total-numbers'>
-              <div className='d-flex align-items-center mr-2'>
+            <div className='d-flex flex-wrap align-items-center user-total-numbers'>
+              <div className='d-flex align-items-center mr-2 mb-2 mb-sm-0'>
                 <div className='color-box bg-light-primary'>
                   <Pocket className='text-primary' />
                 </div>
@@ -365,7 +330,7 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                   <small>Pocket Money</small>
                 </div>
               </div>
-              <div className='d-flex align-items-center'>
+              <div className='d-flex align-items-center mr-2 mb-2 mb-sm-0'>
                 <div className='color-box bg-light-success'>
                   <Pocket className='text-success' />
                 </div>
@@ -374,46 +339,78 @@ const UserInfoCard = ({ studentDetails, userRole }) => {
                   <small>Total Spent</small>
                 </div>
               </div>
+              <div className='d-flex align-items-center mt-2 mb-2 mb-sm-0'>
+                <div className='color-box bg-light-info'>
+                  <Smile className='text-info' />
+                </div>
+                <div className='ml-1'>
+                  <h5 className='mb-0'>{studentDetails.accountNumber ? `${studentDetails.accountNumber} - ${studentDetails.bank}` : 'N/A'}</h5>
+                  <small>Bank Account Details</small>
+                </div>
+              </div>
             </div>
             
           </Col>
-          <Col xl='6' lg='12' className='mt-2 mt-xl-0'>
-            <div className='user-info-wrapper'>
-                <div className='d-flex flex-wrap align-items-center mt-0'>
-                  <div className='user-info-title'>
-                    <Award className='mr-1' size={14} />
-                    <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
-                      Class
-                </CardText>
+          <Col xs='12' lg='6'>
+            <div className='user-info-wrapper d-flex flex-column flex-sm-row justify-content-between'>
+                <div className='mb-2 mb-sm-0'>
+                  <div className='d-flex flex-wrap align-items-center mt-0'>
+                    <div className='user-info-title'>
+                      <Hexagon className='mr-1' size={14} />
+                      <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
+                        Student Type
+                      </CardText>
+                    </div>
+                    <CardText className='text-capitalize mb-0'>{studentDetails?.type}</CardText>
                   </div>
-                  <CardText className='mb-0 text-capitalize'>{studentDetails?.class} Class</CardText>
+                  <div className='d-flex flex-wrap align-items-center mt-1'>
+                    <div className='user-info-title'>
+                      <Star className='mr-1' size={14} />
+                      <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
+                        Gender
+                      </CardText>
+                    </div>
+                    <CardText className='text-capitalize mb-0'>{studentDetails?.gender}</CardText>
+                  </div>
+                  <div className='d-flex flex-wrap align-items-center mt-1'>
+                    <div className='user-info-title'>
+                      <UserPlus className='mr-1' size={14} />
+                      <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
+                        Tag Number
+                      </CardText>
+                    </div>
+                    <CardText className='text-capitalize mb-0'>{studentDetails?.tagNumber}</CardText>
+                  </div>
                 </div>
-                <div className='d-flex flex-wrap align-items-center mt-1'>
-                  <div className='user-info-title'>
-                    <Hexagon className='mr-1' size={14} />
-                    <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
-                      Student Type
-                </CardText>
+
+                <div>
+                  <div className='d-flex flex-wrap align-items-center mt-0'>
+                    <div className='user-info-title'>
+                      <UserPlus className='mr-1' size={14} />
+                      <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
+                        Status
+                      </CardText>
+                    </div>
+                    <CardText className='text-capitalize mb-0'>{studentDetails?.status}</CardText>
                   </div>
-                  <CardText className='text-capitalize mb-0'>{studentDetails?.type}</CardText>
-                </div>
-                <div className='d-flex flex-wrap align-items-center mt-1'>
-                  <div className='user-info-title'>
-                    <Star className='mr-1' size={14} />
-                    <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
-                      Status
-                    </CardText>
+                  <div className='d-flex flex-wrap align-items-center mt-1'>
+                    <div className='user-info-title'>
+                      <Star className='mr-1' size={14} />
+                      <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
+                        Parent Name
+                      </CardText>
+                    </div>
+                    <CardText className='text-capitalize mb-0'>{studentDetails?.parent.title}. {studentDetails?.parent.fullName} ({studentDetails?.parent.phone})</CardText>
                   </div>
-                  <CardText className='text-capitalize mb-0'>{studentDetails?.status}</CardText>
-                </div>
-                <div className='d-flex flex-wrap align-items-center mt-1'>
-                  <div className='user-info-title'>
-                    <UserPlus className='mr-1' size={14} />
-                    <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
-                      Enrolled
-                    </CardText>
+                  <div className='d-flex flex-wrap align-items-center mt-1'>
+                    <div className='user-info-title'>
+                      <UserPlus className='mr-1' size={14} />
+                      <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
+                        Enrolled
+                      </CardText>
+                    </div>
+                    <CardText className='text-capitalize mb-0'>{moment(studentDetails?.createdAt).format('LL')}</CardText>
                   </div>
-                  <CardText className='text-capitalize mb-0'>{moment(studentDetails?.createdAt).format('LL')}</CardText>
                 </div>
             </div>
           </Col>

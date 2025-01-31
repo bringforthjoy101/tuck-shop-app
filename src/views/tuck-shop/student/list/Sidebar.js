@@ -1,14 +1,16 @@
 // ** Custom Components
 import Sidebar from '@components/sidebar'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 
-import { swal, apiRequest } from '@utils'
+import { swal, apiRequest, selectThemeColors } from '@utils'
 import { getAllData, getFilteredData } from '../store/action'
 
 // ** Third Party Components
 import { Button, FormGroup, Label, Spinner, CustomInput } from 'reactstrap'
 import { AvForm, AvInput } from 'availity-reactstrap-validation-safe'
+import InputPasswordToggle from '@components/input-password-toggle'
+import Select from 'react-select'
 
 const SidebarNewUsers = ({ open, toggleSidebar }) => {
 	const dispatch = useDispatch()
@@ -17,13 +19,13 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
 		firstName: '',
 		lastName: '',
 		otherName: '',
+		tagNumber: '',
+		password: '',
 		type: '',
-		className: '',
 		year: '',
 		group: '',
+		parentId: '',
 		avatar: '',
-		parentName: '',
-		parentEmail: '',
 	})
 
 	const [isSubmitting, setIsSubmitting] = useState(false)
@@ -55,6 +57,35 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
 			console.error({ error })
 		}
 	}
+	const [parents, setParents] = useState([])
+	const handleParentChange = (selectedOption) => {
+		setUserData({ ...userData, parentId: selectedOption?.value || '' })
+	}
+
+	  useEffect(() => {
+		const fetchParents = async () => {
+		  try {
+			const response = await apiRequest({
+			  url: '/parents',
+			  method: 'GET'
+			})
+			console.log({response})
+			if (response?.data?.status) {
+			  // Transform parent data into select options format
+			  const parentOptions = response.data.data.map(parent => ({
+				value: parent.id,
+				label: `${parent.title}. ${parent.fullName}`
+			  }))
+			  setParents(parentOptions)
+			}
+		  } catch (error) {
+			console.error('Error fetching parents:', error)
+			swal('Oops!', 'Error loading parents list', 'error')
+		  }
+		}
+		
+		fetchParents()
+	  }, [])
 
 	// ** Function to handle form submit
 	const onSubmit = async (event, errors) => {
@@ -114,18 +145,77 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
 						required
 					/>
 				</FormGroup>
-				{/* <FormGroup>
-            <Label for='otherName'>Other Name</Label>
-            <AvInput 
-              name='otherName' 
-              id='otherName' 
-              placeholder='Other Name' 
-              value={userData.otherName}
-              onChange={e => setUserData({...userData, otherName: e.target.value})}
-            />
-          </FormGroup> */}
 				<FormGroup>
-					<Label for="role">Student Type</Label>
+					<Label for='otherName'>Other Name</Label>
+					<AvInput 
+					name='otherName' 
+					id='otherName' 
+					placeholder='Other Name' 
+					value={userData.otherName}
+					onChange={e => setUserData({...userData, otherName: e.target.value})}
+					/>
+				</FormGroup>
+				<FormGroup>
+					{/* <Label for="gender">Gender</Label> */}
+					<CustomInput 
+						type='radio' 
+						id='gender-male' 
+						name='gender' 
+						inline 
+						label='Male' 
+						value='male'
+						checked={userData.gender === 'male'} 
+						onChange={(e) => setUserData({ ...userData, gender: e.target.value })} 
+					/>
+          			<CustomInput 
+						type='radio' 
+						id='gender-female' 
+						name='gender' 
+						inline 
+						label='Female' 
+						value='female'
+						checked={userData.gender === 'female'}
+						onChange={(e) => setUserData({ ...userData, gender: e.target.value })} 
+					/>
+					{/* <AvInput
+						type="radio"
+						id="gender"
+						name="gender"
+						value={userData.gender}
+						onChange={(e) => setUserData({ ...userData, gender: e.target.value })}
+						required
+					>
+						<option value="">Select Gender</option>
+						<option value="male">Male</option>
+						<option value="female">Female</option>
+					</AvInput> */}
+				</FormGroup>
+				<FormGroup>
+					<Label for="tagNumber">Tag Number</Label>
+					<AvInput
+						type="text"
+						name="tagNumber"
+						id="tagNumber"
+						placeholder="Tag Number"
+						value={userData.tagNumber}
+						onChange={(e) => setUserData({ ...userData, tagNumber: e.target.value })}
+						required
+					/>
+				</FormGroup>
+				<FormGroup>
+					<InputPasswordToggle
+						tag={AvInput}
+						className="input-group-merge"
+						label="Password"
+						htmlFor="password"
+						name="password"
+						value={userData.password}
+						onChange={(e) => setUserData({ ...userData, password: e.target.value })}
+						required
+					/>
+				</FormGroup>
+				<FormGroup>
+					<Label for="type">Student Type</Label>
 					<AvInput
 						type="select"
 						id="type"
@@ -143,72 +233,50 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
 					<Label for="role">Student Class</Label>
 					<AvInput
 						type="select"
-						id="className"
-						name="className"
-						value={userData.className}
-						onChange={(e) => setUserData({ ...userData, className: e.target.value })}
+						id="year"
+						name="year"
+						value={userData.year}
+						onChange={(e) => setUserData({ ...userData, year: e.target.value })}
 						required
 					>
 						<option value="">Select Student Class</option>
-						<option value="junior">Junior (JSS)</option>
-						<option value="senior">Senior (SS)</option>
+						<option value="7">JSS 1</option>
+						<option value="8">JSS 2</option>
+						<option value="9">JSS 3</option>
+						<option value="10">SSS 1</option>
+						<option value="11">SSS 2</option>
+						<option value="12">SSS 3</option>
+						<option value="0">Graduated</option>
 					</AvInput>
 				</FormGroup>
 				<FormGroup>
-					<Label for="parentName">Parent Name</Label>
+					<Label for="group">Class Group</Label>
 					<AvInput
-						name="parentName"
-						id="parentName"
-						placeholder="Parent Name"
-						value={userData.parentName}
-						onChange={(e) => setUserData({ ...userData, parentName: e.target.value })}
+						type="text"
+						name="group"
+						id="group"
+						placeholder="Group"
+						value={userData.group}
+						onChange={(e) => setUserData({ ...userData, group: e.target.value })}
+						required
 					/>
 				</FormGroup>
 				<FormGroup>
-					<Label for="parentEmail">Parent Email</Label>
-					<AvInput
-						name="parentEmail"
-						id="parentEmail"
-						placeholder="Parent Email"
-						value={userData.parentEmail}
-						onChange={(e) => setUserData({ ...userData, parentEmail: e.target.value })}
+					<Label for="parentId">Parent</Label>
+					<Select
+						theme={selectThemeColors}
+						className="react-select"
+						classNamePrefix="select"
+						options={parents}
+						isClearable={true}
+						value={parents.find(option => option.value === userData.parentId) || null}
+						onChange={handleParentChange}
+						isLoading={!parents.length}
+						placeholder="Select Parent"
+						required
 					/>
 				</FormGroup>
-				{/* <FormGroup>
-            <Label for='role'>Student Year</Label>
-            <AvInput 
-              type='select' 
-              id='year' 
-              name='year' 
-              value={userData.year}
-              onChange={e => setUserData({...userData, year: e.target.value})}
-              required
-            >
-              <option value=''>Select Student Year</option>
-              <option value='7'>Seven (7)</option>
-              <option value='8'>Eight (8)</option>
-              <option value='9'>Nine (9)</option>
-              <option value='10'>Ten (10)</option>
-              <option value='11'>Eleven (11)</option>
-              <option value='12'>Twelve (12)</option>
-            </AvInput>
-          </FormGroup> */}
-				{/* <FormGroup>
-            <Label for='role'>Student Group</Label>
-            <AvInput 
-              type='select' 
-              id='group' 
-              name='group' 
-              value={userData.group}
-              onChange={e => setUserData({...userData, group: e.target.value})}
-              required
-            >
-              <option value=''>Select Student Group</option>
-              <option value='A'>A</option>
-              <option value='W'>W</option>
-              <option value='R'>R</option>
-            </AvInput>
-          </FormGroup> */}
+				
 				<Button type="submit" className="mr-1" color="primary" disabled={isSubmitting}>
 					{isSubmitting && <Spinner color="white" size="sm" />}
 					<span className="ml-50">Submit</span>

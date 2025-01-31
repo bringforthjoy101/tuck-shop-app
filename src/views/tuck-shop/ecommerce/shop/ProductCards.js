@@ -39,6 +39,20 @@ const ProductCards = props => {
     dispatch(getProducts(store.params))
   }
 
+  const productTypeObj = {
+    drink: 'light-success',
+    food: 'light-primary',
+    snack: 'light-warning',
+    other: 'light-info',
+    medicine: 'light-danger',
+  }
+
+  const productCategoryObj = {
+    consumable: 'light-secondary',
+    'non-consumable': 'light-primary',
+    other: 'light-warning',
+  }
+
   // ** Renders products
   const renderProducts = () => {
     if (products.length) {
@@ -71,7 +85,22 @@ const ProductCards = props => {
                     {item.name}
                   </Link>
                 </h6> */}
-                <CardText className='item-description'>{item.description}</CardText>
+                <div className='item-wrapper'>
+                  <CardText className='item-description'>
+                    <Badge className='text-capitalize' color={productTypeObj[item.type]} pill>
+                      {item.type}
+                    </Badge>
+                  </CardText>
+                  <CardText className='item-description'>
+                  <Badge className='text-capitalize' color={productCategoryObj[item.category]} pill>
+                      {item.category}
+                    </Badge>
+                  </CardText>
+                </div>
+                <CardText>
+                    {item.availability.join(', ')}
+                </CardText>
+                
               </CardBody>
               <div className='item-options text-center'>
                 <div className='item-wrapper'>

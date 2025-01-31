@@ -228,17 +228,63 @@ const AddEventSidebar = props => {
 
   // ** (UI) removeEventInCalendar
   const removeEventInCalendar = eventId => {
-    calendarApi.getEventById(eventId).remove()
+    try {
+      const event = calendarApi.getEventById(eventId)
+      if (event) {
+        event.remove()
+      } else {
+        console.warn('Event not found:', eventId)
+      }
+    } catch (error) {
+      console.error('Error removing event:', error)
+      toast.error(
+        <ToastComponent 
+          title='Error removing event' 
+          color='danger' 
+          icon={<X />} 
+        />, 
+        {
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeButton: false
+        }
+      )
+    }
   }
+
+  // ** Function to handle Delete Event
   const handleDeleteEvent = () => {
-    dispatch(removeEvent(selectedEvent.id))
-    removeEventInCalendar(selectedEvent.id)
-    handleAddEventSidebar()
-    toast.error(<ToastComponent title='Event Removed' color='danger' icon={<Trash />} />, {
-      autoClose: 2000,
-      hideProgressBar: true,
-      closeButton: false
-    })
+    try {
+      if (selectedEvent?.id) {
+        removeEventInCalendar(selectedEvent.id)
+        dispatch(removeEvent(selectedEvent.id))
+        handleAddEventSidebar()
+        toast.error(
+          <ToastComponent 
+            title='Event Removed' 
+            color='danger' 
+            icon={<Trash />} 
+          />, 
+          {
+            autoClose: 2000
+          }
+        )
+      }
+    } catch (error) {
+      console.error('Error deleting event:', error)
+      toast.error(
+        <ToastComponent 
+          title='Error deleting event' 
+          color='danger' 
+          icon={<X />} 
+        />, 
+        {
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeButton: false
+        }
+      )
+    }
   }
 
   // ** Event Action buttons

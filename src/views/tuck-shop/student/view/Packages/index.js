@@ -41,7 +41,7 @@ const CustomHeader = ({ handleFilter, searchTerm, handlePerPage, rowsPerPage, do
               <option value='50'>50</option>
             </CustomInput>
           </div>
-          <h3 className="d-none d-lg-block">{studentDetails.firstName}'s Books</h3>
+          <h3 className="d-none d-lg-block">{studentDetails.firstName}'s Snack Packages</h3>
         </Col>
         <Col
           lg='3' sm="6"
@@ -108,12 +108,12 @@ const TransactionList = () => {
       counter++
     })
   })
-  console.log('allbooks', allBooks)
+  // console.log('allbooks', allBooks)
 
   useEffect(() => {
     // dispatch(getUserAllUtilitiesTransactions(store.userDetails.user_details.user_id))
     dispatch(
-      getFilteredStudentBooks(allBooks, {
+      getFilteredStudentBooks(store.studentDetails.packages, {
         page: currentPage,
         perPage: rowsPerPage,
         q: searchTerm
@@ -124,7 +124,7 @@ const TransactionList = () => {
   const handleFilter = val => {
     setSearchTerm(val)
     dispatch(
-      getFilteredStudentBooks(allBooks, {
+      getFilteredStudentBooks(store.studentDetails.packages, {
         page: currentPage,
         perPage: rowsPerPage,
         q: val
@@ -135,7 +135,7 @@ const TransactionList = () => {
   const handlePerPage = e => {
     const value = parseInt(e.currentTarget.value)
     dispatch(
-      getFilteredStudentBooks(allBooks, {
+      getFilteredStudentBooks(store.studentDetails.packages, {
         page: currentPage,
         perPage: value,
         q: searchTerm
@@ -146,7 +146,7 @@ const TransactionList = () => {
 
   const handlePagination = page => {
     dispatch(
-      getFilteredStudentBooks(allBooks, {
+      getFilteredStudentBooks(store.studentDetails.packages, {
         page: page.selected + 1,
         perPage: rowsPerPage,
         q: searchTerm
@@ -155,7 +155,7 @@ const TransactionList = () => {
     setCurrentPage(page.selected + 1)
   }
 
-  const filteredData = allBooks?.filter(
+  const filteredData = store.studentDetails.packages?.filter(
     item => (item?.name?.toLowerCase())
   )
 
@@ -270,12 +270,12 @@ const TransactionList = () => {
     const isFiltered = Object.keys(filters).some(function (k) {
       return filters[k].length > 0
     })
-    if (allBooks.length > 0) {
-      return allBooks
-    } else if (allBooks.length === 0 && isFiltered) {
+    if (store.studentDetails.packages.length > 0) {
+      return store.studentDetails.packages
+    } else if (store.studentDetails.packages.length === 0 && isFiltered) {
       return []
     } else {
-      return allBooks.slice(0, rowsPerPage)
+      return store.studentDetails.packages.slice(0, rowsPerPage)
     }
   }
 
@@ -302,7 +302,7 @@ const TransactionList = () => {
                 handleFilter={handleFilter}
                 handlePerPage={handlePerPage}
                 downloadCSV={downloadCSV}
-                storeData={allBooks}
+                storeData={store.studentDetails.packages}
                 downloadPDF={downloadPDF}
                 searchTerm={searchTerm}
                 studentDetails={store.studentDetails}

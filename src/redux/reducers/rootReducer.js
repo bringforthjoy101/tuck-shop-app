@@ -31,6 +31,7 @@ import orders from '@src/views/tuck-shop/order/store/reducer'
 import transactions from '@src/views/tuck-shop/transaction/store/reducer'
 import settlements from '@src/views/tuck-shop/settlement/store/reducer'
 import serviceFees from '@src/views/tuck-shop/service-fee/store/reducer'
+import parents from '@src/views/tuck-shop/parent/store/reducer'
 
 import email from '@src/views/apps/email/store/reducer'
 // import invoice from '@src/views/apps/invoice/store/reducer'
@@ -49,6 +50,7 @@ const rootReducer = combineReducers({
   students,
   kitchenStaffs,
   admins,
+  parents,
   products,
   transactions,
   settlements,

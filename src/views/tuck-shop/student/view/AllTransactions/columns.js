@@ -30,7 +30,7 @@ const transactionTypeObj = {
 export const columns = [
   {
     name: 'Transaction ID',
-    minWidth: '100px',
+    width: '200px',
     selector: 'transactionId',
     cell: row => <span>{ `#${row.transactionId}` }</span>
   },
@@ -38,7 +38,7 @@ export const columns = [
     name: 'Type',
     selector: 'type',
     sortable: true,
-    minWidth: '80px',
+    width: '80px',
     cell: row => (
       <Badge className='text-capitalize' color={transactionTypeObj[row.type]} pill>
         {row.type}
@@ -49,17 +49,17 @@ export const columns = [
     name: 'Amount',
     selector: 'amount',
     sortable: true,
-    minWidth: '150px',
+    width: '150px',
     cell: row => <span>{(row.amount || 0).toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}</span>
   },
   {
     name: 'Balance',
     selector: 'balance',
     sortable: true,
-    minWidth: '150px',
+    width: '150px',
     cell: row => {
-      return row.balance !== 0 ? (
-        <span>{(row.balance || 0).toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}</span>
+      return row.postBalance !== 0 ? (
+        <span>{(row.postBalance || 0).toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}</span>
       ) : (
         <Badge color='light-danger' pill>
           Empty
@@ -69,10 +69,10 @@ export const columns = [
   },
   {
     name: 'Narration',
-    selector: 'narration',
+    selector: 'narration', 
     sortable: true,
-    minWidth: '80px',
-    cell: row => <span>{row.narration}</span>
+    width: '250px',
+    cell: row => <span style={{maxWidth: '50ch', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{row.narration}</span>
   },
   // {
   //   name: 'Status',
@@ -89,14 +89,14 @@ export const columns = [
     name: 'Date',
     selector: 'createdAt',
     sortable: true,
-    minWidth: '80px',
+    width: '150px',
     cell: row => moment(row.createdAt).format('lll')
   },
   {
     name: 'Initiated By',
-    minWidth: '200px',
+    width: '200px',
     selector: 'admin',
     sortable: true,
-    cell: row => <span className='font-weight-bold'>{row.admin.firstName} {row.admin.lastName}</span>
+    cell: row => <span className='font-weight-bold'>{row.admin?.fullName || 'Self'}</span>
   }
 ]

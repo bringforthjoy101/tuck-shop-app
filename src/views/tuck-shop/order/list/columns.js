@@ -35,7 +35,7 @@ const getItemNames = (items) => {
 export const columns = [
 	{
 		name: 'Order Id',
-		width: '150px',
+		width: '200px',
 		selector: 'trans_amount',
 		sortable: true,
 		cell: (row) => (
@@ -46,10 +46,10 @@ export const columns = [
 	},
 	{
 		name: 'Order Amount',
-		width: '150px',
+		width: '200px',
 		selector: 'amount',
 		sortable: true,
-		cell: (row) => <span className="text-capitalize">{row?.amount?.toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}</span>,
+		cell: (row) => <span className="text-capitalize">{row?.amount?.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}</span>,
 	},
 	// {
 	// 	name: 'Products ',
@@ -60,7 +60,7 @@ export const columns = [
 	// },
 	{
 		name: 'Student',
-		minWidth: '200px',
+		minWidth: '300px',
 		selector: 'student',
 		sortable: true,
 		cell: (row) => (
@@ -78,19 +78,19 @@ export const columns = [
 	},
 	{
 		name: 'Order Date',
-		minWidth: '150px',
+		minWidth: '100px',
 		selector: 'createdAt',
 		sortable: true,
-		cell: (row) => moment(row.createdAt).format('lll'),
+		cell: (row) => moment(row.orderDate).format('ll'),
 	},
 	{
 		name: 'Initiated By',
-		minWidth: '200px',
+		minWidth: '150px',
 		selector: 'admin',
 		sortable: true,
 		cell: (row) => (
 			<span className="font-weight-bold">
-				{row.admin.firstName} {row.admin.lastName}
+				{row.admin?.fullName || `self-initiated`}
 			</span>
 		),
 	},

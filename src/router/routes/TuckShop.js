@@ -64,6 +64,22 @@ const ManagerRoutes = [
         }
       },
       {
+        path: '/parents/list',
+        component: lazy(() => import('../../views/tuck-shop/parent/list'))
+      },
+      {
+        path: '/parent/view',
+        exact: true,
+        component: () => <Redirect to='/tuck-shop/parent/view/1' />
+      },
+      {
+        path: '/parent/view/:id',
+        component: lazy(() => import('../../views/tuck-shop/parent/view')),
+        meta: {
+          navLink: '/tuck-shop/parent/view'
+        }
+      },
+      {
         path: '/students/list',
         component: lazy(() => import('../../views/tuck-shop/student/list'))
       },
@@ -214,6 +230,22 @@ const BursaryRoutes = [
     component: lazy(() => import('../../views/tuck-shop/admin/view')),
     meta: {
       navLink: '/tuck-shop/admin/view'
+    }
+  },
+  {
+    path: '/parents/list',
+    component: lazy(() => import('../../views/tuck-shop/parent/list'))
+  },
+  {
+    path: '/parent/view',
+    exact: true,
+    component: () => <Redirect to='/tuck-shop/parent/view/1' />
+  },
+  {
+    path: '/parent/view/:id',
+    component: lazy(() => import('../../views/tuck-shop/parent/view')),
+    meta: {
+      navLink: '/tuck-shop/parent/view'
     }
   },
   {
@@ -388,4 +420,141 @@ const StoreRoutes = [
   }
 ]
 
-export default userData?.role === 'manager' ? ManagerRoutes : userData?.role === 'bursary' ? BursaryRoutes : userData?.role === 'sales-rep' ? SalesRepRoutes : StoreRoutes
+const studentRoutes = [
+  {
+      path: '/apps/ecommerce/shop',
+      className: 'ecommerce-application',
+      component: lazy(() => import('../../views/tuck-shop/ecommerce/shop'))
+  },
+  {
+      path: '/apps/ecommerce/checkout',
+      className: 'ecommerce-application',
+      component: lazy(() => import('../../views/tuck-shop/ecommerce/checkout'))
+  },
+    {
+      path: '/orders/list',
+      component: lazy(() => import('../../views/tuck-shop/order/list'))
+    },
+    {
+      path: '/order/preview',
+      exact: true,
+      component: () => <Redirect to='/tuck-shop/order/preview/1' />
+    },
+    {
+      path: '/order/preview/:id',
+      component: lazy(() => import('../../views/tuck-shop/order/preview')),
+      meta: {
+        navLink: '/tuck-shop/order/preview'
+      }
+    },
+    {
+      path: '/transactions/list',
+      component: lazy(() => import('../../views/tuck-shop/transaction/list'))
+    },
+    {
+      path: '/transaction/view',
+      exact: true,
+      component: () => <Redirect to='/tuck-shop/transaction/view/1' />
+    },
+    {
+      path: '/transaction/view/:id',
+      component: lazy(() => import('../../views/tuck-shop/transaction/view')),
+      meta: {
+        navLink: '/tuck-shop/transaction/view'
+      }
+    },
+    {
+      path: '/settings/list',
+      component: lazy(() => import('../../views/tuck-shop/settings/list'))
+    }
+]
+
+const parentRoutes = [
+  {
+      path: '/apps/ecommerce/shop',
+      className: 'ecommerce-application',
+      component: lazy(() => import('../../views/tuck-shop/ecommerce/shop'))
+  },
+  {
+      path: '/apps/ecommerce/checkout',
+      className: 'ecommerce-application',
+      component: lazy(() => import('../../views/tuck-shop/ecommerce/checkout'))
+  },
+    {
+      path: '/students/list',
+      component: lazy(() => import('../../views/tuck-shop/student/list'))
+    },
+    {
+      path: '/student/view',
+      exact: true,
+      component: () => <Redirect to='/tuck-shop/student/view/1' />
+    },
+    {
+      path: '/student/view/:id',
+      component: lazy(() => import('../../views/tuck-shop/student/view')),
+      meta: {
+        navLink: '/tuck-shop/student/view'
+      }
+    },
+    {
+      path: '/orders/list',
+      component: lazy(() => import('../../views/tuck-shop/order/list'))
+    },
+    {
+      path: '/order/preview',
+      exact: true,
+      component: () => <Redirect to='/tuck-shop/order/preview/1' />
+    },
+    {
+      path: '/order/preview/:id',
+      component: lazy(() => import('../../views/tuck-shop/order/preview')),
+      meta: {
+        navLink: '/tuck-shop/order/preview'
+      }
+    },
+    {
+      path: '/transactions/list',
+      component: lazy(() => import('../../views/tuck-shop/transaction/list'))
+    },
+    {
+      path: '/transaction/view',
+      exact: true,
+      component: () => <Redirect to='/tuck-shop/transaction/view/1' />
+    },
+    {
+      path: '/transaction/view/:id',
+      component: lazy(() => import('../../views/tuck-shop/transaction/view')),
+      meta: {
+        navLink: '/tuck-shop/transaction/view'
+      }
+    },
+    {
+      path: '/settings/list',
+      component: lazy(() => import('../../views/tuck-shop/settings/list'))
+    }
+]
+
+let routes = []
+
+switch (userData?.type) {
+  case 'student':
+    routes = studentRoutes
+    break
+  case 'parent':
+    routes = parentRoutes
+    break
+  case 'admin':
+  default:
+    if (userData?.role === 'manager') {
+      routes = ManagerRoutes
+    } else if (userData?.role === 'bursary') {
+      routes = BursaryRoutes
+    } else if (userData?.role === 'sales-rep') {
+      routes = SalesRepRoutes
+    } else if (userData?.role === 'store') {
+      routes = StoreRoutes
+    }
+    break
+}
+
+export default routes

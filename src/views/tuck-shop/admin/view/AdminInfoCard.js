@@ -23,7 +23,7 @@ const UserInfoCard = ({ selectedAdmin }) => {
           initials
           color={color}
           className='rounded'
-          content={`${selectedAdmin.firstName} ${selectedAdmin.lastName}`}
+          content={selectedAdmin.fullName}
           contentStyles={{
             borderRadius: 0,
             fontSize: 'calc(36px)',
@@ -49,7 +49,7 @@ const UserInfoCard = ({ selectedAdmin }) => {
                 {renderUserImg()}
                 <div className='d-flex flex-column ml-1'>
                   <div className='user-info mt-2'>
-                    <h4 className='mb-0'>{selectedAdmin !== null ? `${selectedAdmin.firstName} ${selectedAdmin.lastName}` : 'Invoice Admin'}</h4>
+                    <h4 className='mb-0'>{selectedAdmin !== null ? selectedAdmin.fullName : 'Invoice Admin'}</h4>
                     <CardText tag='span'>
                       {selectedAdmin !== null ? selectedAdmin.email : 'appia.admin@appiawave.com'}
                     </CardText>

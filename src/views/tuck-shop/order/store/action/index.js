@@ -4,9 +4,20 @@ import moment from 'moment'
 export const apiUrl = process.env.REACT_APP_API_ENDPOINT
 
 // ** Get all User Data
-export const getAllData = () => {
+export const getAllData = ({startDate, endDate, year, group}) => {
 	return async (dispatch) => {
-		const response = await apiRequest({ url: '/orders', method: 'GET' }, dispatch)
+		const url = '/orders'
+		const queryParams = new URLSearchParams()
+		
+		if (startDate) queryParams.append('startDate', new Date(startDate).toISOString())
+		if (endDate) queryParams.append('endDate', new Date(endDate).toISOString())
+		if (year) queryParams.append('year', year)
+		if (group) queryParams.append('group', group)
+		
+		const queryString = queryParams.toString()
+		const finalUrl = `${url}${queryString ? `?${queryString}` : ''}`
+		console.log({ finalUrl })
+		const response = await apiRequest({ url: finalUrl, method: 'GET', params: {startDate, endDate, year, group} }, dispatch)
 		console.log(response)
 		if (response && response.data.data && response.data.status) {
 			await dispatch({
@@ -23,7 +34,7 @@ export const getAllData = () => {
 // All Users Filtered Data
 export const getFilteredData = (orders, params) => {
 	return async (dispatch) => {
-		const { q = '', perPage = 100, page = 1 } = params
+		const { q = '', perPage = 100, page = 1, year, group } = params
 
 		/* eslint-disable  */
 		const queryLowered = q?.toLowerCase()
@@ -31,7 +42,9 @@ export const getFilteredData = (orders, params) => {
 			(order) =>
 				order?.orderNumber?.toLowerCase()?.includes(queryLowered) ||
 				order?.student.firstName?.toLowerCase()?.includes(queryLowered) ||
-				moment(order.createdAt).format('lll').includes(q)
+				moment(order.createdAt).format('lll').includes(q) ||
+				order?.year === year ||
+				order?.group === group
 		)
 
 		/* eslint-enable  */

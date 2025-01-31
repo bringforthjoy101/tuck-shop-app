@@ -21,13 +21,13 @@ export const getAllData = () => {
 // All Users Filtered Data
 export const getFilteredData = (products, params) => {
   return async dispatch => {
-    const { category = null, q = '', perPage = 10,  page = 1 } = params
+    const { category = null, q = '', perPage = 10,  page = 1, type = null, status = null } = params
 
     /* eslint-disable  */
     const queryLowered = q?.toLowerCase()
     const filteredData = products?.filter(
       product => 
-        (product?.name?.toLowerCase()?.includes(queryLowered)) && product?.category === (category || product.category)
+        (product?.name?.toLowerCase()?.includes(queryLowered)) && product?.category === (category || product.category) && product?.type === (type || product.type) && product?.status === (status || product.status)
       )
   
     /* eslint-enable  */
