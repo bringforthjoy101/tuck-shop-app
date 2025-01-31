@@ -151,6 +151,15 @@ const Cart = (props) => {
 
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const [isGeneralOrder, setIsGeneralOrder] = useState(false)
+	const classObject = {
+		7: 'JSS 1',
+		8: 'JSS 2',
+		9: 'JSS 3',
+		10: 'SSS 1',
+		11: 'SSS 2',
+		12: 'SSS 3',
+		0: 'Graduated'
+	}
 
 	const store = useSelector((state) => state.students)
 
@@ -181,7 +190,7 @@ const Cart = (props) => {
 		return students
 			.filter((student) => student.status === 'active')
 			.map((student) => {
-				return { value: student.id, label: `${student.firstName} ${student.lastName} (₦${student.wallet.toLocaleString()})` }
+				return { value: student.id, label: `${student.firstName} ${student.lastName} | ${classObject[student.year]} ${student.group} | ${student.wallet.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}` }
 			})
 	}
 
@@ -346,7 +355,7 @@ const Cart = (props) => {
 									disabled={isSubmitting}
 								>
 									{isSubmitting && <Spinner color="white" size="sm" />}
-									Place Order
+									{isGeneralOrder ? 'Create Package' : 'Place Order'}
 								</Button.Ripple>
 							</div>
 						</AvForm>

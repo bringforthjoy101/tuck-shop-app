@@ -62,7 +62,7 @@ const PreviewCard = ({ data }) => {
 							</Media> */}
 							<Avatar
 								initials
-								color="light-primary"
+								color="light-info"
 								className='rounded mr-25'
 								content={`${data?.student?.firstName} ${data?.student?.lastName}`}
 								contentStyles={{

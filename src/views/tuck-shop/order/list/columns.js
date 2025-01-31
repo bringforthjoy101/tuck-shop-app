@@ -39,7 +39,7 @@ export const columns = [
 		selector: 'trans_amount',
 		sortable: true,
 		cell: (row) => (
-			<Link to={`/order/preview/${row.id}`}>
+			<Link to={`/order/preview/${row.id}`} className='text-info'>
 				<span>#{row.orderNumber}</span>
 			</Link>
 		),
@@ -67,7 +67,7 @@ export const columns = [
 			<div className="d-flex justify-content-left align-items-center">
 				{renderClient(row.student)}
 				<div className="d-flex flex-column">
-					<Link to={`/student/view/${row.student.id}`} className="user-name text-truncate mb-0">
+					<Link to={`/student/view/${row.student.id}`} className="user-name text-truncate mb-0 text-info">
 						<span className="font-weight-bold">
 							{row.student.firstName} {row.student.lastName}
 						</span>

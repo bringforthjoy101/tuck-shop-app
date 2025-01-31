@@ -345,20 +345,20 @@ const Calendar = props => {
       )
     }
 
-    if (events.length > 0) {
-      toast.success(
-        <ToastComponent 
-          title={`Event${events.length > 1 ? 's' : ''} added ${recurrenceType !== 'none' ? `(${recurrenceType})` : ''}`} 
-          color='success' 
-          icon={<Check />} 
-        />, 
-        {
-          autoClose: 2000,
-          hideProgressBar: true,
-          closeButton: false
-        }
-      )
-    }
+    // if (events.length > 0) {
+    //   toast.success(
+    //     <ToastComponent 
+    //       title={`Event${events.length > 1 ? 's' : ''} added ${recurrenceType !== 'none' ? `(${recurrenceType})` : ''}`} 
+    //       color='success' 
+    //       icon={<Check />} 
+    //     />, 
+    //     {
+    //       autoClose: 2000,
+    //       hideProgressBar: true,
+    //       closeButton: false
+    //     }
+    //   )
+    // }
   }
 
   // ** Function to handle recurrence modal

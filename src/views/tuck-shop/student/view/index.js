@@ -49,18 +49,16 @@ const UserView = (props) => {
 	return store.studentDetails !== null && store.studentDetails !== undefined ? (
 		<div className="app-user-view">
 			<Row>
-				<Col xl="9" lg="8" md="7">
+				<Col xl={userData?.type === 'parent' ? '12' : '9'} lg={userData?.type === 'parent' ? '12' : '8'} md={userData?.type === 'parent' ? '12' : '7'}>
 					<UserInfoCard studentDetails={store.studentDetails} userRole={userData?.role} />
 				</Col>
 				{userData?.role === 'manager' || userData?.role === 'bursary' ? (
 					<Col xl="3" lg="4" md="5">
 						<PlanCard studentDetails={store.studentDetails} />
 					</Col>
-				) : (
-					<Spinner color="primary" className="reload-spinner" />
-				)}
+				) : ''}
 			</Row>
-			{userData?.role === 'manager' || userData?.role === 'bursary' ? (
+			{userData?.role === 'manager' || userData?.role === 'bursary' || userData?.type === 'parent' ? (
 				<div>
 					<Card className="mb-3 d-flex justify-content-around">
 						<Row className="d-sm-block d-lg-flex justify-content-center">

@@ -53,8 +53,9 @@ export const addEvent = events => {
           type: 'ADD_EVENT'
         })
         dispatch(fetchEvents({studentId: events[0].extendedProps.studentId}))
+        
       } else {
-        swal('Oops!', 'Something went wrong! Please try again.', 'error')
+        swal('Oops!', response.data.message || 'Something went wrong! Please try again.', 'error')
       }
     })
     // axios.post('/apps/calendar/add-event', { event }).then(() => {

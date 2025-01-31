@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect, Fragment } from 'react'
 import Avatar from '@components/avatar'
-import Logo from '../../../assets/images/logo/favicon.png'
+import Logo from '../../../assets/images/logo/toltem-icon.png'
 import { useSkin } from '@hooks/useSkin'
 import useJwt from '@src/auth/jwt/useJwt'
 import { useDispatch } from 'react-redux'

@@ -26,6 +26,16 @@ const filters = [
   { label: 'ETC', color: 'info', className: 'custom-control-info' }
 ]
 
+const classObject = {
+  7: 'JSS 1',
+  8: 'JSS 2',
+  9: 'JSS 3',
+  10: 'SSS 1',
+  11: 'SSS 2',
+  12: 'SSS 3',
+  0: 'Graduated'
+}
+
 const snackPackageObj = {
   evening: { color: 'primary', className: 'bg-light-primary', startTime: '15:00', endTime: '15:30' },
   morning: { color: 'success', className: 'bg-light-success', startTime: '10:00', endTime: '10:30' },
@@ -104,7 +114,7 @@ const SidebarLeft = props => {
         })
         const formattedStudents = response.data.data.map(student => ({
           value: student.id,
-          label: `${student.firstName} ${student.lastName} (${student.tagNumber})`
+          label: `${student.firstName} ${student.lastName} (${classObject[student.year]} ${student.group})`
         }))
         setStudents(formattedStudents)
       } catch (error) {
