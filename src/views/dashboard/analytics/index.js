@@ -69,9 +69,10 @@ const AnalyticsDashboard = () => {
 				) : userData?.type === 'student' && (
 					<>
 						<Col lg="6" sm="12">
-							<StatsVertical icon={<DollarSign size={21} />} color="primary" stats={dashData.studentBalance.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })} statTitle="Wallet Balance" />
+							<StatsVertical icon={<DollarSign size={21} />} color="primary" stats={dashData?.studentBalance?.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })} statTitle="Wallet Balance" />
 						</Col>
 					</>
+
 				)}
 			</Row>
 			{userData?.type === 'admin' && (

@@ -171,10 +171,10 @@ const Cart = (props) => {
 		if (userData?.type !== 'admin') {
 			setIsGeneralOrder(true)
 		}
-		if (selectedOption) {
-			setOrderData(prev => ({ ...prev, studentId: selectedOption.value }))
-			setPackagedOrderData(prev => ({ ...prev, studentId: selectedOption.value }))
-		}
+		// if (selectedOption) {
+		// 	setOrderData(prev => ({ ...prev, studentId: selectedOption.value }))
+		// 	setPackagedOrderData(prev => ({ ...prev, studentId: selectedOption.value }))
+		// }
 
 		if (userData?.type === 'student') {
 			const student = store.allData?.find(student => student.id === userData?.id)
@@ -182,7 +182,7 @@ const Cart = (props) => {
 			setPackagedOrderData(prev => ({ ...prev, studentId: student?.id }))
 			
 		}
-	}, [dispatch, selectedOption])
+	}, [dispatch])
 
 	const renderStudents = (students) => {
 		// console.log(students)
@@ -198,6 +198,12 @@ const Cart = (props) => {
 	const handleCategoryChange = (option) => {
 		setPackagedOrderData(prev => ({ ...prev, category: option.value }))
 	}
+
+	const handleStudentChange = (option) => {
+		// setSelectedOption(option)
+		setPackagedOrderData(prev => ({ ...prev, studentId: option.value }))
+	}
+
 
 	// ** Function to handle form submit
 	const onSubmit = async (event, errors) => {
