@@ -33,6 +33,8 @@ const InvoicePreview = () => {
 	const toggleSendSidebar = () => setSendSidebarOpen(!sendSidebarOpen)
 	const toggleAddSidebar = () => setAddPaymentOpen(!addPaymentOpen)
 
+	const userData = JSON.parse(localStorage.getItem('userData'))
+
 	// ** Get invoice on mount based on id
 	useEffect(() => {
 		// axios.get(`/api/invoice/invoices/${id}`).then(response => {
@@ -49,9 +51,12 @@ const InvoicePreview = () => {
 				<Col xl={9} md={8} sm={12}>
 					<PreviewCard data={selectedOrder} />
 				</Col>
-				{/* <Col xl={3} md={4} sm={12}>
-					<PreviewActions id={id} data={selectedSale} />
-				</Col> */}
+				{userData?.type === "admin" ? (
+					<Col xl={3} md={4} sm={12}>
+					<PreviewActions id={id} data={selectedOrder} />
+				</Col>
+				) : ""}
+				
 			</Row>
 			{/* <SendInvoiceSidebar toggleSidebar={toggleSendSidebar} open={sendSidebarOpen} /> */}
 			{/* <AddPaymentSidebar toggleSidebar={toggleAddSidebar} open={addPaymentOpen} /> */}

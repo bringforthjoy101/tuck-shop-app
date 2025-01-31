@@ -1,0 +1,68 @@
+@import '../bootstrap-extended/include';
+@import '../components/include';
+
+.card.term-card {
+  background: $white;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border: none;
+  margin-bottom: 2rem;
+  border-radius: 0.428rem;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 8px 24px !important;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  .card-body {
+    padding: 2rem;
+    background-color: $white;
+    border-radius: 0.428rem;
+  }
+
+  .card-title {
+    color: $primary;
+    font-weight: 500;
+    font-size: 1.285rem;
+    margin-bottom: 1rem;
+    text-transform: capitalize;
+  }
+
+  .card-text {
+    color: $body-color;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .term-meta {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    border-top: 1px solid $border-color;
+    
+    small {
+      line-height: 1.5;
+      font-size: 0.857rem;
+      display: flex;
+      align-items: center;
+      
+      &:first-child {
+        margin-bottom: 0.75rem;
+      }
+
+      .feather {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+} 

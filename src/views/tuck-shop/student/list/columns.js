@@ -125,7 +125,7 @@ export const columns = [
       <div className='d-flex justify-content-left align-items-center'>
         {renderClient(row)}
         <div className='d-flex flex-column'>
-          {userData.role === 'manager' || userData.role === 'bursary' ? <Link
+          {userData.role === 'manager' || userData.role === 'bursary' || userData.type === 'parent' ? <Link
             to={`/student/view/${row.id}`}
             className='user-name text-truncate mb-0'
           >

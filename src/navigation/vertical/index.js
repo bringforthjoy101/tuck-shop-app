@@ -11,7 +11,7 @@ import settlements from './settlements.js'
 import serviceFees from './service-fees.js'
 import calendar from './calendar.js'
 import parents from './parents'
-
+import terms from './terms'
 const userData = JSON.parse(localStorage.getItem('userData'))
 
 // ** Merge & Export
@@ -20,9 +20,9 @@ console.log({ userType: userData?.type })
 switch (userData?.type) {
     case 'admin':
         if (userData?.role === 'manager') {
-            navigations = [...dashboards, ...tuckShop, ...students, ...parents, ...calendar, ...products, ...orders, ...transaction, ...settlements, ...serviceFees, ...admins]
+            navigations = [...dashboards, ...tuckShop, ...students, ...parents, ...calendar, ...products, ...orders, ...transaction, ...admins, ...terms]
         } else if (userData?.role === 'bursary') {
-            navigations = [...dashboards, ...tuckShop, ...students, ...parents, ...calendar, ...transaction, ...settlements, ...serviceFees]
+            navigations = [...dashboards, ...tuckShop, ...students, ...parents, ...calendar, ...transaction]
         } else if (userData?.role === 'sales-rep') {
             navigations = [...dashboards, ...tuckShop, ...calendar, ...transaction, ...orders]
         } else {

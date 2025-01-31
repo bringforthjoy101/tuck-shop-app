@@ -174,7 +174,7 @@ const Login = props => {
             <AvForm className='auth-login-form mt-2' onSubmit={handleSubmit}>
               <FormGroup>
                 <Label className="form-label" for="login-type">Type</Label>
-                <AvInput type="select" name="login-type" id="login-type" value={type} onChange={(e) => setType(e.target.value)}>
+                <AvInput type="select" name="login-type" id="login-type" value={type} onChange={(e) => setType(e.target.value)} required>
                   <option value="">Select Type</option>
                   <option value="parent">Parent</option>
                   <option value="admin">Admin</option>

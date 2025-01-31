@@ -7,6 +7,9 @@ import { CardBody, Button, CustomInput, Modal, ModalHeader, ModalBody, Table } f
 import Select from 'react-select'
 import axios from 'axios'
 import { swal, apiRequest, selectThemeColors } from '@utils'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal)
 
 // ** illustration import
 import illustration from '@src/assets/images/pages/calendar-illustration.png'
@@ -133,10 +136,11 @@ const SidebarLeft = props => {
             endTime: snackPackageObj[snackPackage.category].endTime,
             packageId: snackPackage.id,
             studentId: selectedOption.value,
+            category: snackPackage.category,
             products: snackPackage.products.map(product => ({
               name: product.name,
               id: product.id,
-              amount: product.amount,
+              price: product.price,
               daysAvailable: product.availability
             }))
           
@@ -284,8 +288,8 @@ const SidebarLeft = props => {
           {selectedEvent?.label} Details
         </ModalHeader>
         <ModalBody>
-          <div className='mb-2'>
-            <strong>Time:</strong> {selectedEvent?.startTime} - {selectedEvent?.endTime}
+          <div className='mb-2 text-capitalize'>
+            <strong>Category:</strong> {selectedEvent?.category}
           </div>
           <div>
             <strong>Products:</strong>
@@ -301,12 +305,67 @@ const SidebarLeft = props => {
                 {selectedEvent?.products.map(product => (
                   <tr key={product.id}>
                     <td>{product.name}</td>
-                    <td>{product.amount}</td>
+                    <td>{product.price?.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}</td>
                     <td>{product.daysAvailable.join(', ')}</td>
                   </tr>
                 ))}
               </tbody>
             </Table>
+          <div className='mt-2'>
+            <Button.Ripple 
+              color='warning' 
+              block 
+              outline 
+              onClick={() => {
+                MySwal.fire({
+                  title: 'Are you sure?',
+                  text: "Do you want to disable this package?",
+                  icon: 'warning', 
+                  showCancelButton: true,
+                  confirmButtonText: 'Yes, disable it!',
+                  customClass: {
+                    confirmButton: 'btn btn-primary',
+                    cancelButton: 'btn btn-outline-danger ml-1'
+                  },
+                  buttonsStyling: false
+                }).then(async function (result) {
+                  if (result.value) {
+                    try {
+                      const response = await apiRequest({
+                        url: `/terms/${selectedEvent?.packageId}`,
+                        method: 'GET'
+                      })
+                      
+                      if (response?.data?.status) {
+                        MySwal.fire({
+                          icon: 'success',
+                          title: 'Disabled!',
+                          text: 'Package has been disabled.',
+                          customClass: {
+                            confirmButton: 'btn btn-primary'
+                          }
+                        })
+                        setModal(false)
+                      } else {
+                        throw new Error(response?.data?.message || 'Failed to disable package')
+                      }
+                    } catch (error) {
+                      MySwal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: error.message || 'Something went wrong while disabling the package.',
+                        customClass: {
+                          confirmButton: 'btn btn-primary'
+                        }
+                      })
+                    }
+                  }
+                })
+              }}
+            >
+              Disable Package
+            </Button.Ripple>
+          </div>
           </div>
         </ModalBody>
       </Modal>

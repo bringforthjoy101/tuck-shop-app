@@ -3,6 +3,7 @@ import { Badge, Card, CardBody, CardText, Row, Col, Table, Media } from 'reactst
 import moment from 'moment'
 import { isUserLoggedIn } from '@utils'
 import {useState, useEffect} from 'react'
+import Avatar from '@components/avatar'
 
 const PreviewCard = ({ data }) => {
 	const [userData, setUserData] = useState(null)
@@ -20,13 +21,13 @@ const PreviewCard = ({ data }) => {
 						<p className="card-text font-weight-bold mb-25">{product.name}</p>
 					</td>
 					<td className="py-1">
-						<span className="font-weight-bold">₦{product.price.toLocaleString()}</span>
+						<span className="font-weight-bold">{product.price.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}</span>
 					</td>
 					<td className="py-1">
-						<span className="font-weight-bold">{product.qty.toLocaleString()} {product.unit}</span>
+						<span className="font-weight-bold">{product.quantity.toLocaleString()}</span>
 					</td>
 					<td className="py-1">
-						<span className="font-weight-bold">₦{product.amount.toLocaleString()}</span>
+						<span className="font-weight-bold">₦{(product.price * product.quantity).toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}</span>
 					</td>
 				</tr>
 			)
@@ -50,7 +51,7 @@ const PreviewCard = ({ data }) => {
 					<div>
 						{/* <h4 className="invoice-title">{'DEMO'}</h4> */}
 						<div className="logo-wrapper">
-							<Media className="mr-25" left>
+							{/* <Media className="mr-25" left>
 								<Media
 									object
 									className="rounded mr-50"
@@ -58,27 +59,44 @@ const PreviewCard = ({ data }) => {
 									alt="Generic placeholder image"
 									height="80"
 								/>
-							</Media>
+							</Media> */}
+							<Avatar
+								initials
+								color="light-primary"
+								className='rounded mr-25'
+								content={`${data?.student?.firstName} ${data?.student?.lastName}`}
+								contentStyles={{
+									borderRadius: 0,
+									fontSize: 'calc(36px)',
+									width: '100%',
+									height: '100%'
+								}}
+								style={{
+									height: '80px',
+									width: '80px'
+								}}
+							/>
 						</div>
-						<CardText className="mb-25">{data?.student?.firstName || ''} {data?.student?.lastName || ''}</CardText>
-						<CardText className="mb-25">{data?.business?.address || ''}</CardText>
-						<CardText className="mb-0">{data?.business?.phone || ''}</CardText>
+						<CardText className="mb-25 font-weight-bold">{data?.student?.firstName || ''} {data?.student?.lastName || ''}</CardText>
+						<CardText className="mb-25">{data?.package?.name || ''}</CardText>
+						{/* <CardText className="mb-25">{data?.package?.description || ''}</CardText> */}
+						<CardText className="mb-0 capitalize">{data?.package?.category || ''}</CardText>
 					</div>
 					<div className="mt-md-0 mt-2">
 						<h4 className="invoice-title">
-							BILL PRINT OUT <span className="invoice-number">#{data.orderNumber}</span>
+							<span className="invoice-number">#{data.orderNumber}</span>
 						</h4>
 						<div className="invoice-date-wrapper">
-							<p className="invoice-date-title">Date Issued:</p>
+							<p className="invoice-date-title">Date Ordered:</p>
 							<p className="invoice-date">{moment(data.createdAt).format('LL')}</p>
 						</div>
 						<div className="invoice-date-wrapper">
-							<p className="invoice-date-title">Due Date:</p>
-							<p className="invoice-date">{moment(data.createdAt).format('LL')}</p>
+							<p className="invoice-date-title">Delivery Date:</p>
+							<p className="invoice-date">{moment(data.orderDate).format('LL')}</p>
 						</div>
 						<div className="invoice-date-wrapper">
 							<p className="invoice-date-title">Amount Paid:</p>
-							<p className="invoice-date">₦{data.amount.toLocaleString()}</p>
+							<p className="invoice-date">{data.amount.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}</p>
 						</div>
 					</div>
 				</div>

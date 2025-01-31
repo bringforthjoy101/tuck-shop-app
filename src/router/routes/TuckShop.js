@@ -182,6 +182,10 @@ const ManagerRoutes = [
       {
         path: '/settings/list',
         component: lazy(() => import('../../views/tuck-shop/settings/list'))
+      },
+      {
+        path: '/terms',
+        component: lazy(() => import('../../views/tuck-shop/terms/list'))
       }
 ]
 
