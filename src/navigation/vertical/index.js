@@ -20,9 +20,9 @@ console.log({ userType: userData?.type })
 switch (userData?.type) {
     case 'admin':
         if (userData?.role === 'manager') {
-            navigations = [...dashboards, ...tuckShop, ...students, ...parents, ...calendar, ...products, ...orders, ...transaction, ...admins, ...terms]
+            navigations = [...dashboards, ...tuckShop, ...calendar, ...students, ...parents, ...products, ...orders, ...transaction, ...admins, ...terms]
         } else if (userData?.role === 'bursary') {
-            navigations = [...dashboards, ...tuckShop, ...students, ...parents, ...calendar, ...transaction]
+            navigations = [...dashboards, ...tuckShop, ...calendar, ...students, ...parents, ...transaction]
         } else if (userData?.role === 'sales-rep') {
             navigations = [...dashboards, ...tuckShop, ...calendar, ...transaction, ...orders]
         } else {

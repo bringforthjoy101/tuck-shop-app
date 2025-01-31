@@ -4,7 +4,7 @@
 const themeConfig = {
   app: {
     appName: 'TuckShop',
-    appLogoImage: require('@src/assets/images/logo/favicon.png').default
+    appLogoImage: require('@src/assets/images/logo/toltem-icon.png')
   },
   layout: {
     isRTL: false,

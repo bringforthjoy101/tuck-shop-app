@@ -1,5 +1,5 @@
 // ** Logo
-import logo from '@src/assets/images/logo/favicon.png'
+import logo from '@src/assets/images/logo/toltem-icon.png'
 
 const SpinnerComponent = () => {
   return (

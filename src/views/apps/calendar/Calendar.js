@@ -16,6 +16,7 @@ import { toast } from 'react-toastify'
 import { Card, CardBody, Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap'
 import { Menu, Check, X } from 'react-feather'
 import moment from 'moment'
+import { apiRequest } from '@utils'
 
 // ** Toast Component
 const ToastComponent = ({ title, icon, color }) => (
@@ -54,11 +55,27 @@ const Calendar = props => {
     refetchEvents
   } = props
 
+  const [currentTerm, setCurrentTerm] = useState(null)
+
+  // Fetch current term
+  const fetchCurrentTerm = async () => {
+    try {
+      const response = await apiRequest({
+        url: '/get-current-term',
+        method: 'GET'
+      })
+      setCurrentTerm(response.data.data)
+    } catch (error) {
+      console.error('Error fetching current term:', error)
+    }
+  }
+
   // ** UseEffect checks for CalendarAPI Update
   useEffect(() => {
     if (calendarApi === null) {
       setCalendarApi(calendarRef.current.getApi())
     }
+    fetchCurrentTerm()
   }, [calendarApi])
 
   const generateUniqueEventId = (index) => {
@@ -83,8 +100,20 @@ const Calendar = props => {
       info: 'ETC'
     }
 
+    // Check if date is within valid range
+    const isDateInValidRange = (date) => {
+      const termStart = new Date(currentTerm?.startDate)
+      const termEnd = new Date(currentTerm?.endDate)
+      return date >= termStart && date <= termEnd
+    }
+
     // Function to check if a date already has this event or has reached the limit
     const canAddEventToDate = (date) => {
+      // First check if date is within valid range
+      if (!isDateInValidRange(date)) {
+        return { allowed: false, reason: 'out-of-range' }
+      }
+
       const existingEvents = calendarRef.current.getApi().getEvents().filter(event => {
         const eventDate = new Date(event.start).setHours(0, 0, 0, 0)
         const checkDate = new Date(date).setHours(0, 0, 0, 0)
@@ -137,7 +166,7 @@ const Calendar = props => {
           if (!check.allowed) {
             skippedDates.push({ 
               date: currentDate, 
-              reason: check.reason === 'no-products' ? 'no products available' : check.reason === 'limit' ? 'day full' : 'duplicate event' 
+              reason: check.reason === 'no-products' ? 'no products available' : check.reason === 'limit' ? 'day full' : check.reason === 'out-of-range' ? 'outside term dates' : 'duplicate event' 
             })
             continue
           }
@@ -174,7 +203,10 @@ const Calendar = props => {
           
           const check = canAddEventToDate(currentDate)
           if (!check.allowed) {
-            skippedDates.push({ date: currentDate, reason: check.reason === 'no-products' ? 'no products available' : check.reason === 'limit' ? 'day full' : 'duplicate event' })
+            skippedDates.push({ 
+              date: currentDate, 
+              reason: check.reason === 'no-products' ? 'no products available' : check.reason === 'limit' ? 'day full' : check.reason === 'out-of-range' ? 'outside term dates' : 'duplicate event' 
+            })
             continue
           }
 
@@ -221,7 +253,11 @@ const Calendar = props => {
           
           const check = canAddEventToDate(currentDate)
           if (!check.allowed) {
-            skippedDates.push({ date: currentDate, reason: check.reason, unavailableProducts: check.unavailableProducts })
+            skippedDates.push({ 
+              date: currentDate, 
+              reason: check.reason === 'no-products' ? 'no products available' : check.reason === 'limit' ? 'day full' : check.reason === 'out-of-range' ? 'outside term dates' : 'duplicate event',
+              unavailableProducts: check.unavailableProducts 
+            })
             continue
           }
 
@@ -253,7 +289,11 @@ const Calendar = props => {
         // Single event (no recurrence)
         const check = canAddEventToDate(startDate)
         if (!check.allowed) {
-          skippedDates.push({ date: startDate, reason: check.reason === 'no-products' ? 'no products available' : check.reason === 'limit' ? 'day full' : 'duplicate event', unavailableProducts: check.unavailableProducts })
+          skippedDates.push({ 
+            date: startDate, 
+            reason: check.reason === 'no-products' ? 'no products available' : check.reason === 'limit' ? 'day full' : check.reason === 'out-of-range' ? 'outside term dates' : 'duplicate event',
+            unavailableProducts: check.unavailableProducts 
+          })
         } else {
           const eventStart = new Date(startDate)
           const eventEnd = new Date(startDate)
@@ -280,9 +320,6 @@ const Calendar = props => {
 
     // Add successful events to store
     dispatch(addEvent(events))
-    // events.forEach(event => {
-    //   dispatch(addEvent(event))
-    // })
 
     // Close all toasts
     toast.dismiss()
@@ -291,9 +328,7 @@ const Calendar = props => {
     if (skippedDates.length > 0) {
       const skippedMessage = skippedDates.map(skip => {
         const date = skip.date.toLocaleDateString()
-        return `${date} (${
-          skip.reason === 'no-products' ? `unavailable products: ${skip.unavailableProducts}` : skip.reason === 'limit' ? 'day full' : 'duplicate event'
-        })`
+        return `${date} (${skip.reason})`
       }).join(', ')
 
       toast.warning(
@@ -333,7 +368,7 @@ const Calendar = props => {
       setSelectedEventData(null)
     }
   }
-  console.log(store.events)
+
   // ** calendarOptions(Props)
 
   const snackPackageObj = {
@@ -361,9 +396,13 @@ const Calendar = props => {
       start: 'sidebarToggle, prev,next, title',
       end: 'dayGridMonth,listMonth'
     },
+    // validRange: {
+    //   start: new Date().toISOString().split('T')[0],
+    //   end: academicYearEnd.toISOString().split('T')[0]
+    // },
     validRange: {
-      start: new Date().toISOString().split('T')[0],
-      end: academicYearEnd.toISOString().split('T')[0]
+      start: currentTerm?.startDate,
+      end: currentTerm?.endDate
     },
     views: {
       dayGridMonth: {

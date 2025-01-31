@@ -27,7 +27,7 @@ import { useSkin } from '@hooks/useSkin'
 import { useNavbarType } from '@hooks/useNavbarType'
 import { useFooterType } from '@hooks/useFooterType'
 import { useNavbarColor } from '@hooks/useNavbarColor'
-import Logo from '../../assets/images/logo/favicon.png'
+import Logo from '../../assets/images/logo/toltem-icon.png'
 
 // ** Styles
 import '@styles/base/core/menu/menu-types/horizontal-menu.scss'

@@ -7,7 +7,8 @@ import { Disc, X, Circle } from 'react-feather'
 
 // ** Config
 import themeConfig from '@configs/themeConfig'
-import Logo from '../../../../../assets/images/logo/favicon.png'
+import Logo from '../../../../../assets/images/logo/toltem-icon.png'
+// const Logo = themeConfig.app.appLogoImage
 
 const VerticalMenuHeader = props => {
   // ** Props
