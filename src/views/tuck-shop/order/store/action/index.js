@@ -20,13 +20,16 @@ export const getAllData = ({startDate, endDate, year, group}) => {
 		const response = await apiRequest({ url: finalUrl, method: 'GET', params: {startDate, endDate, year, group} }, dispatch)
 		console.log(response)
 		if (response && response.data.data && response.data.status) {
-			await dispatch({
+			const action = {
 				type: 'GET_ALL_ORDERS_DATA',
 				data: response.data.data,
-			})
+			}
+			await dispatch(action)
+			return action
 		} else {
 			console.log(response)
 			swal('Oops!', 'Something went wrong.', 'error')
+			return null
 		}
 	}
 }

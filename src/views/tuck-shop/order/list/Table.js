@@ -322,20 +322,6 @@ const TransactionTable = () => {
 									value={selectedYear}
 									onChange={(data) => {
 										setSelectedYear(data)
-										dispatch(getAllData({
-											year: data.value,
-											group: selectedGroup.value
-										}))
-										dispatch(
-											getFilteredData(store.allData, {
-												page: currentPage,
-												perPage: rowsPerPage,
-												status: currentStatus.value,
-												year: data.value,
-												group: selectedGroup.value,
-												q: searchTerm,
-											})
-										)
 									}}
 								/>
 							</FormGroup>
@@ -353,20 +339,6 @@ const TransactionTable = () => {
 									value={selectedGroup}
 									onChange={(data) => {
 										setSelectedGroup(data)
-										dispatch(getAllData({
-											year: selectedYear.value,
-											group: data.value
-										}))
-										dispatch(
-											getFilteredData(store.allData, {
-												page: currentPage,
-												perPage: rowsPerPage,
-												status: currentStatus.value,
-												year: selectedYear.value,
-												group: data.value,
-												q: searchTerm,
-											})
-										)
 									}}
 								/>
 							</FormGroup>
@@ -378,13 +350,45 @@ const TransactionTable = () => {
 								id="range-picker"
 								className="form-control"
 								onChange={(date) => {
-									handleRangeSearch(date)
+									setPicker(date)
 								}}
 								options={{
 									mode: 'range',
 									defaultDate: ['2020-02-01', '2020-02-15'],
 								}}
 							/>
+						</Col>
+						<Col lg="3" md="6" className="d-flex align-items-end">
+							<Button.Ripple 
+								color="primary" 
+								className="mb-1" 
+								onClick={async () => {
+									// Format dates as YYYY-MM-DD and handle timezone correctly
+									const startDate = picker[0] ? moment(picker[0]).format('YYYY-MM-DD') : null
+									const endDate = picker[1] ? moment(picker[1]).format('YYYY-MM-DD') : null
+									
+									// Wait for the data to be fetched before filtering
+									const result = await dispatch(getAllData({
+										startDate,
+										endDate,
+										year: selectedYear.value,
+										group: selectedGroup.value
+									}))
+
+									// Get the action result and filter the new data
+									if (result?.type === 'GET_ALL_ORDERS_DATA' && result.data) {
+										dispatch(
+											getFilteredData(result.data, {
+												page: currentPage,
+												perPage: rowsPerPage,
+												q: searchTerm
+											})
+										)
+									}
+								}}
+							>
+								Apply Filters
+							</Button.Ripple>
 						</Col>
 					</Row>
 				</CardBody>
