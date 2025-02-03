@@ -215,54 +215,81 @@ const TransactionTable = () => {
 	// download PDF
 	const downloadPDF = () => {
 		const doc = new jsPDF({
-			orientation: 'landscape',
+			orientation: 'landscape'
 		})
 
+		// Define column widths as percentages of the page width
+		const columnWidths = {
+			0: 40,  // OrderId
+			1: 40,  // Amount
+			2: 80,  // Products
+			3: 40,  // Student
+			4: 40,  // Date
+			5: 40   // Initiated By
+		}
+
 		doc.autoTable({
-			styles: { halign: 'left' },
-			columnStyles: {
-				0: { cellWidth: 'auto' },
-				1: { cellWidth: 'auto' },
-				2: { cellWidth: 'auto' },
-				3: { cellWidth: 'auto' },
-				4: { cellWidth: 'auto' },
-				5: { cellWidth: 'auto' },
-			},
 			head: [['OrderId', 'Amount', 'Products', 'Student', 'Date', 'Initiated By']],
+			styles: { 
+				halign: 'left',
+				fontSize: 9,
+				cellPadding: 3
+			},
+			headStyles: {
+				fillColor: [51, 122, 183],
+				fontSize: 10,
+				fontStyle: 'bold'
+			},
+			columnStyles: {
+				0: { cellWidth: columnWidths[0] },
+				1: { cellWidth: columnWidths[1] },
+				2: { cellWidth: columnWidths[2] },
+				3: { cellWidth: columnWidths[3] },
+				4: { cellWidth: columnWidths[4] },
+				5: { cellWidth: columnWidths[5] }
+			},
+			margin: { top: 10 }
 		})
+
 		const getProducts = (items) => {
 			const arr = []
 			const _items = process.env.NODE_ENV === 'production' ? JSON.parse(items) : items
 			_items.forEach((item) => {
 				arr.push(`${item.name} X ${item.qty}`)
 			})
-			const string = arr.join(', ')
-			return string
+			return arr.join(', ')
 		}
+
 		store.data.map((arr) => {
 			doc.autoTable({
-				styles: { halign: 'left' },
-				theme: 'grid',
-				columnStyles: {
-					0: { cellWidth: 'auto' },
-					1: { cellWidth: 'auto' },
-					2: { cellWidth: 'auto' },
-					3: { cellWidth: 'auto' },
-					4: { cellWidth: 'auto' },
-					5: { cellWidth: 'auto' },
-				},
 				body: [
-					[
+						[
 						`#${arr.orderNumber}`,
 						arr.amount.toLocaleString('en-US', { style: 'currency', currency: 'NGN' }),
 						getProducts(arr.products),
 						`${arr.student.firstName} ${arr.student.lastName}`,
 						moment(arr.createdAt).format('lll'),
-						`${arr.admin.firstName} ${arr.admin.lastName}`,
-					],
+						`${arr.admin.firstName} ${arr.admin.lastName}`
+					]
 				],
+				styles: { 
+					fontSize: 8,
+					cellPadding: 2,
+					overflow: 'linebreak',
+					lineWidth: 0.1
+				},
+				columnStyles: {
+					0: { cellWidth: columnWidths[0] },
+					1: { cellWidth: columnWidths[1] },
+					2: { cellWidth: columnWidths[2] },
+					3: { cellWidth: columnWidths[3] },
+					4: { cellWidth: columnWidths[4] },
+					5: { cellWidth: columnWidths[5] }
+				},
+				startY: doc.lastAutoTable.finalY + 0.5
 			})
 		})
+
 		const date = new Date()
 		doc.save(
 			`tuckshop_orders_${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}_${date.getDate()}-${date.getMonth()}-${date.getFullYear()}.pdf`

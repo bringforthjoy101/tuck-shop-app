@@ -20,7 +20,8 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
     price: '',
     description: '',
     image: '',
-    availability: ['Monday']
+    availability: ['Monday'],
+    period: ['morning', 'evening']
   })
   console.log({productData})
 
@@ -51,7 +52,8 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
                 price: '',
                 description: '',
                 image: '',
-                availability: ['Monday']
+                availability: ['Monday'],
+                period: ['morning', 'evening']
             })
             toggleSidebar()
         } else {
@@ -64,7 +66,8 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
             price: '',
             description: '',
             image: '',
-            availability: ['Monday']
+            availability: ['Monday'],
+            period: ['morning', 'evening']
           })
           toggleSidebar()
         }
@@ -250,6 +253,38 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
                   setProductData({...productData, availability: [...productData.availability, day]})
                 } else {
                   setProductData({...productData, availability: productData.availability.filter(d => d !== day)})
+                }
+              }}  
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for='period'>Period Available</Label><br />
+            <CustomInput 
+              inline 
+              type='checkbox' 
+              id='morning' 
+              label='Morning' 
+              defaultChecked
+              onChange={e => {
+                const period = 'morning'
+                if (e.target.checked) {
+                  setProductData({...productData, period: [...productData.period, period]})
+                } else {
+                  setProductData({...productData, period: productData.period.filter(d => d !== period)})
+                }
+              }} 
+            />
+            <CustomInput 
+              inline 
+              type='checkbox' 
+              id='evening' 
+              label='Evening'
+              onChange={e => {
+                const period = 'evening'
+                if (e.target.checked) {
+                  setProductData({...productData, period: [...productData.period, period]})
+                } else {
+                  setProductData({...productData, period: productData.period.filter(d => d !== period)})
                 }
               }}  
             />

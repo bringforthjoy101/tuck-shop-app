@@ -173,10 +173,10 @@ const UserInfoCard = ({ selectedProduct }) => {
                 <div className='user-info-title'>
                   <User className='mr-1' size={14} />
                   <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
-                    Created By
+                    Period Available
                   </CardText>
                 </div>
-                <CardText className='text-capitalize mb-0'>{selectedProduct?.admin.fullName}</CardText>
+                <CardText className='text-capitalize mb-0'>{selectedProduct?.period.join(', ')}</CardText>
               </div>
             </div>
           </div>

@@ -22,7 +22,8 @@ import {
   updateFilter,
   updateAllFilters,
   addEvent,
-  removeEvent
+  removeEvent,
+  fetchWalletBalance
 } from './store/actions/index'
 
 // ** Styles
@@ -106,6 +107,7 @@ const CalendarComponent = () => {
               toggleSidebar={toggleSidebar}
               updateAllFilters={updateAllFilters}
               handleAddEventSidebar={handleAddEventSidebar}
+              fetchWalletBalance={fetchWalletBalance}
             />
           </Col>
           <Col className='position-relative'>
@@ -118,8 +120,10 @@ const CalendarComponent = () => {
               selectEvent={selectEvent}
               updateEvent={updateEvent}
               addEvent={addEvent}
+              fetchWalletBalance={fetchWalletBalance}
               removeEvent={removeEvent}
               refetchEvents={refetchEvents}
+              fetchEvents={fetchEvents}
               toggleSidebar={toggleSidebar}
               calendarsColor={calendarsColor}
               setCalendarApi={setCalendarApi}

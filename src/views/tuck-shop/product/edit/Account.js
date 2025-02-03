@@ -25,6 +25,7 @@ const UserAccountTab = ({ selectedProduct }) => {
 		type: selectedProduct.type,
 		category: selectedProduct.category,
 		availability: selectedProduct.availability,
+		period: selectedProduct.period,
 		// image: 'https://res.cloudinary.com/bringforthjoy/image/upload/v1621720743/INVESTA/appia_reward_image_placeholder_um7q6g.jpg'
 	})
 
@@ -49,6 +50,7 @@ const UserAccountTab = ({ selectedProduct }) => {
 						type: selectedProduct.type,
 						category: selectedProduct.category,
 						availability: selectedProduct.availability,
+						period: selectedProduct.period,
 					})
 					history.push(`/product/view/${selectedProduct.id}`)
 				} else {
@@ -60,6 +62,7 @@ const UserAccountTab = ({ selectedProduct }) => {
 						type: selectedProduct.type,
 						category: selectedProduct.category,
 						availability: selectedProduct.availability,
+						period: selectedProduct.period,
 					})
 				}
 			} catch (error) {
@@ -366,6 +369,41 @@ const UserAccountTab = ({ selectedProduct }) => {
 									value={productData.description}
 									onChange={e => setProductData({...productData, description: e.target.value})}
 									required 
+								/>
+							</FormGroup>
+						</Col>
+						<Col md='6' sm='12'>
+							<FormGroup>
+								<Label for='period'>Period Available</Label><br />
+								<CustomInput 
+									inline 
+									type='checkbox' 
+									id='morning' 
+									label='Morning' 
+									defaultChecked={selectedProduct.period.includes('morning')}
+									onChange={e => {
+										const period = 'morning'
+										if (e.target.checked) {
+										setProductData({...productData, period: [...productData.period, period]})
+										} else {
+										setProductData({...productData, period: productData.period.filter(d => d !== period)})
+										}
+									}} 
+								/>
+								<CustomInput 
+									inline 
+									type='checkbox' 
+									id='evening' 
+									label='Evening'
+									defaultChecked={selectedProduct.period.includes('evening')}
+									onChange={e => {
+										const period = 'evening'
+										if (e.target.checked) {
+										setProductData({...productData, period: [...productData.period, period]})
+										} else {
+										setProductData({...productData, period: productData.period.filter(d => d !== period)})
+										}
+									}}  
 								/>
 							</FormGroup>
 						</Col>

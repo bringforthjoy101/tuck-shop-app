@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 // ** Custom Components
 import Avatar from '@components/avatar'
 import moment from 'moment'
+import { Badge } from 'reactstrap'
 
 // ** Third Party Components
 
@@ -32,6 +33,12 @@ const getItemNames = (items) => {
 	return `${string.substring(0, 35)}...`
 }
 
+const statusObj = {
+	pending: 'light-warning',
+	cancelled: 'light-danger',
+	completed: 'light-success'
+}
+
 export const columns = [
 	{
 		name: 'Order Id',
@@ -50,6 +57,13 @@ export const columns = [
 		selector: 'amount',
 		sortable: true,
 		cell: (row) => <span className="text-capitalize">{row?.amount?.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}</span>,
+	},
+	{
+		name: 'Status',
+		width: '200px',
+		selector: 'status',
+		sortable: true,
+		cell: (row) => <Badge className='text-capitalize' color={statusObj[row.status]} pill>{row.status}</Badge>,
 	},
 	// {
 	// 	name: 'Products ',

@@ -200,7 +200,7 @@ const Cart = (props) => {
 	}
 
 	const handleStudentChange = (option) => {
-		// setSelectedOption(option)
+		setSelectedOption(option)
 		setPackagedOrderData(prev => ({ ...prev, studentId: option.value }))
 	}
 
@@ -339,7 +339,7 @@ const Cart = (props) => {
 									value={selectedOption}
 									options={renderStudents(store.allData)}
 									isClearable={false}
-									onChange={setSelectedOption}
+									onChange={handleStudentChange}
 									required
 									disabled={userData?.type === 'student'}
 								/>

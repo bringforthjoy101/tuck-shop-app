@@ -9,6 +9,7 @@ import axios from 'axios'
 import { swal, apiRequest, selectThemeColors } from '@utils'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { useSelector } from 'react-redux'
 const MySwal = withReactContent(Swal)
 
 // ** illustration import
@@ -92,7 +93,7 @@ const draggableEvents = [
 
 const SidebarLeft = props => {
   // ** Props
-  const { handleAddEventSidebar, toggleSidebar, updateFilter, updateAllFilters, store, dispatch } = props
+  const { handleAddEventSidebar, toggleSidebar, updateFilter, updateAllFilters, fetchWalletBalance, store, dispatch } = props
 
   // ** State for modal
   const [modal, setModal] = useState(false)
@@ -102,6 +103,9 @@ const SidebarLeft = props => {
   const [studentOrders, setStudentOrders] = useState([])
   const [studentPackages, setStudentPackages] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  
+  // Get wallet balance from store using useSelector
+  const walletBalance = useSelector(state => state.calendar.studentWalletBalance)
 
   // ** Fetch students on component mount
   useEffect(() => {
@@ -153,8 +157,9 @@ const SidebarLeft = props => {
               price: product.price,
               daysAvailable: product.availability
             }))
-          
         })) || [])
+        // Fetch wallet balance when student is selected
+        await dispatch(fetchWalletBalance(selectedOption.value))
       } catch (error) {
         console.error('Error fetching student orders:', error)
         swal('Error', 'Error fetching student orders', 'error')
@@ -192,8 +197,8 @@ const SidebarLeft = props => {
           const studentId = eventEl.getAttribute('data-student-id')
           return {
             title: `${startTime} ${title}`,
-            start: new Date(), // This will be overridden on drop
-            end: new Date(),   // This will be overridden on drop
+            start: new Date(),
+            end: new Date(),
             allDay: false,
             display: 'block',
             extendedProps: {
@@ -202,20 +207,31 @@ const SidebarLeft = props => {
               endTime,
               products,
               packageId,
-              studentId
+              studentId,
+              onEventDropped: () => {
+                // Fetch updated wallet balance after event is dropped
+                if (studentId) {
+                  dispatch(fetchWalletBalance(studentId))
+                }
+              }
             }
           }
         }
       })
     })
-  }, [studentPackages]) // Add studentPackages as dependency since we need to reinitialize when packages change
+  }, [studentPackages])
 
   return (
     <Fragment>
       <div className='sidebar-wrapper'>
         <CardBody>
-          <h5 className='section-label mb-1'>
-            <span className='align-middle'>Select Student</span>
+          <h5 className='section-label mb-1 d-flex justify-content-between align-items-center'>
+            <span className='align-middle'>Student</span>
+            {walletBalance !== null && (
+              <h4 className={`${walletBalance > 2000 ? 'text-primary' : 'text-danger animate__animated animate__flash animate__infinite'}`}>
+                {walletBalance?.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
+              </h4>
+            )}
           </h5>
           <Select
             className='react-select mb-3'

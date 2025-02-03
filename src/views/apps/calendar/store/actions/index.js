@@ -121,3 +121,23 @@ export const selectEvent = event => {
     })
   }
 }
+
+// ** Fetch Wallet Balance
+export const fetchWalletBalance = (studentId) => {
+  return async dispatch => {
+    try {
+      const response = await apiRequest({
+        url: `/students/get-wallet/${studentId}`,
+        method: 'GET'
+      })
+      if (response.data?.status) {
+        dispatch({
+          type: 'UPDATE_WALLET_BALANCE',
+          data: response.data.data || 0
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching wallet balance:', error)
+    }
+  }
+}

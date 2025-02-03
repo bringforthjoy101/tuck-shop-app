@@ -3,7 +3,8 @@
 const initialState = {
   events: [],
   selectedEvent: {},
-  selectedCalendars: ['Personal', 'Business', 'Family', 'Holiday', 'ETC']
+  selectedCalendars: ['Personal', 'Business', 'Family', 'Holiday', 'ETC'],
+  studentWalletBalance: 0
 }
 
 const calenderReducer = (state = initialState, action) => {
@@ -27,7 +28,7 @@ const calenderReducer = (state = initialState, action) => {
               start: new Date(event?.orderDate),
               end: new Date(event?.orderDate),
               allDay: true,
-              extendedProps: { calendar: 'Personal', amount: event?.amount, products: event?.products, category: event?.category }
+              extendedProps: { calendar: 'Personal', amount: event?.amount, products: event?.products, category: event?.category, studentId: event?.studentId }
             })) : []
       }
     case 'UPDATE_FILTERS':
@@ -54,6 +55,8 @@ const calenderReducer = (state = initialState, action) => {
       return { ...state, selectedCalendars: selected }
     case 'SELECT_EVENT':
       return { ...state, selectedEvent: action.event }
+    case 'UPDATE_WALLET_BALANCE':
+      return { ...state, studentWalletBalance: action.data }
     default:
       return state
   }

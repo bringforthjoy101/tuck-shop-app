@@ -97,8 +97,8 @@ export const editStudent = (studnetId, studentData) => {
 // Add Funds
 export const creditOrDebitStudentWallet = ({ studentId, narration, amount, type }) => {
 	return async (dispatch) => {
-		const body = JSON.stringify({ studentId, narration, amount, type })
-		const response = await apiRequest({ url: `/students/wallet`, method: 'POST', body }, dispatch)
+		const body = JSON.stringify({ studentId, narration, amount })
+		const response = await apiRequest({ url: `/students/wallet/${type}`, method: 'POST', body }, dispatch)
 		console.log({ response })
 		if (response && response.data.status) {
 			swal('Good!', `Funds of ${amount} was successfully ${type === 'credit' ? 'added' : 'deducted'}!.`, 'success')
@@ -259,15 +259,30 @@ export const deactivateUser = (users, id) => {
 }
 
 //  Reset User Password
-export const passwordReset = ({ user_id }) => {
+export const passwordReset = ({ studentId }) => {
 	return async (dispatch) => {
-		const body = JSON.stringify({ user_id })
-		const response = await apiRequest({ url: `/admin/users/reset/`, method: 'POST', body }, dispatch)
-		if (response && response.data.success) {
+		const response = await apiRequest({ url: `/reset-student-password/${studentId}`, method: 'GET' }, dispatch)
+		if (response && response.data.status) {
 			swal('Good!', `User password reset Sucessfully.`, 'success')
 		} else {
 			console.log(response)
 			swal('Oops!', 'Somthing went wrong with your network.', 'error')
+		}
+	}
+}
+
+export const resetStudentPassword = (studentId) => {
+	return async (dispatch) => {
+		const response = await apiRequest({ url: `/reset-student-password/${studentId}`, method: 'GET' }, dispatch)
+		if (response) {
+			if (response.data.status) {
+				swal('Good!', `${response.data.message}.`, 'success')
+				await dispatch(getStudentDetails(studentId))
+			} else {
+				swal('Oops!', `${response.data.message}.`, 'error')
+			}
+		} else {
+			swal('Oops!', 'Something went wrong with your network.', 'error')
 		}
 	}
 }

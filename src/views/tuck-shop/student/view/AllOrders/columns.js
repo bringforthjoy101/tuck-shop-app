@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import Avatar from '@components/avatar'
 
 // ** Third Party Components
-import { Badge, UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem } from 'reactstrap'
+import { Badge } from 'reactstrap'
 import { Send, CheckCircle, Save, ArrowDownCircle, Info, PieChart } from 'react-feather'
 
 const getItemNames = (items) => {
@@ -19,6 +19,12 @@ const getItemNames = (items) => {
 	const string = arr.join(', ')
 	if (string.length < 35) return string
 	return `${string.substring(0, 35)}...`
+}
+
+const statusObj = {
+	pending: 'light-warning',
+	cancelled: 'light-danger',
+	completed: 'light-success'
 }
 
 // ** Table columns
@@ -39,6 +45,13 @@ export const columns = [
 		sortable: true,
 		minWidth: '150px',
 		cell: (row) => <span>{(row.amount || 0).toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}</span>,
+	},
+	{
+		name: 'Status',
+		selector: 'status',
+		sortable: true,
+		minWidth: '150px',
+		cell: (row) => <Badge className="text-capitalize" color={statusObj[row.status]} pill>{row.status}</Badge>,
 	},
 	{
 		name: 'Products ',

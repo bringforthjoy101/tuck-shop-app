@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 
 // ** Custom Components
 import Avatar from '@components/avatar'
@@ -10,7 +10,7 @@ import Flatpickr from 'react-flatpickr'
 import { X, Check, Trash } from 'react-feather'
 import Select, { components } from 'react-select'
 import { AvForm, AvField } from 'availity-reactstrap-validation-safe'
-import { selectThemeColors, isObjEmpty } from '@utils'
+import { selectThemeColors, isObjEmpty, apiRequest } from '@utils'
 import { Button, Modal, ModalHeader, ModalBody, FormGroup, Label, CustomInput, Input } from 'reactstrap'
 
 // ** Avatar Images
@@ -44,7 +44,6 @@ const AddEventSidebar = props => {
     dispatch,
     open,
     handleAddEventSidebar,
-    calendarsColor,
     calendarApi,
     refetchEvents,
     addEvent,
@@ -57,265 +56,122 @@ const AddEventSidebar = props => {
   const selectedEvent = store.selectedEvent
 
   // ** States
-  const [url, setUrl] = useState('')
-  const [desc, setDesc] = useState('')
-  const [title, setTitle] = useState('')
-  const [guests, setGuests] = useState({})
-  const [allDay, setAllDay] = useState(false)
-  const [location, setLocation] = useState('')
-  const [endPicker, setEndPicker] = useState(new Date())
-  const [startPicker, setStartPicker] = useState(new Date())
-  const [value, setValue] = useState([{ value: 'Business', label: 'Business', color: 'primary' }])
+  const [students, setStudents] = useState([])
+  const [selectedStudent, setSelectedStudent] = useState(null)
+  const [studentPackages, setStudentPackages] = useState([])
+  const [selectedPackage, setSelectedPackage] = useState(null)
+  const [allDay, setAllDay] = useState(true)
+  const [startPicker, setStartPicker] = useState(selectedEvent.start)
+  const [endPicker, setEndPicker] = useState(selectedEvent.start)
 
-  // ** Select Options
-  const options = [
-    { value: 'Business', label: 'Business', color: 'primary' },
-    { value: 'Personal', label: 'Personal', color: 'danger' },
-    { value: 'Family', label: 'Family', color: 'warning' },
-    { value: 'Holiday', label: 'Holiday', color: 'success' },
-    { value: 'ETC', label: 'ETC', color: 'info' }
-  ]
-
-  const guestsOptions = [
-    { value: 'Donna Frank', label: 'Donna Frank', avatar: img1 },
-    { value: 'Jane Foster', label: 'Jane Foster', avatar: img2 },
-    { value: 'Gabrielle Robertson', label: 'Gabrielle Robertson', avatar: img3 },
-    { value: 'Lori Spears', label: 'Lori Spears', avatar: img4 },
-    { value: 'Sandy Vega', label: 'Sandy Vega', avatar: img5 },
-    { value: 'Cheryl May', label: 'Cheryl May', avatar: img6 }
-  ]
-
-  // ** Custom select components
-  const OptionComponent = ({ data, ...props }) => {
-    return (
-      <components.Option {...props}>
-        <span className={`bullet bullet-${data.color} bullet-sm mr-50`}></span>
-        {data.label} 
-      </components.Option>
-    )
+  const classObject = {
+    7: 'JSS 1',
+    8: 'JSS 2',
+    9: 'JSS 3',
+    10: 'SSS 1',
+    11: 'SSS 2',
+    12: 'SSS 3',
+    0: 'Graduated'
   }
 
-  const GuestsComponent = ({ data, ...props }) => {
-    return (
-      <components.Option {...props}>
-        <div className='d-flex flex-wrap align-items-center'>
-          <Avatar className='my-0 mr-1' size='sm' img={data.avatar} />
-          <div>{data.label}</div>
-        </div>
-      </components.Option>
-    )
-  }
-
-  // ** Adds New Event
-  const handleAddEvent = () => {
-    const obj = {
-      title,
-      start: startPicker,
-      end: endPicker,
-      allDay,
-      display: 'block',
-      extendedProps: {
-        calendar: value[0].label,
-        url: url.length ? url : undefined,
-        guests: guests.length ? guests : undefined,
-        location: location.length ? location : undefined,
-        desc: desc.length ? desc : undefined
+  // ** Fetch students on component mount
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await apiRequest({
+          url: '/students',
+          method: 'GET'
+        })
+        const formattedStudents = response.data.data.map(student => ({
+          value: student.id,
+          label: `${student.firstName} ${student.lastName} | ${classObject[student.year]} ${student.group} | ${student.wallet.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}`
+        }))
+        setStudents(formattedStudents)
+      } catch (error) {
+        console.error('Error fetching students:', error)
       }
     }
-    dispatch(addEvent(obj))
-    refetchEvents()
-    handleAddEventSidebar()
-    toast.success(<ToastComponent title='Event Added' color='success' icon={<Check />} />, {
-      autoClose: 2000,
-      hideProgressBar: true,
-      closeButton: false
-    })
+    fetchStudents()
+    console.log({selectedEvent})
+  }, [])
+
+  // ** Handle student selection
+  const handleStudentChange = async (selectedOption) => {
+    setSelectedStudent(selectedOption)
+    console.log({selectedOption})
+    if (selectedOption) {
+      try {
+        const response = await apiRequest({
+          url: `/orders/student/${selectedOption.value}`,
+          method: 'GET'
+        })
+        const packages = response.data.data?.packages || []
+        const formattedPackages = packages.map(pkg => ({
+          value: pkg.id,
+          label: pkg.name,
+          products: pkg.products,
+          category: pkg.category
+        }))
+        setStudentPackages(formattedPackages)
+      } catch (error) {
+        console.error('Error fetching student packages:', error)
+      }
+    } else {
+      setStudentPackages([])
+      setSelectedPackage(null)
+    }
   }
 
   // ** Reset Input Values on Close
   const handleResetInputValues = () => {
     dispatch(selectEvent({}))
-    setTitle('')
-    setAllDay(false)
-    setUrl('')
-    setLocation('')
-    setDesc('')
-    setGuests({})
-    setValue([{ value: 'Business', label: 'Business', color: 'primary' }])
-    setStartPicker(new Date())
-    setEndPicker(new Date())
+    setSelectedStudent(null)
+    setSelectedPackage(null)
+    setAllDay(true)
+    setStartPicker(selectedEvent.start)
+    setEndPicker(selectedEvent.start)
   }
 
-  // ** Set sidebar fields
-  const handleSelectedEvent = () => {
-    if (!isObjEmpty(selectedEvent)) {
-      const calendar = selectedEvent.extendedProps.calendar
+  // ** Adds New Event
+  const handleAddEvent = () => {
+    if (!selectedStudent || !selectedPackage) {
+      toast.error(
+        <ToastComponent title='Please select both student and package' color='danger' icon={<X />} />,
+        {
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeButton: false
+        }
+      )
+      return
+    }
 
-      const resolveLabel = () => {
-        if (calendar.length) {
-          return { label: calendar, value: calendar, color: calendarsColor[calendar] }
-        } else {
-          return { value: 'Business', label: 'Business', color: 'primary' }
+    const obj = [
+      {
+        title: `${selectedPackage.label}`,
+        start: new Date(new Date(selectedEvent.start).setDate(new Date(selectedEvent.start).getDate() + 1)),
+        end: new Date(endPicker),
+        allDay,
+        display: 'block',
+        extendedProps: {
+          calendar: selectedPackage.category,
+          products: selectedPackage.products,
+          packageId: selectedPackage.value,
+          studentId: selectedStudent.value
         }
       }
-      setTitle(selectedEvent.title || title)
-      setAllDay(selectedEvent.allDay || allDay)
-      setUrl(selectedEvent.url || url)
-      setLocation(selectedEvent.extendedProps.location || location)
-      setDesc(selectedEvent.extendedProps.description || desc)
-      setGuests(selectedEvent.extendedProps.guests || guests)
-      setStartPicker(new Date(selectedEvent.start))
-      setEndPicker(selectedEvent.allDay ? new Date(selectedEvent.start) : new Date(selectedEvent.end))
-      setValue([resolveLabel()])
-    }
-  }
-
-  // ** (UI) updateEventInCalendar
-  const updateEventInCalendar = (updatedEventData, propsToUpdate, extendedPropsToUpdate) => {
-    const existingEvent = calendarApi.getEventById(updatedEventData.id)
-
-    // ** Set event properties except date related
-    // ? Docs: https://fullcalendar.io/docs/Event-setProp
-    // ** dateRelatedProps => ['start', 'end', 'allDay']
-    // ** eslint-disable-next-line no-plusplus
-    for (let index = 0; index < propsToUpdate.length; index++) {
-      const propName = propsToUpdate[index]
-      existingEvent.setProp(propName, updatedEventData[propName])
-    }
-
-    // ** Set date related props
-    // ? Docs: https://fullcalendar.io/docs/Event-setDates
-    existingEvent.setDates(updatedEventData.start, updatedEventData.end, { allDay: updatedEventData.allDay })
-
-    // ** Set event's extendedProps
-    // ? Docs: https://fullcalendar.io/docs/Event-setExtendedProp
-    // ** eslint-disable-next-line no-plusplus
-    for (let index = 0; index < extendedPropsToUpdate.length; index++) {
-      const propName = extendedPropsToUpdate[index]
-      existingEvent.setExtendedProp(propName, updatedEventData.extendedProps[propName])
-    }
-  }
-
-  // ** Updates Event in Store
-  const handleUpdateEvent = () => {
-    const eventToUpdate = {
-      id: selectedEvent.id,
-      title,
-      allDay,
-      start: startPicker,
-      end: endPicker,
-      url,
-      extendedProps: {
-        location,
-        description: desc,
-        guests,
-        calendar: value[0].label
-      }
-    }
-
-    const propsToUpdate = ['id', 'title', 'url']
-    const extendedPropsToUpdate = ['calendar', 'guests', 'location', 'description']
-
-    dispatch(updateEvent(eventToUpdate))
-    updateEventInCalendar(eventToUpdate, propsToUpdate, extendedPropsToUpdate)
+    ]
+    dispatch(addEvent(obj))
+    refetchEvents()
     handleAddEventSidebar()
-    toast.success(<ToastComponent title='Event Updated' color='success' icon={<Check />} />, {
-      autoClose: 2000,
-      hideProgressBar: true,
-      closeButton: false
-    })
-  }
-
-  // ** (UI) removeEventInCalendar
-  const removeEventInCalendar = eventId => {
-    try {
-      const event = calendarApi.getEventById(eventId)
-      if (event) {
-        event.remove()
-      } else {
-        console.warn('Event not found:', eventId)
-      }
-    } catch (error) {
-      console.error('Error removing event:', error)
-      toast.error(
-        <ToastComponent 
-          title='Error removing event' 
-          color='danger' 
-          icon={<X />} 
-        />, 
-        {
-          autoClose: 2000,
-          hideProgressBar: true,
-          closeButton: false
-        }
-      )
-    }
-  }
-
-  // ** Function to handle Delete Event
-  const handleDeleteEvent = () => {
-    try {
-      if (selectedEvent?.id) {
-        removeEventInCalendar(selectedEvent.id)
-        dispatch(removeEvent(selectedEvent.id))
-        handleAddEventSidebar()
-        toast.error(
-          <ToastComponent 
-            title='Event Removed' 
-            color='danger' 
-            icon={<Trash />} 
-          />, 
-          {
-            autoClose: 2000
-          }
-        )
-      }
-    } catch (error) {
-      console.error('Error deleting event:', error)
-      toast.error(
-        <ToastComponent 
-          title='Error deleting event' 
-          color='danger' 
-          icon={<X />} 
-        />, 
-        {
-          autoClose: 2000,
-          hideProgressBar: true,
-          closeButton: false
-        }
-      )
-    }
-  }
-
-  // ** Event Action buttons
-  const EventActions = () => {
-    if (isObjEmpty(selectedEvent) || (!isObjEmpty(selectedEvent) && !selectedEvent.title.length)) {
-      return (
-        <Fragment>
-          <Button.Ripple className='mr-1' type='submit' color='primary'>
-            Add
-          </Button.Ripple>
-          <Button.Ripple color='secondary' type='reset' onClick={handleAddEventSidebar} outline>
-            Cancel
-          </Button.Ripple>
-        </Fragment>
-      )
-    } else {
-      return (
-        <Fragment>
-          <Button.Ripple
-            className='mr-1'
-            color='primary'
-            // onClick={handleUpdateEvent}
-          >
-            Update
-          </Button.Ripple>
-          <Button.Ripple color='danger' onClick={handleDeleteEvent} outline>
-            Delete
-          </Button.Ripple>
-        </Fragment>
-      )
-    }
+    // toast.success(
+    //   <ToastComponent title='Event Added' color='success' icon={<Check />} />,
+    //   {
+    //     autoClose: 2000,
+    //     hideProgressBar: true,
+    //     closeButton: false
+    //   }
+    // )
   }
 
   // ** Close BTN
@@ -327,63 +183,40 @@ const AddEventSidebar = props => {
       toggle={handleAddEventSidebar}
       className='sidebar-lg'
       contentClassName='p-0'
-      onOpened={handleSelectedEvent}
       onClosed={handleResetInputValues}
       modalClassName='modal-slide-in event-sidebar'
     >
       <ModalHeader className='mb-1' toggle={handleAddEventSidebar} close={CloseBtn} tag='div'>
-        <h5 className='modal-title'>
-          {selectedEvent && selectedEvent.title && selectedEvent.title.length ? 'Update' : 'Add'} Event
-        </h5>
+        <h5 className='modal-title'>Add Event</h5>
       </ModalHeader>
       <ModalBody className='flex-grow-1 pb-sm-0 pb-3'>
-        <AvForm
-          onSubmit={(event, errors, values) => {
-            if (errors.length === 0) {
-              if (isObjEmpty(selectedEvent) || (!isObjEmpty(selectedEvent) && !selectedEvent.title.length)) {
-                handleAddEvent()
-              } else {
-                handleUpdateEvent()
-              }
-              handleAddEventSidebar()
-            }
-          }}
-        >
+        <AvForm onSubmit={(e, errors) => {
+          e.preventDefault()
+          if (errors && !errors.length) {
+            handleAddEvent()
+          }
+        }}>
           <FormGroup>
-            <Label for='title'>Title</Label>
-            <AvField
-              name='title'
-              id='title'
-              placeholder='Title'
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              required
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label for='label'>Label</Label>
+            <Label for='student'>Student</Label>
             <Select
-              id='label'
-              value={value}
-              options={options}
+              id='student'
+              name='student'
+              options={students}
               theme={selectThemeColors}
               className='react-select'
               classNamePrefix='select'
-              isClearable={false}
-              onChange={data => setValue([data])}
-              components={{
-                Option: OptionComponent
-              }}
+              isClearable={true}
+              value={selectedStudent}
+              onChange={handleStudentChange}
+              placeholder="Select Student..."
             />
           </FormGroup>
 
           <FormGroup>
-            <Label for='startDate'>Start Date</Label>
+            <Label for='startDate'>Date</Label>
             <Flatpickr
               required
               id='startDate'
-              // tag={Flatpickr}
               name='startDate'
               className='form-control'
               onChange={date => setStartPicker(date[0])}
@@ -392,15 +225,32 @@ const AddEventSidebar = props => {
                 enableTime: allDay === false,
                 dateFormat: 'Y-m-d H:i'
               }}
+              disabled
             />
           </FormGroup>
 
           <FormGroup>
+            <Label for='package'>Package</Label>
+            <Select
+              id='package'
+              name='package'
+              options={studentPackages}
+              theme={selectThemeColors}
+              className='react-select'
+              classNamePrefix='select'
+              isClearable={true}
+              value={selectedPackage}
+              onChange={setSelectedPackage}
+              isDisabled={!selectedStudent}
+              placeholder="Select Package..."
+            />
+          </FormGroup>
+
+          {/* <FormGroup>
             <Label for='endDate'>End Date</Label>
             <Flatpickr
               required
               id='endDate'
-              // tag={Flatpickr}
               name='endDate'
               className='form-control'
               onChange={date => setEndPicker(date[0])}
@@ -409,10 +259,11 @@ const AddEventSidebar = props => {
                 enableTime: allDay === false,
                 dateFormat: 'Y-m-d H:i'
               }}
+              disabled
             />
-          </FormGroup>
+          </FormGroup> */}
 
-          <FormGroup>
+          {/* <FormGroup>
             <CustomInput
               type='switch'
               id='allDay'
@@ -422,56 +273,15 @@ const AddEventSidebar = props => {
               onChange={e => setAllDay(e.target.checked)}
               inline
             />
-          </FormGroup>
+          </FormGroup> */}
 
-          <FormGroup>
-            <Label for='eventURL'>Event URL</Label>
-            <Input
-              type='url'
-              id='eventURL'
-              value={url}
-              onChange={e => setUrl(e.target.value)}
-              placeholder='https://www.google.com'
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label for='guests'>Guests</Label>
-            <Select
-              isMulti
-              id='guests'
-              className='react-select'
-              classNamePrefix='select'
-              isClearable={false}
-              options={guestsOptions}
-              theme={selectThemeColors}
-              value={guests.length ? [...guests] : null}
-              onChange={data => setGuests([...data])}
-              components={{
-                Option: GuestsComponent
-              }}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label for='location'>Location</Label>
-            <Input id='location' value={location} onChange={e => setLocation(e.target.value)} placeholder='Office' />
-          </FormGroup>
-
-          <FormGroup>
-            <Label for='description'>Description</Label>
-            <Input
-              type='textarea'
-              name='text'
-              id='description'
-              rows='3'
-              value={desc}
-              onChange={e => setDesc(e.target.value)}
-              placeholder='Description'
-            />
-          </FormGroup>
           <FormGroup className='d-flex'>
-            <EventActions />
+            <Button.Ripple className='mr-1' type='submit' color='primary'>
+              Add
+            </Button.Ripple>
+            <Button.Ripple color='secondary' type='reset' onClick={handleAddEventSidebar} outline>
+              Cancel
+            </Button.Ripple>
           </FormGroup>
         </AvForm>
       </ModalBody>

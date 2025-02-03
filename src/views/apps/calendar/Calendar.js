@@ -13,10 +13,14 @@ import Avatar from '@components/avatar'
 
 // ** Third Party Components
 import { toast } from 'react-toastify'
-import { Card, CardBody, Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap'
+import { Card, CardBody, Button, Modal, ModalHeader, ModalBody, Table, Spinner } from 'reactstrap'
 import { Menu, Check, X } from 'react-feather'
 import moment from 'moment'
 import { apiRequest } from '@utils'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+
+const MySwal = withReactContent(Swal)
 
 // ** Toast Component
 const ToastComponent = ({ title, icon, color }) => (
@@ -37,6 +41,8 @@ const Calendar = props => {
   const [selectedEventData, setSelectedEventData] = useState(null)
   const [orderDetailsModal, setOrderDetailsModal] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState(null)
+  const [selectedStudentId, setSelectedStudentId] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // ** Props
   const {
@@ -52,7 +58,9 @@ const Calendar = props => {
     selectEvent,
     updateEvent,
     addEvent,
-    refetchEvents
+    fetchWalletBalance,
+    refetchEvents,
+    fetchEvents
   } = props
 
   const [currentTerm, setCurrentTerm] = useState(null)
@@ -189,7 +197,11 @@ const Calendar = props => {
               recurring: 'daily',
               products: check.products,
               packageId,
-              studentId
+              studentId,
+              onEventDropped: () => {
+                // Make API call to fetch updated wallet balance
+                fetchWalletBalance(studentId)
+              }
             }
           })
         }
@@ -228,7 +240,11 @@ const Calendar = props => {
               recurring: 'weekly',
               products: check.products,
               packageId,
-              studentId
+              studentId,
+              onEventDropped: () => {
+                // Make API call to fetch updated wallet balance
+                fetchWalletBalance(studentId)
+              }
             }
           })
         }
@@ -279,7 +295,11 @@ const Calendar = props => {
               recurring: 'monthly',
               products: check.products,
               packageId,
-              studentId
+              studentId,
+              onEventDropped: () => {
+                // Make API call to fetch updated wallet balance
+                fetchWalletBalance(studentId)
+              }
             }
           })
         }
@@ -312,7 +332,11 @@ const Calendar = props => {
               calendar: calendarMap[color] || 'ETC',
               products: check.products,
               packageId,
-              studentId
+              studentId,
+              onEventDropped: () => {
+                // Make API call to fetch updated wallet balance
+                fetchWalletBalance(studentId)
+              }
             }
           })
         }
@@ -320,6 +344,16 @@ const Calendar = props => {
 
     // Add successful events to store
     dispatch(addEvent(events))
+
+    // Call onEventDropped for each event
+    events.forEach(event => {
+      if (event.extendedProps?.studentId) {
+        const onEventDropped = event.extendedProps?.onEventDropped
+        if (typeof onEventDropped === 'function') {
+          onEventDropped()
+        }
+      }
+    })
 
     // Close all toasts
     toast.dismiss()
@@ -344,6 +378,10 @@ const Calendar = props => {
         }
       )
     }
+
+    setTimeout(() => {
+      dispatch(fetchWalletBalance(studentId))
+    }, 2000)
 
     // if (events.length > 0) {
     //   toast.success(
@@ -418,7 +456,7 @@ const Calendar = props => {
       Enable dragging and resizing event
       ? Docs: https://fullcalendar.io/docs/editable
     */
-    editable: true,
+    editable: false,
 
     // Prevent selecting past dates
     selectConstraint: {
@@ -548,7 +586,17 @@ const Calendar = props => {
         packageId,
         studentId
       })
-      setRecurrenceModal(true)
+      // setRecurrenceModal(true)
+      handleRecurrenceSelect('none', {
+        title: eventTitle,
+        color: eventColor,
+        startTime,
+        endTime,
+        dropDate: info.date,
+        products,
+        packageId,
+        studentId
+      })
     },
 
     // Function to handle recurrence selection
@@ -615,7 +663,8 @@ const Calendar = props => {
         title: clickedEvent.title,
         date: clickedEvent.start,
         amount: clickedEvent.extendedProps.amount,
-        products: clickedEvent.extendedProps.products
+        products: clickedEvent.extendedProps.products,
+        studentId: clickedEvent.extendedProps.studentId
       })
       setOrderDetailsModal(true)
     },
@@ -633,6 +682,8 @@ const Calendar = props => {
       const ev = blankEvent
       ev.start = info.date
       ev.end = info.date
+      // console.log({info})
+      // ev.extendedProps.studentId = info.draggedEl.getAttribute('data-student-id')
       dispatch(selectEvent(ev))
       handleAddEventSidebar()
     },
@@ -667,7 +718,44 @@ const Calendar = props => {
         return
       }
 
-      dispatch(updateEvent(droppedEvent))
+      // Update the event with preserved onEventDropped function
+      const updatedEvent = {
+        ...droppedEvent,
+        extendedProps: {
+          ...droppedEvent.extendedProps,
+          onEventDropped: () => {
+            // Make API call to fetch updated wallet balance
+            const apiRequest = async () => {
+              try {
+                const response = await fetch(`/students/get-wallet/${droppedEvent.extendedProps.studentId}`, {
+                  method: 'GET'
+                })
+                if (response.ok) {
+                  const data = await response.json()
+                  if (data.status) {
+                    // Dispatch an action to update the wallet balance in the store
+                    dispatch({
+                      type: 'UPDATE_WALLET_BALANCE',
+                      data: data.data || 0
+                    })
+                  }
+                }
+              } catch (error) {
+                console.error('Error fetching wallet balance:', error)
+              }
+            }
+            apiRequest()
+          }
+        }
+      }
+
+      dispatch(updateEvent(updatedEvent))
+
+      // Call onEventDropped immediately after updating
+      if (updatedEvent.extendedProps?.studentId) {
+        updatedEvent.extendedProps.onEventDropped()
+      }
+
       toast.success(
         <ToastComponent 
           title='Event Updated' 
@@ -724,7 +812,7 @@ const Calendar = props => {
                 <strong>Date:</strong> {moment(selectedOrder.date).format('LL')}
               </div>
               <div className='mb-2'>
-                <strong>Amount:</strong> {selectedOrder.amount.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
+                <strong>Amount:</strong> {selectedOrder.amount?.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
               </div>
               <div>
                 <strong>Products:</strong>
@@ -746,6 +834,93 @@ const Calendar = props => {
                     ))}
                   </tbody>
                 </Table>
+              </div>
+              <div className='d-flex justify-content-end mt-2'>
+                <Button 
+                  color='danger' 
+                  disabled={isSubmitting}
+                  onClick={async () => {
+                    const result = await MySwal.fire({
+                      title: 'Are you sure?',
+                      text: "You won't be able to revert this!",
+                      icon: 'warning',
+                      showCancelButton: true,
+                      confirmButtonText: 'Yes, cancel it!',
+                      cancelButtonText: 'No, keep it!',
+                      customClass: {
+                        confirmButton: 'btn btn-danger',
+                        cancelButton: 'btn btn-outline-secondary ml-1'
+                      },
+                      buttonsStyling: false
+                    })
+
+                    if (result.isConfirmed) {
+                      setIsSubmitting(true)
+                      try {
+                        const response = await apiRequest({
+                          url: `/orders/refund/${selectedOrder.id}`,
+                          method: 'GET'
+                        })
+
+                        if (response.data.status) {
+                          // Remove the event from calendar
+                          const event = calendarApi.getEventById(selectedOrder.id)
+                          console.log({event})
+                          if (event) {
+                            event.remove()
+                          }
+
+                          // Close modal
+                          setOrderDetailsModal(false)
+
+                          // Show success message
+                          toast.success(
+                            <ToastComponent 
+                              title='Order cancelled successfully' 
+                              color='success' 
+                              icon={<Check />} 
+                            />,
+                            {
+                              autoClose: 2000,
+                              hideProgressBar: true,
+                              closeButton: false
+                            }
+                          )
+
+                          // Refetch events to update the calendar
+                          refetchEvents()
+                          dispatch(fetchWalletBalance(selectedOrder.studentId))
+                          dispatch(fetchEvents({studentId: selectedOrder.studentId}))
+                        }
+                      } catch (error) {
+                        console.error('Error cancelling order:', error)
+                        toast.error(
+                          <ToastComponent 
+                            title='Error cancelling order' 
+                            color='danger' 
+                            icon={<X />} 
+                          />,
+                          {
+                            autoClose: 2000,
+                            hideProgressBar: true,
+                            closeButton: false
+                          }
+                        )
+                      } finally {
+                        setIsSubmitting(false)
+                      }
+                    }
+                  }}
+                >
+                  {isSubmitting ? (
+                    <Fragment>
+                      <Spinner size="sm" className='mr-50' />
+                      <span>Cancelling...</span>
+                    </Fragment>
+                  ) : (
+                    'Cancel Order'
+                  )}
+                </Button>
               </div>
             </div>
           )}
