@@ -13,7 +13,7 @@ import withReactContent from 'sweetalert2-react-content'
 const MySwal = withReactContent(Swal)
 
 // ** Third Party Components
-import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
+import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem, Badge } from 'reactstrap'
 import { MoreVertical, FileText, Trash2, Archive } from 'react-feather'
 
 
@@ -63,6 +63,11 @@ const handleDelete = async (id) => {
   })
 }
 
+const statusObj = {
+  0: 'light-danger',
+  1: 'light-success'
+}
+
 export const columns = [
   {
     name: 'Product Name',
@@ -91,6 +96,13 @@ export const columns = [
     cell: row => <span>{(row.price || 0).toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}</span>
   },
   {
+    name: 'Quantity',
+    minWidth: '150px',
+    selector: 'qty',
+    sortable: true,
+    cell: row => <span>{row.qty.toLocaleString()}</span>
+  },
+  {
     name: 'Type',
     minWidth: '150px',
     selector: 'type',
@@ -109,7 +121,7 @@ export const columns = [
     minWidth: '150px',
     selector: 'status',
     sortable: true,
-    cell: row => <span className="text-capitalize">{row.status}</span>
+    cell: row => <Badge className="text-capitalize" color={statusObj[row.qty > 0 ? 1 : 0]} pill>{row.qty > 0 ? 'In Stock' : 'Out of Stock'}</Badge>
   },
   {
     name: 'Cretaed Date',

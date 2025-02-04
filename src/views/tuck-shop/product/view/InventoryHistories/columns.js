@@ -73,6 +73,6 @@ export const columns = [
 		minWidth: '200px',
 		selector: 'admin',
 		sortable: true,
-		cell: (row) => <span className="font-weight-bold">{row.admin.firstName} {row.admin.lastName}</span>,
+		cell: (row) => <span className="font-weight-bold">{row.admin ? row.admin.fullName : 'Student'}</span>,
 	},
 ]

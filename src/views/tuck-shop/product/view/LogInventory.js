@@ -32,6 +32,7 @@ export const LogInventory = ({ selectedInventory }) => {
 		if (errors && !errors.length) {
 			await dispatch(logInventory(id, inventoryData))
 			setInventoryData({
+				...inventoryData,
 				qty: null,
 				type: null,
 				department: null,

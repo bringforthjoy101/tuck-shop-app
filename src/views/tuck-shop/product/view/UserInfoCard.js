@@ -8,7 +8,7 @@ import moment from 'moment'
 import {useHistory, Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
-import { Hexagon, Star, UserPlus, Calendar, Check, DollarSign, User } from 'react-feather'
+import { Hexagon, Star, UserPlus, Calendar, Check, DollarSign, User, Box } from 'react-feather'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { deleteProduct, getAllData } from '../store/action'
@@ -148,6 +148,15 @@ const UserInfoCard = ({ selectedProduct }) => {
                   </CardText>
                 </div>
                 <CardText className='text-capitalize mb-0'>{selectedProduct?.price.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}</CardText>
+              </div>
+              <div className='d-flex flex-wrap align-items-center mt-1'>
+                <div className='user-info-title'>
+                  <Box className='mr-1' size={14} />
+                  <CardText tag='span' className='user-info-title font-weight-bold mb-0'>
+                    Quantity
+                  </CardText>
+                </div>
+                <CardText className='text-capitalize mb-0'>{`${selectedProduct?.qty.toLocaleString()} ${selectedProduct?.qty > 1 ? 'units' : 'unit'}`}</CardText>
               </div>
             </div>
             <div>

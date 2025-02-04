@@ -4,6 +4,7 @@ import { Fragment, useState, useEffect } from 'react'
 // ** Columns
 import { columns } from './columns'
 import Sidebar from './Sidebar'
+import BatchUploadModal from './BatchUploadModal'
 
 // ** Store & Actions
 import { getAllData, getFilteredData } from '../store/action'
@@ -38,9 +39,11 @@ const ProductTable = () => {
   const [currentType, setCurrentType] = useState({ value: '', label: 'Select Type', number: 0 })
   const [currentStatus, setCurrentStatus] = useState({ value: '', label: 'Select Status', number: 0 })
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [batchModalOpen, setBatchModalOpen] = useState(false)
 
   // ** Function to toggle sidebar
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen)
+  const toggleBatchModal = () => setBatchModalOpen(!batchModalOpen)
 
   useEffect(() => {
     dispatch(getAllData())
@@ -281,6 +284,10 @@ const ProductTable = () => {
     }
   }
 
+  const handleBatchUploadSuccess = () => {
+    dispatch(getAllData())
+  }
+
   return (
     <Fragment>
       <Card>
@@ -427,9 +434,14 @@ const ProductTable = () => {
         </Col>
         <Col sm='12' lg='4' className='d-flex align-items-center justify-content-lg-end justify-content-start mt-sm-0 mt-1'>
           {userData?.role === 'manager' && (
-            <Button.Ripple color='primary' onClick={toggleSidebar}>
-              Add New Product
-            </Button.Ripple>
+            <>
+              <Button.Ripple className='mr-1' color='primary' onClick={toggleBatchModal}>
+                Batch Upload
+              </Button.Ripple>
+              <Button.Ripple color='primary' onClick={toggleSidebar}>
+                Add New Product
+              </Button.Ripple>
+            </>
           )}
         </Col>
       </Row>
@@ -447,6 +459,7 @@ const ProductTable = () => {
         />
       </Card>
       <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} />
+      <BatchUploadModal isOpen={batchModalOpen} toggle={toggleBatchModal} onSuccess={handleBatchUploadSuccess} />
     </Fragment>
   )
 }

@@ -274,6 +274,10 @@ const UsersList = () => {
 		}
 	}
 
+	const handleBatchUploadSuccess = () => {
+		dispatch(getAllData())
+	}
+
 	return (
 		<Fragment>
 			<Card>
@@ -458,7 +462,7 @@ const UsersList = () => {
 				/>
 			</Card>
 			<Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} />
-			<BatchUploadModal isOpen={isBatchModalOpen} toggle={toggleBatchModal} />
+			<BatchUploadModal isOpen={isBatchModalOpen} toggle={toggleBatchModal} onSuccess={handleBatchUploadSuccess} />
 		</Fragment>
 	)
 }

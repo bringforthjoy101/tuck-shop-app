@@ -1,6 +1,7 @@
 // ** React Imports
 import { useState } from 'react'
 import Papa from 'papaparse'
+import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
 
 // ** Reactstrap Imports
@@ -29,18 +30,11 @@ const BatchUploadModal = ({ isOpen, toggle, onSuccess }) => {
   const downloadTemplate = () => {
     // Define the template headers and a sample row
     const templateData = {
-      firstName: 'John',
-      lastName: 'Doe',
-      otherName: 'Doe',
-      tagNumber: '1234567890',
-      gender: 'male',
-      type: 'student',
-      year: '7',
-      group: 'A',
-      parentTitle: 'Mr',
-      parentFullName: 'John Doe',
-      parentPhone: '08012345678',
-      parentEmail: 'john.doe@example.com',
+      name: 'Sample Product',
+      description: 'Product description here',
+      price: '1000',
+      category: 'consumable',
+      type: 'food',
     }
 
     // Convert to CSV
@@ -51,7 +45,7 @@ const BatchUploadModal = ({ isOpen, toggle, onSuccess }) => {
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.setAttribute('href', url)
-    link.setAttribute('download', 'student_upload_template.csv')
+    link.setAttribute('download', 'product_upload_template.csv')
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -88,28 +82,28 @@ const BatchUploadModal = ({ isOpen, toggle, onSuccess }) => {
       setError('')
 
       const response = await apiRequest({
-        url: '/students/create-multiple',
+        url: '/products/create-multiple',
         method: 'POST',
-        body: { students: csvData }
+        body: { products: csvData }
       })
 
       if (response && response.data.status) {
-        if (response.data.data.errors?.length) {
-          response.data.data.errors.forEach(error => {
-            toast.error(error.errorMsg)
-          })
-          setError('Some students could not be uploaded. Please check the errors above.')
+        if (response.data.data.errors.length) {
+            response.data.data.errors.forEach(error => {
+              toast.error(error.errorMsg)
+            })
+            setError('Something went wrong while uploading products')
         } else {
-          swal('Success', 'Students uploaded successfully', 'success')
+          swal('Success', 'Products uploaded successfully', 'success')
           toggle() // Close modal
           if (onSuccess) onSuccess() // Refresh data if needed
         }
       } else {
-        setError(response?.data?.message || 'Something went wrong while uploading students')
+        setError(response?.data?.message || 'Something went wrong while uploading products')
       }
     } catch (err) {
-      console.error('Error uploading students:', err)
-      setError('Failed to upload students. Please try again.')
+      console.error('Error uploading products:', err)
+      setError('Failed to upload products. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -126,7 +120,7 @@ const BatchUploadModal = ({ isOpen, toggle, onSuccess }) => {
 
   return (
     <Modal isOpen={isOpen} toggle={handleClose} className='modal-dialog-centered modal-lg'>
-      <ModalHeader toggle={handleClose}>Batch Upload Students</ModalHeader>
+      <ModalHeader toggle={handleClose}>Batch Upload Products</ModalHeader>
       <ModalBody>
         <div className='mb-2'>
           <div className='d-flex justify-content-between align-items-center mb-1'>
