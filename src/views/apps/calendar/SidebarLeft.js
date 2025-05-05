@@ -275,6 +275,31 @@ const SidebarLeft = props => {
             <h5 className='section-label mb-1'>
               <span className='align-middle'>Snack Packages</span>
             </h5>
+            <style>
+              {`
+                .calendar-events-filter {
+                  max-height: 400px;
+                  overflow-y: auto;
+                  padding: 0.5rem;
+                  margin-bottom: 1rem;
+                  scrollbar-width: thin;
+                  scrollbar-color: #b4b7bd #f8f8f8;
+                }
+                
+                .calendar-events-filter::-webkit-scrollbar {
+                  width: 4px;
+                }
+                
+                .calendar-events-filter::-webkit-scrollbar-track {
+                  background: #f8f8f8;
+                }
+                
+                .calendar-events-filter::-webkit-scrollbar-thumb {
+                  background-color: #b4b7bd;
+                  border-radius: 20px;
+                }
+              `}
+            </style>
             <div className='calendar-events-filter'>
               {studentPackages && studentPackages.map((event, key) => (
                 <div

@@ -16,7 +16,7 @@ export const fetchEvents = ({studentId}) => {
           start: new Date(event?.orderDate),
           end: new Date(event?.orderDate),
           allDay: true,
-          extendedProps: { calendar: 'Personal', amount: event?.amount, products: event?.products, category: event?.category }
+          extendedProps: { calendar: 'Personal', amount: event?.amount, products: event?.products, category: event?.category, studentId: event?.studentId }
         })) || []
         dispatch({
           type: 'FETCH_EVENTS',
@@ -41,7 +41,10 @@ export const addEvent = events => {
     const orderedPackages = events.map(event => ({
       packageId: event.extendedProps.packageId,
       studentId: event.extendedProps.studentId,
-      orderDate: new Date(event.start).toISOString().split('T')[0]
+      orderDate: new Date(event.start).toISOString().split('T')[0],
+      productIds: event.extendedProps.products.map(product => product.id),
+      category: event.extendedProps.category,
+      title: event.extendedProps.title
     }))
     const body = JSON.stringify({orderedPackages})
 

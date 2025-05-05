@@ -201,6 +201,7 @@ const Cart = (props) => {
 
 	const handleStudentChange = (option) => {
 		setSelectedOption(option)
+		setOrderData(prev => ({ ...prev, studentId: option.value }))
 		setPackagedOrderData(prev => ({ ...prev, studentId: option.value }))
 	}
 
@@ -213,7 +214,7 @@ const Cart = (props) => {
 		const submitData = isGeneralOrder ? packagedOrderData : orderData
 			console.log({ submitData })
 			// Check if all required fields have values
-			const requiredFields = isGeneralOrder ? ['name', 'description', 'category', 'studentId', 'productIds'] : ['amount', 'products', 'studentId']
+			const requiredFields = isGeneralOrder ? ['name', 'description', 'category', 'studentId', 'productIds'] : ['amount', 'orderedProducts', 'studentId']
 			const hasEmptyFields = requiredFields.some(field => {
 				const value = submitData[field]
 				return value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0)

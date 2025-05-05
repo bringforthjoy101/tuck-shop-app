@@ -452,10 +452,10 @@ const TransactionTable = () => {
 								<span className="align-middle ml-lg-50">Download Table</span>
 							</DropdownToggle>
 							<DropdownMenu right>
-								{/* <DropdownItem className="w-100" onClick={() => downloadCSV(store.allData)}>
+								<DropdownItem className="w-100" onClick={() => downloadCSV(store.allData)}>
 									<FileText size={15} />
 									<span className="align-middle ml-50">CSV</span>
-								</DropdownItem> */}
+								</DropdownItem>
 								<DropdownItem className="w-100" onClick={() => downloadPDF()}>
 									<FileText size={15} />
 									<span className="align-middle ml-50">PDF</span>

@@ -43,6 +43,7 @@ const Calendar = props => {
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [selectedStudentId, setSelectedStudentId] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [loadingCell, setLoadingCell] = useState(null)
 
   // ** Props
   const {
@@ -347,6 +348,7 @@ const Calendar = props => {
 
     // Call onEventDropped for each event
     events.forEach(event => {
+      console.log({event}, event.extendedProps?.studentId)
       if (event.extendedProps?.studentId) {
         const onEventDropped = event.extendedProps?.onEventDropped
         if (typeof onEventDropped === 'function') {
@@ -415,15 +417,9 @@ const Calendar = props => {
     afternoon: { color: 'info', className: 'bg-light-info', startTime: '12:00', endTime: '13:00' }
   }
 
-  // Get the academic year end date (assuming it ends in December)
+  // Get today's date at midnight for consistent comparison
   const today = new Date()
-  const currentYear = today.getFullYear()
-  const academicYearEnd = new Date(currentYear, 11, 31) // December 31st of current year
-  
-  // If we're past September, use next year's December as end date
-  if (today.getMonth() >= 8) { // September is month 8 (0-based index)
-    academicYearEnd.setFullYear(currentYear + 1)
-  }
+  today.setHours(0, 0, 0, 0)
 
   const calendarOptions = {
     events: store.events.length ? store.events : [],
@@ -434,13 +430,31 @@ const Calendar = props => {
       start: 'sidebarToggle, prev,next, title',
       end: 'dayGridMonth,listMonth'
     },
-    // validRange: {
-    //   start: new Date().toISOString().split('T')[0],
-    //   end: academicYearEnd.toISOString().split('T')[0]
-    // },
-    validRange: {
-      start: currentTerm?.startDate,
-      end: currentTerm?.endDate
+    // Disable past dates while respecting term dates
+    validRange: (currentDate) => {
+      console.log({currentDate, currentTerm})
+      // If no term dates are set, don't show any dates
+      if (!currentTerm?.startDate || !currentTerm?.endDate) {
+        return {
+          start: currentDate,
+          end: currentDate
+        }
+      }
+
+      const termStart = new Date(currentTerm.startDate)
+      const termEnd = new Date(currentTerm.endDate)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+
+      // If today is after term start, use today as start date
+      // Otherwise use term start date
+      const effectiveStart = today > termStart ? today : termStart
+      const effectiveEnd = today > termEnd ? today : termEnd
+      console.log({effectiveStart, effectiveEnd})
+      return {
+        start: effectiveStart,
+        end: effectiveEnd
+      }
     },
     views: {
       dayGridMonth: {
@@ -456,16 +470,29 @@ const Calendar = props => {
       Enable dragging and resizing event
       ? Docs: https://fullcalendar.io/docs/editable
     */
-    editable: false,
+    editable: true,
 
     // Prevent selecting past dates
     selectConstraint: {
-      start: new Date().toISOString().split('T')[0]
+      start: today.toISOString()
     },
 
     // Prevent dragging to past dates
     eventConstraint: {
-      start: new Date().toISOString().split('T')[0]
+      start: today.toISOString()
+    },
+
+    // Add selectable property to enable date selection
+    selectable: true,
+
+    // Add selectMirror to show a preview of the event being created
+    selectMirror: true,
+
+    // Disable past dates in month view
+    dayCellDidMount: (arg) => {
+      if (arg.date < today) {
+        arg.el.classList.add('fc-day-disabled')
+      }
     },
 
     /*
@@ -502,6 +529,8 @@ const Calendar = props => {
       const packageId = info.draggedEl.getAttribute('data-package-id')
       const studentId = info.draggedEl.getAttribute('data-student-id')
       
+      // Set loading state for the cell using the date
+      setLoadingCell(info.date.toISOString())
 
       // Get the day of the week for the dropped date
       const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -513,6 +542,7 @@ const Calendar = props => {
       )
 
       if (unavailableProducts.length > 0) {
+        setLoadingCell(null)
         const unavailableNames = unavailableProducts.map(p => p.name).join(', ')
         toast.error(
           <ToastComponent 
@@ -538,6 +568,7 @@ const Calendar = props => {
 
       // Check event limit (max 2 events per day)
       if (existingEvents.length >= 2) {
+        setLoadingCell(null)
         toast.error(
           <ToastComponent 
             title='Maximum 2 events per day allowed' 
@@ -560,6 +591,7 @@ const Calendar = props => {
       })
 
       if (isDuplicate) {
+        setLoadingCell(null)
         toast.error(
           <ToastComponent 
             title='This event already exists on this date' 
@@ -587,6 +619,8 @@ const Calendar = props => {
         studentId
       })
       // setRecurrenceModal(true)
+
+      // Handle the event submission
       handleRecurrenceSelect('none', {
         title: eventTitle,
         color: eventColor,
@@ -597,6 +631,9 @@ const Calendar = props => {
         packageId,
         studentId
       })
+
+      // Clear loading state after event is handled
+      setLoadingCell(null)
     },
 
     // Function to handle recurrence selection
@@ -646,6 +683,21 @@ const Calendar = props => {
       return [`bg-light-${colorName?.color || 'primary'}`]
     },
 
+    // Add dayCellContent to show loading spinner
+    dayCellContent: (arg) => {
+      const isLoading = loadingCell === arg.date.toISOString()
+      return (
+        <div className="d-flex justify-content-between align-items-center">
+          <span>{arg.dayNumberText}</span>
+          {isLoading && (
+            <div className="calendar-loading-indicator">
+              <Spinner size="sm" color="primary" />
+            </div>
+          )}
+        </div>
+      )
+    },
+
     // eventContent: (arg) => {
     //   const colorName = calendarsColor[arg.event._def.extendedProps.calendar]
     //   return (
@@ -656,15 +708,34 @@ const Calendar = props => {
     //   )
     // },
 
-    eventClick({ event: clickedEvent }) {
+    eventClick({ event: clickedEvent, info }) {
       console.log({clickedEvent})
+      const studentId = clickedEvent.extendedProps?.studentId
+      
+      // Check if we have a valid studentId
+      if (!studentId) {
+        toast.error(
+          <ToastComponent 
+            title='Cannot cancel order: Missing student information' 
+            color='danger' 
+            icon={<X />} 
+          />, 
+          {
+            autoClose: 2000,
+            hideProgressBar: true,
+            closeButton: false
+          }
+        )
+        return
+      }
+
       setSelectedOrder({
         id: clickedEvent.id,
         title: clickedEvent.title,
         date: clickedEvent.start,
-        amount: clickedEvent.extendedProps.amount,
-        products: clickedEvent.extendedProps.products,
-        studentId: clickedEvent.extendedProps.studentId
+        amount: clickedEvent.extendedProps?.amount,
+        products: clickedEvent.extendedProps?.products,
+        studentId // Store the validated studentId
       })
       setOrderDetailsModal(true)
     },
@@ -791,9 +862,35 @@ const Calendar = props => {
 
   return (
     <Fragment>
+      <style>
+        {`
+          .fc-day-disabled {
+            background-color: #f5f5f5 !important;
+            cursor: not-allowed !important;
+            opacity: 0.6;
+          }
+          .fc-day-disabled .fc-daygrid-day-number {
+            color: #999 !important;
+          }
+          .fc-day-disabled:hover {
+            background-color: #f5f5f5 !important;
+          }
+          .calendar-loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+          }
+          .fc-daygrid-day-frame {
+            position: relative;
+            min-height: 100px;
+          }
+        `}
+      </style>
       <Card className='shadow-none border-0 mb-0 rounded-0'>
         <CardBody className='pb-0'>
-          <FullCalendar {...calendarOptions} />{' '}
+          <FullCalendar {...calendarOptions} />
         </CardBody>
       </Card>
 
@@ -857,6 +954,7 @@ const Calendar = props => {
                     if (result.isConfirmed) {
                       setIsSubmitting(true)
                       try {
+                        console.log({selectedOrder})
                         const response = await apiRequest({
                           url: `/orders/refund/${selectedOrder.id}`,
                           method: 'GET'

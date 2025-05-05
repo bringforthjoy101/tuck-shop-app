@@ -100,6 +100,9 @@ const ProductCards = props => {
                 <CardText>
                     {item.availability.join(', ')}
                 </CardText>
+                <CardText>
+                    {item.period.join(', ')}
+                </CardText>
                 
               </CardBody>
               <div className='item-options text-center'>
